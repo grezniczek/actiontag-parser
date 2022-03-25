@@ -1,0 +1,41 @@
+{
+    "name": "Action Tag Parser - Demo",
+    "namespace": "DE\\RUB\\ActionTagParserExternalModule",
+    "description": "An external module demonstrating an improved action tag parser.",
+    "documentation": "README.md",
+    "authors": [
+        {
+            "name": "Günther Rezniczek",
+            "email": "guenther.rezniczek@rub.de",
+            "institution": "Ruhr-Universität Bochum"
+        }
+    ],
+    "framework-version": 8,
+    "permissions": [
+        "redcap_every_page_top"
+    ],
+    "enable-every-page-hooks-on-system-pages": false,
+    "links": {
+        "project": [
+            {
+                "name": "Explain Action Tags",
+                "key": "explain",
+                "icon": "fas fa-bug",
+                "url": "explain.php",
+                "show-header-and-footer": true
+            }
+        ],
+        "system": [
+        ]
+    },
+    "system-settings": [
+    ],
+    "project-settings": [
+    ],
+    "compatibility": {
+        "php-version-min": "7.4.0",
+        "php-version-max": "",
+        "redcap-version-min": "12.0.1",
+        "redcap-version-max": ""
+     }
+}
