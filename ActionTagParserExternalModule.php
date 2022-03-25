@@ -33,10 +33,11 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         foreach ($Proj->metadata as $field => $meta) {
             $misc = $meta["misc"] ?? "";
             if (strpos($misc, "@") !== false) {
-                print "<p>Field: <b>$field</b></p><pre>";
+                print "<hr><p class=\"ml-2\">Field: <b>$field</b></p><pre class=\"mr-2\">";
                 $result = ActionTagParser::parse($misc);
-                print_r($result);
-                print "</pre><hr>";
+                print_r($result["orig"]);
+                print_r($result["parts"]);
+                print "</pre>";
             }
         }
 
