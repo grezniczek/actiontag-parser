@@ -63,7 +63,7 @@ class ActionTagParser {
         $param_start = -1;
         /** @var array Parts */
         $parts = array();
-        /** @var int Number of parts */
+        /** @var int Number of parts -- TODO: This may be unnecessary */
         $n_parts = 0;
         /** @var array|null The currently worked-on tag */
         $tag = null;
@@ -349,7 +349,10 @@ class ActionTagParser {
                 // End of string reached
                 if ($c === "") {
                     // This is premature. We have a "broken" parameter.
-                    // Add to the segment
+                    // Add the tag
+                    $parts[] = $tag;
+                    $n_parts += 1;
+                    // Add partial param to the segment
                     $seg_text .= $param_text;
                     $seg_end = $pos - 1;
                     $parts[] = array(
