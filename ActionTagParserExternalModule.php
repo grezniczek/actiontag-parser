@@ -36,6 +36,7 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
                 print "<hr><p class=\"ml-2\">Field: <b>$field</b></p><pre class=\"mr-2\">";
                 $result = ActionTagParser::parse($misc);
                 print_r($result["orig"]);
+                print "<hr>";
                 print_r($result["parts"]);
                 print "</pre>";
             }
