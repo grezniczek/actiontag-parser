@@ -29,20 +29,22 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
         // Get all fields that have an action tag
 
+        $fields = [];
         $Proj = new \Project($project_id);
         foreach ($Proj->metadata as $field => $meta) {
             $misc = $meta["misc"] ?? "";
             if (strpos($misc, "@") !== false) {
-                print "<hr><p class=\"ml-2\">Field: <b>$field</b></p><pre class=\"mr-2\">";
-                $result = ActionTagParser::parse($misc);
-                print_r($result["orig"]);
-                print "<hr>";
-                print_r($result["parts"]);
-                print "</pre>";
+                $fields[$meta["form_name"]."-".$meta["field_order"]] = $meta;
             }
         }
-
-
+        ksort($fields);
+        foreach ($fields as $_ => $meta) {
+            print "<hr><p class=\"ml-2\">Field: <b>{$meta["field_name"]}</b></p><pre class=\"mr-2\">";
+            $result = ActionTagParser::parse($meta["misc"]);
+            print_r($result["orig"]);
+            print "<hr>";
+            print_r($result["parts"]);
+            print "</pre>";
+        }
     }
-
 }
