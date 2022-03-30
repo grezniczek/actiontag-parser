@@ -37,6 +37,8 @@ class ActionTagParser {
         $searching_param = false;
         /** @var bool|string Whether inside a param candidate */
         $in_param = false;
+        /** @var bool|string Whether inside a string literal */
+        $in_string_literal = false;
         /** @var int Start position of a segment */
         $seg_start = 0;
         /** @var int End position of a segment */
@@ -61,6 +63,8 @@ class ActionTagParser {
         $param_text = "";
         /** @var int Start position of an action tag parameter */
         $param_start = -1;
+        /** @var int Number of open brackets (parenthesis or curly braces) */
+        $param_nop = 0;
         /** @var array Parts */
         $parts = array();
         /** @var int Number of parts -- TODO: This may be unnecessary */
@@ -265,6 +269,22 @@ class ActionTagParser {
                     $prev = $c;
                     continue;
                 }
+                // Is the char an opening curly brace (potential JSON paramater)?
+                else if ($c === "{") {
+                    // This is the start of a JSON parameter
+                    // End segment and mode
+                    $searching_param = false;
+                    $seg_end = $pos - 1;
+                    // Start param mode
+                    $in_param = "json";
+                    $param_text = $c;
+                    $param_start = $pos;
+                    $param_nop = 1;
+                    $in_string_literal = false;
+                    // Set previous and continue
+                    $prev = $c;
+                    continue;
+                }
                 // Is it something else?
                 else {
                     // This cannot be a parameter.
@@ -310,20 +330,8 @@ class ActionTagParser {
                     $in_param = "bracketed";
                     $param_text = $c;
                     $param_start = $pos;
-                    // Set previous and continue
-                    $prev = $c;
-                    continue;
-                }
-                // Is the char an opening curly brace (potential JSON paramater)?
-                else if ($c === "{") {
-                    // This is the start of a JSON parameter
-                    // End segment and mode
-                    $searching_param = false;
-                    $seg_end = $pos - 1;
-                    // Start param mode
-                    $in_param = "json";
-                    $param_text = $c;
-                    $param_start = $pos;
+                    $param_nop = 1;
+                    $in_string_literal = false;
                     // Set previous and continue
                     $prev = $c;
                     continue;
@@ -390,6 +398,7 @@ class ActionTagParser {
                         // End of parameter reached
                         $param_text .= $c;
                         $tag["param"] = array(
+                            "type" => "quoted",
                             "start" => $param_start,
                             "end" => $pos,
                             "text" => $param_text,
@@ -420,11 +429,149 @@ class ActionTagParser {
                     continue;
                 }
             }
+            // JSON parameter. The idea here is to count the "open" curly braces (outside of string literals).
+            // Entering, the counter is at 1. When 0 is reached, the JSON parameter ends.
+            else if ($in_param == "json") {
+                // Is char the escape character?
+                if ($c === self::esc) {
+                    // Escaping in a JSON candidate is ONLY possible in a string literal! See https://www.json.org/
+                    if (!$in_string_literal) {
+                        // TODO - add tag without parameter, add segment so far and esc char separately as invalid and continus with outside text
+                        throw new \Exception("Not implemented");
+                        continue;
+                    }
+                    if ($escaped) {
+                        $param_text .= $c;
+                        $escaped = false;
+                        $prev = $c;
+                        continue;
+                    }
+                    else {
+                        $escaped = true;
+                        continue;
+                    }
+                }
+                // Is char a double quote? Note: Only double quotes are valid quotes in JSON
+                else if ($c === '"') {
+                    // When not in a string literal, start string literal
+                    if (!$in_string_literal) {
+                        $param_text .= $c;
+                        $in_string_literal = true;
+                        $prev = $c;
+                        continue;
+                    }
+                    // Is the quote escaped?
+                    if ($escaped) {
+                        // Add it, and the esc char
+                        $param_text .= (self::esc . $c);
+                        $prev = $c;
+                        continue;
+                    }
+                    else {
+                        // This ends the string literal
+                        $in_string_literal = false;
+                        $param_text .= $c;
+                        $prev = $c;
+                        continue;
+                    }
+                }
+                // From here on, there must not be an escaped state
+                if ($escaped) {
+                    // Add esc char and reset. This esc char is illegal here, but this will be handled by the JSON parser later
+                    $param_text .= self::esc;
+                    $escaped = false;
+                }
+                // Is char a single quote? Note: Only double quotes are valid quotes in JSON outside of a string literal
+                if ($c === "'") {
+                    if (!$in_string_literal) {
+                        // Single quote outside of a string literal is not valid JSON. We kindly inform about this, as it might be a common mistake
+                        // TODO - exit and alert
+                        throw new \Exception("Not implemented");
+                        continue;
+                    }
+                    else {
+                        $param_text .= $c;
+                        $prev = $c;
+                        continue;
+                    }
+                }
+                // Is char an opening curly brace?
+                else if ($c === "{") {
+                    $param_text .= $c;
+                    // Increase open bracket count, but only when not inside a string literal
+                    $param_nop += ($in_string_literal ? 0 : 1);
+                    $prev = $c;
+                    continue;
+                }
+                // Is char a closing curly brace?
+                else if ($c === "}") {
+                    $param_text .= $c;
+                    // Decrease open bracket count, but only when not inside a string literal
+                    $param_nop -= ($in_string_literal ? 0 : 1);
+                    $prev = $c;
+                    // Are we at the closing brace?
+                    if ($param_nop == 0) {
+                        // The JSON parameter is complete
+                        // Test for valid JSON
+                        $valid_json = true;
+                        $json_error = null;
+                        try {
+                            $_ = json_decode($param_text, true, 512, JSON_THROW_ON_ERROR);
+                        }
+                        catch (\Throwable $ex) {
+                            $valid_json = false;
+                            $json_error = $ex->getMessage();
+                        }
+                        $tag["param"] = array(
+                            "type" => "json",
+                            "start" => $param_start,
+                            "end" => $pos,
+                            "text" => $param_text,
+                            "valid" => $valid_json,
+                            "annotation" => $json_error,
+                        );
+                        $param_start = -1;
+                        $param_text = "";
+                        $in_param = false;
+                        $parts[] = $tag;
+                        $n_parts += 1;
+                        $outside_tag = true;
+                        // Reset segment stuff
+                        $seg_start = -1;
+                        $seg_end = -1;
+                        $seg_text = "";
+                    }
+                    continue;
+                }
+                // End of string
+                else if ($c === "") {
+                    // This is premature. We have a "broken" parameter.
+                    // Add the tag
+                    $parts[] = $tag;
+                    $n_parts += 1;
+                    // Add partial param to the segment
+                    $seg_text .= $param_text;
+                    $seg_end = $pos - 1;
+                    $parts[] = array(
+                        "type" => "ots",
+                        "start" => $seg_start,
+                        "end" => $seg_end,
+                        "text" => $seg_text,
+                        "annotation" => "Incomplete potential JSON parameter.",
+                    );
+                    $n_parts += 1;
+                    break;
+                }
+                // Any other character
+                else {
+                    $param_text .= $c;
+                    $prev = $c;
+                    continue;
+                }
+            }
             else if ($in_param == "bracketed") {
                 // TODO
-            }
-            else if ($in_param == "json") {
-                // TODO
+                
             }
         }
 
