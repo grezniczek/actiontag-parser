@@ -398,7 +398,7 @@ class ActionTagParser {
                         // End of parameter reached
                         $param_text .= $c;
                         $tag["param"] = array(
-                            "type" => "quoted",
+                            "type" => "string",
                             "start" => $param_start,
                             "end" => $pos,
                             "text" => $param_text,
