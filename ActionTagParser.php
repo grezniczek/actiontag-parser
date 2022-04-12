@@ -173,6 +173,15 @@ class ActionTagParser {
                 }
                 // Empty char
                 else {
+                    // Anything in a last segment?
+                    if (strlen($seg_text)) {
+                        $parts[] = array(
+                            "type" => "ots",
+                            "start" => $seg_start,
+                            "end" => $pos - 1,
+                            "text" => $seg_text,
+                        );
+                        }
                     // We are done. We are overly specific here. This could be handled by the previous else block (with condition removed)
                     break;
                 }
@@ -472,9 +481,10 @@ class ActionTagParser {
                     }
                     // Is the quote escaped?
                     if ($escaped) {
-                        // Add it, and the esc char
+                        // Add it, and the esc char and end escaped state
                         $param_text .= (self::esc . $c);
                         $prev = $c;
+                        $escaped = false;
                         continue;
                     }
                     else {
@@ -582,8 +592,122 @@ class ActionTagParser {
             // Bracketed parameter. The idea here is to count the "open" parentheses (outside of string literals).
             // Entering, the counter is at 1. When 0 is reached, the bracketed parameter ends.
             else if ($in_param == "bracketed") {
-                // TODO
-                
+                // Is char the escape character?
+                if ($c === self::esc) {
+                    // Escaping in a bracketed candidate is ONLY possible in a string literal, and only for the (current) quote character
+                    if (!$in_string_literal) {
+                        // TODO - add tag without parameter, add segment so far and esc char separately as invalid and continus with outside text
+                        throw new \Exception("Not implemented");
+                        continue;
+                    }
+                    if ($escaped) {
+                        $param_text .= $c;
+                        $escaped = false;
+                        $prev = $c;
+                        continue;
+                    }
+                    else {
+                        $escaped = true;
+                        continue;
+                    }
+                }
+                // Is char a single or double quote?
+                else if ($c === '"' || $c == "'") {
+                    // When not in a string literal, start string literal
+                    if (!$in_string_literal) {
+                        $param_text .= $c;
+                        $in_string_literal = $c;
+                        $prev = $c;
+                        continue;
+                    }
+                    // Is the quote the same that started the string literal?
+                    if ($c === $in_string_literal) {
+                        // Is the quote escaped?
+                        if ($escaped) {
+                            // Add it (and the esc char) and terminate escaped state
+                            $param_text .= (self::esc . $c);
+                            $prev = $c;
+                            $escaped = false;
+                            continue;
+                        }
+                        else {
+                            // This ends the string literal
+                            $in_string_literal = false;
+                            $param_text .= $c;
+                            $prev = $c;
+                            continue;
+                        }
+                    }
+                    else {
+                        // Add it
+                        $param_text .= $c;
+                        $prev = $c;
+                        continue;
+                    }
+                }
+                // Is char an opening parenthesis?
+                if ($c === "(") {
+                    $param_text .= $c;
+                    // Increase open bracket count, but only when not inside a string literal
+                    $param_nop += ($in_string_literal ? 0 : 1);
+                    $prev = $c;
+                    continue;
+                }
+                // Is char a closing parenthesis?
+                else if ($c === ")") {
+                    $param_text .= $c;
+                    // Decrease open bracket count, but only when not inside a string literal
+                    $param_nop -= ($in_string_literal ? 0 : 1);
+                    $prev = $c;
+                    // Are we at the closing brace?
+                    if ($param_nop == 0) {
+                        // The bracketed parameter is complete
+                        $tag["param"] = array(
+                            "type" => "bracketed",
+                            "start" => $param_start,
+                            "end" => $pos,
+                            "text" => $param_text,
+                            "valid" => null, // TODO - any sensible checks? AT-provided callback?
+                            "annotation" => "",
+                        );
+                        $param_start = -1;
+                        $param_text = "";
+                        $in_param = false;
+                        $parts[] = $tag;
+                        $n_parts += 1;
+                        $outside_tag = true;
+                        // Reset segment stuff
+                        $seg_start = -1;
+                        $seg_end = -1;
+                        $seg_text = "";
+                    }
+                    continue;
+                }
+                // End of string
+                else if ($c === "") {
+                    // This is premature. We have a "broken" parameter.
+                    // Add the tag
+                    $parts[] = $tag;
+                    $n_parts += 1;
+                    // Add partial param to the segment
+                    $seg_text .= $param_text;
+                    $seg_end = $pos - 1;
+                    $parts[] = array(
+                        "type" => "ots",
+                        "start" => $seg_start,
+                        "end" => $seg_end,
+                        "text" => $seg_text,
+                        "annotation" => "Incomplete potential bracketed parameter.",
+                    );
+                    $n_parts += 1;
+                    break;
+                }
+                // Any other character
+                else {
+                    $param_text .= $c;
+                    $prev = $c;
+                    continue;
+                }
             }
             #endregion
         }
