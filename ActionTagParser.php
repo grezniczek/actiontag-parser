@@ -24,7 +24,7 @@ class ActionTagParser {
      */
     public static function parse($orig) {
 
-        // State
+        #region State
 
         /** @var int Length of the original string */
         $len = mb_strlen($orig);
@@ -72,13 +72,16 @@ class ActionTagParser {
         /** @var array|null The currently worked-on tag */
         $tag = null;
 
+        #endregion
+
+        #region Main Loop
         // Walk through each char
         for ($pos = 0; $pos <= $len; $pos++) {
             // Get chars at current and next pos
             $c = $pos == $len ? "" : mb_substr($orig, $pos, 1);
             $next = $pos < $len - 1 ? mb_substr($orig, $pos + 1, 1) : "";
 
-            
+            #region Outside tag or in tag name ...
             // Check if outside tag
             if ($outside_tag) {
                 // We are currently OUTSIDE of a tag segment
@@ -244,6 +247,9 @@ class ActionTagParser {
                     continue;
                 }
             }
+            #endregion
+
+            #region Search parameter ...
             // Searching for a parameter that is separated from the tag name by an equal sign
             // (implying that only whitespace can occur before a quote char MUST follow)
             if ($searching_param === "=") {
@@ -352,7 +358,11 @@ class ActionTagParser {
                     continue;
                 }
             }
-            // Parameter parsing
+            #endregion
+            
+            #region Parameter parsing ...
+            
+            // String parameter
             if ($in_param == "quoted") {
                 // End of string reached
                 if ($c === "") {
@@ -569,13 +579,16 @@ class ActionTagParser {
                     continue;
                 }
             }
+            // Bracketed parameter. The idea here is to count the "open" parentheses (outside of string literals).
+            // Entering, the counter is at 1. When 0 is reached, the bracketed parameter ends.
             else if ($in_param == "bracketed") {
                 // TODO
                 
             }
+            #endregion
         }
 
-
+        #endregion
 
         return array(
             "orig" => $orig,
