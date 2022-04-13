@@ -21,24 +21,48 @@ class ActionTagParser {
         "@APPUSERNAME-APP" => array(
             "param" => ["none"],
             "scope" => ["mobile-app"],
+            "field-types" => ["text","textarea"],
         ),
         "@BARCODE-APP" => array(
             "param" => ["none"],
             "scope" => ["mobile-app"],
+            "field-types" => ["text","textarea"],
         ),
         "@CALCDATE" => array(
             "param" => ["args"],
             "scope" => ["mobile-app","survey","data-entry","calc","import"],
-            "warn-when-in" => ["@IF"],
+            "warn-when-inside" => ["@IF"],
+            "field-types" => ["text","textarea"],
         ),
         "@CALCTEXT" => array(
             "param" => ["args"],
             "scope" => ["mobile-app","survey","data-entry","calc","import"],
-            "warn-when-in" => ["@IF"],
+            "warn-when-inside" => ["@IF"],
+            "field-types" => ["text","textarea"],
         ),
         "@CHARLIMIT" => array(
             "param" => ["integer","string"],
+            "piping" => true,
             "scope" => ["mobile-app","survey","data-entry"],
+            "not-together-with" => ["@WORDLIMIT"],
+            "field-types" => ["text","textarea"],
+        ),
+        "@DEFAULT" => array(
+            "param" => ["string"],
+            "piping" => true,
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text","textarea"],
+        ),
+        "@DOWNLOAD-COUNT" => array(
+            "param" => ["args"],
+            "scope" => ["survey","data-entry"],
+            "args-limit" => "same-scope-field",
+            "field-types" => ["text","textarea"],
+        ),
+        "@FORCE-MINMAX" => array(
+            "param" => ["none"],
+            "scope" => ["survey","data-entry","import"],
+            "field-types" => ["text"],
         ),
     );
 
