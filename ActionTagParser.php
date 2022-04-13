@@ -67,8 +67,6 @@ class ActionTagParser {
         $param_nop = 0;
         /** @var array Parts */
         $parts = array();
-        /** @var int Number of parts -- TODO: This may be unnecessary */
-        $n_parts = 0;
         /** @var array|null The currently worked-on tag */
         $tag = null;
 
@@ -127,8 +125,8 @@ class ActionTagParser {
                                     "start" => $seg_start,
                                     "end" => $pos - 1,
                                     "text" => $seg_text,
+                                    "warnings" => [],
                                 );
-                                $n_parts += 1;
                             }
                             $parts[] = array(
                                 "type" => "ots", // outside tag segment
@@ -136,8 +134,8 @@ class ActionTagParser {
                                 "end" => $pos,
                                 "text" => $c,
                                 "annotation" => "Did not qualify as Action Tag starter.",
+                                "warnings" => [],
                             );
-                            $n_parts += 1;
                             $seg_text = "";
                             $seg_start = $pos + 1;
                             $prev = $c;
@@ -156,8 +154,9 @@ class ActionTagParser {
                                 "start" => $seg_start,
                                 "end" => $pos - 1,
                                 "text" => $seg_text,
+                                "annotation" => null,
+                                "warnings" => [],
                             );
-                            $n_parts += 1;
                             $seg_text = "";
                             $prev = $c;
                             continue;
@@ -180,8 +179,10 @@ class ActionTagParser {
                             "start" => $seg_start,
                             "end" => $pos - 1,
                             "text" => $seg_text,
+                            "annotation" => null,
+                            "warnings" => [],
                         );
-                        }
+                    }
                     // We are done. We are overly specific here. This could be handled by the previous else block (with condition removed)
                     break;
                 }
@@ -210,13 +211,12 @@ class ActionTagParser {
                             "end" => $at_name_end,
                             "text" => $at_name,
                             "annotation" => "Did not qualify as a valid Action Tag name.",
+                            "warnings" => []
                         );
-                        $n_parts += 1;
                     }
                     if ($c === "") {
                         // We are done. Add the tag as a part.
                         $parts[] = $tag;
-                        $n_parts += 1;
                         break;
                     }
                     else {
@@ -247,8 +247,8 @@ class ActionTagParser {
                         "end" => $pos - 1,
                         "text" => $at_name,
                         "annotation" => "Did not qualify as a valid Action Tag name.",
+                        "warnings" => [],
                     );
-                    $n_parts += 1;
                     $at_name = "";
                     $at_name_start = -1;
                     $at_name_end = -1;
@@ -305,7 +305,6 @@ class ActionTagParser {
                     // This cannot be a parameter.
                     // Thus, add the tag to parts
                     $parts[] = $tag;
-                    $n_parts += 1;
                     $tag = null;
                     // Switch mode to outside-tag-mode
                     $searching_param = false;
@@ -356,7 +355,6 @@ class ActionTagParser {
                     // This means that this cannot be a parameter.
                     // Thus, add the tag to parts
                     $parts[] = $tag;
-                    $n_parts += 1;
                     $tag = null;
                     // Switch mode to outside-tag-mode
                     $searching_param = false;
@@ -378,7 +376,6 @@ class ActionTagParser {
                     // This is premature. We have a "broken" parameter.
                     // Add the tag
                     $parts[] = $tag;
-                    $n_parts += 1;
                     // Add partial param to the segment
                     $seg_text .= $param_text;
                     $seg_end = $pos - 1;
@@ -388,8 +385,8 @@ class ActionTagParser {
                         "end" => $seg_end,
                         "text" => $seg_text,
                         "annotation" => "Incomplete potential parameter. Missing end quote [{$param_quotetype}].",
+                        "warnings" => [],
                     );
-                    $n_parts += 1;
                     break;
                 }
                 // Char is escape character
@@ -427,7 +424,6 @@ class ActionTagParser {
                         $param_quotetype = "";
                         $in_param = false;
                         $parts[] = $tag;
-                        $n_parts += 1;
                         $prev = $c;
                         $outside_tag = true;
                         // Reset segment stuff
@@ -455,8 +451,15 @@ class ActionTagParser {
                 if ($c === self::esc) {
                     // Escaping in a JSON candidate is ONLY possible in a string literal! See https://www.json.org/
                     if (!$in_string_literal) {
-                        // TODO - add tag without parameter, add segment so far and esc char separately as invalid and continus with outside text
-                        throw new \Exception("Not implemented");
+                        // Add a warning to the tag, for the user's benefit
+                        $tag["warnings"][] = array(
+                            "start" => $pos,
+                            "end" => $pos,
+                            "text" => "Invalid JSON syntax: Escape character '\\' may only occur inside string literals.",
+                        );
+                        // Simply add and continue. The JSON check will catch this, too
+                        $param_text .= $c;
+                        $prev = $c;
                         continue;
                     }
                     if ($escaped) {
@@ -466,7 +469,10 @@ class ActionTagParser {
                         continue;
                     }
                     else {
+                        // We still add the escape character, to be parsed by the JSON decoder
+                        $param_text .= $c;
                         $escaped = true;
+                        $prev = $c;
                         continue;
                     }
                 }
@@ -497,23 +503,32 @@ class ActionTagParser {
                 }
                 // From here on, there must not be an escaped state
                 if ($escaped) {
-                    // Add esc char and reset. This esc char is illegal here, but this will be handled by the JSON parser later
-                    $param_text .= self::esc;
+                    // Check if the character following the esc char is legal. If not, we add a warning for the benefit of the user
+                    // Allowed escaped characters are "/bfnrtu"; we exit out of the escape in any case
                     $escaped = false;
+                    if (mb_strpos("/bfnrtu", $c) === false) {
+                        // Illegal character - add a warning
+                        $tag["warnings"][] = array(
+                            "start" => $pos - 1,
+                            "end" => $pos,
+                            "text" => "Invalid escape sequence. See https://json.org for a list of allowed escape sequences inside JSON strings.",
+                        );
+                    }
                 }
                 // Is char a single quote? Note: Only double quotes are valid quotes in JSON outside of a string literal
                 if ($c === "'") {
                     if (!$in_string_literal) {
                         // Single quote outside of a string literal is not valid JSON. We kindly inform about this, as it might be a common mistake
-                        // TODO - exit and alert
-                        throw new \Exception("Not implemented");
-                        continue;
+                        $tag["warnings"][] = array(
+                            "start" => $pos,
+                            "end" => $pos,
+                            "text" => "Invalid JSON syntax. Single quotes are only allowed inside strings. Did you mean to use a double quote?",
+                        );
                     }
-                    else {
-                        $param_text .= $c;
-                        $prev = $c;
-                        continue;
-                    }
+                    // In any case, we add it. The JSON check will catch this later.
+                    $param_text .= $c;
+                    $prev = $c;
+                    continue;
                 }
                 // Is char an opening curly brace?
                 else if ($c === "{") {
@@ -554,7 +569,6 @@ class ActionTagParser {
                         $param_text = "";
                         $in_param = false;
                         $parts[] = $tag;
-                        $n_parts += 1;
                         $outside_tag = true;
                         // Reset segment stuff
                         $seg_start = -1;
@@ -566,9 +580,14 @@ class ActionTagParser {
                 // End of string
                 else if ($c === "") {
                     // This is premature. We have a "broken" parameter.
+                    // Move any warnings from tag to ots
+                    $warnings = [];
+                    if (isset($tag["warnings"])) {
+                        $warnings = $tag["warnings"];
+                        unset($tag["warnings"]);
+                    }
                     // Add the tag
                     $parts[] = $tag;
-                    $n_parts += 1;
                     // Add partial param to the segment
                     $seg_text .= $param_text;
                     $seg_end = $pos - 1;
@@ -578,8 +597,8 @@ class ActionTagParser {
                         "end" => $seg_end,
                         "text" => $seg_text,
                         "annotation" => "Incomplete potential JSON parameter.",
+                        "warnings" => $warnings,
                     );
-                    $n_parts += 1;
                     break;
                 }
                 // Any other character
@@ -596,8 +615,15 @@ class ActionTagParser {
                 if ($c === self::esc) {
                     // Escaping in a bracketed candidate is ONLY possible in a string literal, and only for the (current) quote character
                     if (!$in_string_literal) {
-                        // TODO - add tag without parameter, add segment so far and esc char separately as invalid and continus with outside text
-                        throw new \Exception("Not implemented");
+                        // We only warn about this, but do not take any further action
+                        $tag["warnings"][] = array(
+                            "start" => $pos,
+                            "end" => $pos,
+                            "text" => "Invalid parameter syntax: Escape character '\\' may only occur inside string literals."
+                        );
+                        // Add it and continue, but do not switch into escaped mode
+                        $param_text .= $c;
+                        $prev = $c;
                         continue;
                     }
                     if ($escaped) {
@@ -674,7 +700,6 @@ class ActionTagParser {
                         $param_text = "";
                         $in_param = false;
                         $parts[] = $tag;
-                        $n_parts += 1;
                         $outside_tag = true;
                         // Reset segment stuff
                         $seg_start = -1;
@@ -686,9 +711,14 @@ class ActionTagParser {
                 // End of string
                 else if ($c === "") {
                     // This is premature. We have a "broken" parameter.
+                    // Move any warnings from tag to ots
+                    $warnings = [];
+                    if (isset($tag["warnings"])) {
+                        $warnings = $tag["warnings"];
+                        unset($tag["warnings"]);
+                    }
                     // Add the tag
                     $parts[] = $tag;
-                    $n_parts += 1;
                     // Add partial param to the segment
                     $seg_text .= $param_text;
                     $seg_end = $pos - 1;
@@ -698,8 +728,8 @@ class ActionTagParser {
                         "end" => $seg_end,
                         "text" => $seg_text,
                         "annotation" => "Incomplete potential bracketed parameter.",
+                        "warnings" => $warnings,
                     );
-                    $n_parts += 1;
                     break;
                 }
                 // Any other character
