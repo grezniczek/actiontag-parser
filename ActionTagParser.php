@@ -14,6 +14,33 @@ class ActionTagParser {
     const at_valid_pre = " \t\n\r";
     /** @var string Valid character after an action tag name (if not end of string) */
     const at_valid_post = " \t=({\n\r";
+    /** @var array Number characters 0-9 */
+    const at_numbers = ["0","1","2","3","4","5","6","7","8","9"];
+
+    const at_info = array(
+        "@APPUSERNAME-APP" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app"],
+        ),
+        "@BARCODE-APP" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app"],
+        ),
+        "@CALCDATE" => array(
+            "param" => ["args"],
+            "scope" => ["mobile-app","survey","data-entry","calc","import"],
+            "warn-when-in" => ["@IF"],
+        ),
+        "@CALCTEXT" => array(
+            "param" => ["args"],
+            "scope" => ["mobile-app","survey","data-entry","calc","import"],
+            "warn-when-in" => ["@IF"],
+        ),
+        "@CHARLIMIT" => array(
+            "param" => ["integer","string"],
+            "scope" => ["mobile-app","survey","data-entry"],
+        ),
+    );
 
     /**
      * Parses a string for action tags and returns all action tag candidates with their parameters.
@@ -149,15 +176,17 @@ class ActionTagParser {
                             $at_name = self::at;
                             $at_name_start = $pos;
                             // Let's add the previous segment to the parts
-                            $parts[] = array(
-                                "type" => "ots", // outside tag segment
-                                "start" => $seg_start,
-                                "end" => $pos - 1,
-                                "text" => $seg_text,
-                                "annotation" => null,
-                                "warnings" => [],
-                            );
-                            $seg_text = "";
+                            if (mb_strlen($seg_text)) {
+                                $parts[] = array(
+                                    "type" => "ots", // outside tag segment
+                                    "start" => $seg_start,
+                                    "end" => $pos - 1,
+                                    "text" => $seg_text,
+                                    "annotation" => null,
+                                    "warnings" => [],
+                                );
+                                $seg_text = "";
+                            }
                             $prev = $c;
                             continue;
                         }
@@ -264,12 +293,12 @@ class ActionTagParser {
             if ($searching_param === "=") {
                 // Is char a quote (single or double)?
                 if ($c === "'" || $c === '"') {
-                    // This is the start of a quoted parameter
+                    // This is the start of a string parameter
                     // End segment and mode
                     $searching_param = false;
                     $seg_end = $pos - 1;
                     // Start param mode
-                    $in_param = "quoted";
+                    $in_param = "string";
                     $param_quotetype = $c;
                     $param_text = $c;
                     $param_start = $pos;
@@ -292,6 +321,22 @@ class ActionTagParser {
                     $seg_end = $pos - 1;
                     // Start param mode
                     $in_param = "json";
+                    $param_text = $c;
+                    $param_start = $pos;
+                    $param_nop = 1;
+                    $in_string_literal = false;
+                    // Set previous and continue
+                    $prev = $c;
+                    continue;
+                }
+                // Is the char a number? Number parameters can occur outside quotes
+                else if (in_array($c, self::at_numbers, true)) {
+                    // This is the start of a integer parameter
+                    // End segment and mode
+                    $searching_param = false;
+                    $seg_end = $pos - 1;
+                    // Start param mode
+                    $in_param = "integer";
                     $param_text = $c;
                     $param_start = $pos;
                     $param_nop = 1;
@@ -336,12 +381,12 @@ class ActionTagParser {
                 }
                 // Is the char an opening parenthesis?
                 else if ($c === "(") {
-                    // This is the start of a bracketed parameter
+                    // This is the start of a args parameter
                     // End segment and mode
                     $searching_param = false;
                     $seg_end = $pos - 1;
                     // Start param mode
-                    $in_param = "bracketed";
+                    $in_param = "args";
                     $param_text = $c;
                     $param_start = $pos;
                     $param_nop = 1;
@@ -368,9 +413,67 @@ class ActionTagParser {
             #endregion
             
             #region Parameter parsing ...
-            
+            // Integer parameter
+            if ($in_param == "integer") {
+                // End of string reached or a whitespace character
+                if ($c === "" || mb_strpos(self::at_valid_pre, $c) !== false) {
+                    $tag["param"] = array(
+                        "type" => "integer",
+                        "start" => $param_start,
+                        "end" => $pos - 1,
+                        "text" => $param_text,
+                    );
+                    $param_start = -1;
+                    $param_text = "";
+                    $param_quotetype = "";
+                    $in_param = false;
+                    $parts[] = $tag;
+                    $prev = $c;
+                    $outside_tag = true;
+                    // Reset segment stuff
+                    $seg_start = -1;
+                    $seg_end = -1;
+                    $seg_text = "";
+                    if ($c === "") {
+                        break;
+                    }
+                    else {
+                        $pos -= 1;
+                        continue;
+                    }
+                }
+                // Is char a number?
+                if (in_array($c, self::at_numbers, true)) {
+                    $param_text .= $c;
+                    $prev = $c;
+                    continue;
+                }
+                // Any other character is illegal here
+                else {
+                    $parts[] = $tag;
+                    // Add partial param to the segment
+                    $seg_text .= $param_text;
+                    $seg_end = $pos - 1;
+                    $parts[] = array(
+                        "type" => "ots",
+                        "start" => $seg_start,
+                        "end" => $seg_end,
+                        "text" => $seg_text,
+                        "annotation" => "Invalid integer parameter. Number characters must be terminated by a space, tab, or line break.",
+                        "warnings" => [],
+                    );
+                    // Reset segment stuff
+                    $seg_start = -1;
+                    $seg_end = -1;
+                    $seg_text = "";
+                    $in_param = false;
+                    $outside_tag = true;
+                    $pos -= 1; // Ensure that the current char will be seen
+                    continue;
+                }
+            }
             // String parameter
-            if ($in_param == "quoted") {
+            else if ($in_param == "string") {
                 // End of string reached
                 if ($c === "") {
                     // This is premature. We have a "broken" parameter.
@@ -608,12 +711,12 @@ class ActionTagParser {
                     continue;
                 }
             }
-            // Bracketed parameter. The idea here is to count the "open" parentheses (outside of string literals).
-            // Entering, the counter is at 1. When 0 is reached, the bracketed parameter ends.
-            else if ($in_param == "bracketed") {
+            // Argument-style parameter. The idea here is to count the "open" parentheses (outside of string literals).
+            // Entering, the counter is at 1. When 0 is reached, the args parameter ends.
+            else if ($in_param == "args") {
                 // Is char the escape character?
                 if ($c === self::esc) {
-                    // Escaping in a bracketed candidate is ONLY possible in a string literal, and only for the (current) quote character
+                    // Escaping in an args candidate is ONLY possible in a string literal, and only for the (current) quote character
                     if (!$in_string_literal) {
                         // We only warn about this, but do not take any further action
                         $tag["warnings"][] = array(
@@ -687,9 +790,9 @@ class ActionTagParser {
                     $prev = $c;
                     // Are we at the closing brace?
                     if ($param_nop == 0) {
-                        // The bracketed parameter is complete
+                        // The args parameter is complete
                         $tag["param"] = array(
-                            "type" => "bracketed",
+                            "type" => "args",
                             "start" => $param_start,
                             "end" => $pos,
                             "text" => $param_text,
@@ -727,7 +830,7 @@ class ActionTagParser {
                         "start" => $seg_start,
                         "end" => $seg_end,
                         "text" => $seg_text,
-                        "annotation" => "Incomplete potential bracketed parameter.",
+                        "annotation" => "Incomplete potential argument-style parameter (inside parentheses).",
                         "warnings" => $warnings,
                     );
                     break;
