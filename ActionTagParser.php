@@ -42,7 +42,7 @@ class ActionTagParser {
         ),
         "@CHARLIMIT" => array(
             "param" => ["integer","quoted-string"],
-            "supports-piping" => true,
+            "supports-piping" => false,
             "scope" => ["mobile-app","survey","data-entry"],
             "not-together-with" => ["@WORDLIMIT"],
             "field-types" => ["text","textarea"],
@@ -277,7 +277,7 @@ class ActionTagParser {
         ),
         "@WORDLIMIT" => array(
             "param" => ["integer","quoted-string"],
-            "supports-piping" => true,
+            "supports-piping" => false,
             "scope" => ["mobile-app","survey","data-entry"],
             "not-together-with" => ["@CHARLIMIT"],
             "field-types" => ["text","textarea"],
