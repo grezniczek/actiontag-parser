@@ -41,14 +41,14 @@ class ActionTagParser {
             "field-types" => ["text","textarea"],
         ),
         "@CHARLIMIT" => array(
-            "param" => ["integer","string"],
+            "param" => ["integer","quoted-string"],
             "piping" => true,
             "scope" => ["mobile-app","survey","data-entry"],
             "not-together-with" => ["@WORDLIMIT"],
             "field-types" => ["text","textarea"],
         ),
         "@DEFAULT" => array(
-            "param" => ["string"],
+            "param" => ["quoted-string"],
             "piping" => true,
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text","textarea"],
@@ -63,6 +63,129 @@ class ActionTagParser {
             "param" => ["none"],
             "scope" => ["survey","data-entry","import"],
             "field-types" => ["text"],
+        ),
+        "@HIDDEN" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@HIDDEN-APP" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@HIDDEN-FORM" => array(
+            "param" => ["none"],
+            "scope" => ["data-entry"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@HIDDEN-PDF" => array(
+            "param" => ["none"],
+            "scope" => ["pdf"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@HIDDEN-SURVEY" => array(
+            "param" => ["none"],
+            "scope" => ["survey"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@HIDEBUTTON" => array(
+            "param" => ["none"],
+            "scope" => ["survey","data-entry"],
+            "field-types" => ["text"],
+        ),
+        "@HIDECHOICE" => array(
+            "param" => ["quoted-string"],
+            "scope" => ["survey","data-entry"],
+            "field-types" => ["checkbox","radio","select","truefalse","yesno"],
+        ),
+        "@HIDDEN" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@IF" => array(
+            "param" => ["args"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@INLINE" => array(
+            "param" => ["none","args"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["file"],
+        ),
+        "@LANGUAGE-CURRENT-FORM" => array(
+            "param" => ["none"],
+            "scope" => ["data-entry"],
+            "field-types" => ["radio","select","text"],
+        ),
+        "@LANGUAGE-CURRENT-SURVEY" => array(
+            "param" => ["none"],
+            "scope" => ["survey"],
+            "field-types" => ["radio","select","text"],
+        ),
+        "@LANGUAGE-FORCE" => array(
+            "param" => ["quoted-string"],
+            "scope" => ["survey","data-entry"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+            "max-per-form" => 1,
+        ),
+        "@LANGUAGE-FORCE-FORM" => array(
+            "param" => ["quoted-string"],
+            "scope" => ["data-entry"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+            "max-per-form" => 1,
+        ),
+        "@LANGUAGE-FORCE-SURVEY" => array(
+            "param" => ["quoted-string"],
+            "scope" => ["survey"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+            "max-per-form" => 1,
+        ),
+        "@LANGUAGE-SET" => array(
+            "param" => ["none"],
+            "scope" => ["survey","data-entry"],
+            "field-types" => ["radio","select"],
+        ),
+        "@LATITUDE" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text"],
+        ),
+        "@LONGITUDE" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text"],
+        ),
+        "@MAXCHECKED" => array(
+            "param" => ["integer","quoted-string"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["checkbox"],
+        ),
+        "@MAXCHOICE" => array(
+            "param" => ["args"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["checkbox","radio","select"],
+        ),
+        "@MAXCHOICE-SURVEY-COMPLETE" => array(
+            "param" => ["args"],
+            "scope" => ["survey"],
+            "field-types" => ["checkbox","radio","select"],
+        ),
+        "@NOMISSING" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@NONEOFTHEABOVE" => array(
+            "param" => ["integer","unquoted-string","quoted-string"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["checkbox"],
+        ),
+        "@HIDDEN" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
     );
 
@@ -322,7 +445,7 @@ class ActionTagParser {
                     $searching_param = false;
                     $seg_end = $pos - 1;
                     // Start param mode
-                    $in_param = "string";
+                    $in_param = "quoted-string";
                     $param_quotetype = $c;
                     $param_text = $c;
                     $param_start = $pos;
@@ -363,7 +486,7 @@ class ActionTagParser {
                     $in_param = "integer";
                     $param_text = $c;
                     $param_start = $pos;
-                    $param_nop = 1;
+                    $param_nop = 0;
                     $in_string_literal = false;
                     // Set previous and continue
                     $prev = $c;
@@ -371,16 +494,18 @@ class ActionTagParser {
                 }
                 // Is it something else?
                 else {
-                    // This cannot be a parameter.
-                    // Thus, add the tag to parts
-                    $parts[] = $tag;
-                    $tag = null;
-                    // Switch mode to outside-tag-mode
+                    // This is the start of an unquoted string parameter
+                    // End segment and mode
                     $searching_param = false;
-                    $outside_tag = true;
-                    // To get the current char into the appropriate logic, we need to set the loop back one position
-                    $pos -= 1;
-                    // We do not need to set the previous char
+                    $seg_end = $pos - 1;
+                    // Start param mode
+                    $in_param = "unquoted-string";
+                    $param_text = $c;
+                    $param_start = $pos;
+                    $param_nop = 0;
+                    $in_string_literal = false;
+                    // Set previous and continue
+                    $prev = $c;
                     continue;
                 }
             }
@@ -472,32 +597,50 @@ class ActionTagParser {
                     $prev = $c;
                     continue;
                 }
-                // Any other character is illegal here
+                // Any other character is illegal here - we switch over to the unquoted string parameter type
                 else {
-                    $parts[] = $tag;
-                    // Add partial param to the segment
-                    $seg_text .= $param_text;
-                    $seg_end = $pos - 1;
-                    $parts[] = array(
-                        "type" => "ots",
-                        "start" => $seg_start,
-                        "end" => $seg_end,
-                        "text" => $seg_text,
-                        "annotation" => "Invalid integer parameter. Number characters must be terminated by a space, tab, or line break.",
-                        "warnings" => [],
+                    $in_param = "unquoted-string";
+                    $param_text .= $c;
+                    $prev = $c;
+                    continue;
+                }
+            }
+            // Integer parameter
+            else if ($in_param == "unquoted-string") {
+                // End of string reached or a whitespace character
+                if ($c === "" || mb_strpos(self::at_valid_pre, $c) !== false) {
+                    $tag["param"] = array(
+                        "type" => "unquoted-string",
+                        "start" => $param_start,
+                        "end" => $pos - 1,
+                        "text" => $param_text,
                     );
+                    $param_start = -1;
+                    $param_text = "";
+                    $param_quotetype = "";
+                    $in_param = false;
+                    $parts[] = $tag;
+                    $prev = $c;
+                    $outside_tag = true;
                     // Reset segment stuff
                     $seg_start = -1;
                     $seg_end = -1;
                     $seg_text = "";
-                    $in_param = false;
-                    $outside_tag = true;
-                    $pos -= 1; // Ensure that the current char will be seen
-                    continue;
+                    if ($c === "") {
+                        break;
+                    }
+                    else {
+                        $pos -= 1;
+                        continue;
+                    }
                 }
+                // Any other char is allowed
+                $param_text .= $c;
+                $prev = $c;
+                continue;
             }
             // String parameter
-            else if ($in_param == "string") {
+            else if ($in_param == "quoted-string") {
                 // End of string reached
                 if ($c === "") {
                     // This is premature. We have a "broken" parameter.
@@ -541,7 +684,7 @@ class ActionTagParser {
                         // End of parameter reached
                         $param_text .= $c;
                         $tag["param"] = array(
-                            "type" => "string",
+                            "type" => "quoted-string",
                             "start" => $param_start,
                             "end" => $pos,
                             "text" => $param_text,
