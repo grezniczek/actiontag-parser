@@ -42,14 +42,14 @@ class ActionTagParser {
         ),
         "@CHARLIMIT" => array(
             "param" => ["integer","quoted-string"],
-            "piping" => true,
+            "supports-piping" => true,
             "scope" => ["mobile-app","survey","data-entry"],
             "not-together-with" => ["@WORDLIMIT"],
             "field-types" => ["text","textarea"],
         ),
         "@DEFAULT" => array(
             "param" => ["quoted-string"],
-            "piping" => true,
+            "supports-piping" => true,
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text","textarea"],
         ),
@@ -182,10 +182,105 @@ class ActionTagParser {
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["checkbox"],
         ),
-        "@HIDDEN" => array(
+        "@NOW" => array(
             "param" => ["none"],
             "scope" => ["mobile-app","survey","data-entry"],
-            "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+            "field-types" => ["text"],
+        ),
+        "@NOW-SERVER" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text"],
+        ),
+        "@NOW-UTC" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text"],
+        ),
+        "@PASSWORDMASK" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text"],
+        ),
+        "@PLACEHOLDER" => array(
+            "param" => ["quoted-string"],
+            "supports-piping" => true,
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text","textarea"],
+        ),
+        "@PREFILL" => array(
+            "param" => ["quoted-string"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["checkbox","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+            "deprecated" => true,
+            "equivalent-to" => "@SETVALUE",
+        ),
+        "@RANDOMORDER" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["checkbox","radio","select","truefalse","yesno"],
+        ),
+        "@READONLY" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@READONLY-APP" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app"],
+            "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@READONLY-FORM" => array(
+            "param" => ["none"],
+            "scope" => ["data-entry"],
+            "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@READONLY-SURVEY" => array(
+            "param" => ["none"],
+            "scope" => ["survey"],
+            "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@RICHTEXT" => array(
+            "param" => ["none"],
+            "scope" => ["survey","data-entry"],
+            "field-types" => ["textarea"],
+        ),
+        "@SETVALUE" => array(
+            "param" => ["quoted-string"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["checkbox","radio","select","slider","sql","text","textarea","truefalse","yesno"],
+        ),
+        "@SYNC-APP" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app"],
+            "field-types" => ["file"],
+        ),
+        "@TODAY" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text"],
+        ),
+        "@TODAY-SERVER" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text"],
+        ),
+        "@TODAY-UTC" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["text"],
+        ),
+        "@USERNAME" => array(
+            "param" => ["none"],
+            "scope" => ["mobile-app","survey","data-entry"],
+            "field-types" => ["radio","select","sql","text","textarea"],
+        ),
+        "@WORDLIMIT" => array(
+            "param" => ["integer","quoted-string"],
+            "supports-piping" => true,
+            "scope" => ["mobile-app","survey","data-entry"],
+            "not-together-with" => ["@CHARLIMIT"],
+            "field-types" => ["text","textarea"],
         ),
     );
 
