@@ -2,7 +2,7 @@
 
 use ExternalModules\AbstractExternalModule;
 
-require_once "ActionTagParser.php";
+require_once "classes/ActionTagParser.php";
 
 use ActionTagParser\ActionTagParser;
 
