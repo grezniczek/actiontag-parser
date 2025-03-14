@@ -1,5 +1,27 @@
 <?php namespace ActionTagParser;
 
+class SEGTYPE {
+    /** @var string Outside tag segment */
+    const OTS = "OTS"; 
+    /** @var string Action tag segment */
+    const TAG = "TAG";
+}
+
+class PARAMTYPE {
+    /** @var string Integer parameter */
+    const INTEGER = "INT";
+    /** @var string Unquoted string parameter */
+    const UNQUOTED_STRING = "STRING";
+    /** @var string Quoted (double or single) string parameter */
+    const QUOTED_STRING = "QUOTED-STRING";
+    /** @var string JSON parameter */
+    const JSON = "JSON";
+    /** @var string General arguments */
+    const ARGS = "ARGS";
+    /** @var string No arguments (i.e., the action tag does not support arguments */
+    const NONE = "NONE";
+}
+
 class ActionTagParser {
 
     /** @var string Escape character */
@@ -19,264 +41,264 @@ class ActionTagParser {
 
     const at_info = array(
         "@APPUSERNAME-APP" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app"],
             "field-types" => ["text","textarea"],
         ),
         "@BARCODE-APP" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app"],
             "field-types" => ["text","textarea"],
         ),
         "@CALCDATE" => array(
-            "param" => ["args"],
+            "param" => [PARAMTYPE::ARGS],
             "scope" => ["mobile-app","survey","data-entry","calc","import"],
             "warn-when-inside" => ["@IF"],
             "field-types" => ["text","textarea"],
         ),
         "@CALCTEXT" => array(
-            "param" => ["args"],
+            "param" => [PARAMTYPE::ARGS],
             "scope" => ["mobile-app","survey","data-entry","calc","import"],
             "warn-when-inside" => ["@IF"],
             "field-types" => ["text","textarea"],
         ),
         "@CHARLIMIT" => array(
-            "param" => ["integer","quoted-string"],
+            "param" => [PARAMTYPE::INTEGER, PARAMTYPE::QUOTED_STRING],
             "supports-piping" => false,
             "scope" => ["mobile-app","survey","data-entry"],
             "not-together-with" => ["@WORDLIMIT"],
             "field-types" => ["text","textarea"],
         ),
         "@DEFAULT" => array(
-            "param" => ["quoted-string"],
+            "param" => [PARAMTYPE::QUOTED_STRING],
             "supports-piping" => true,
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text","textarea"],
         ),
         "@DOWNLOAD-COUNT" => array(
-            "param" => ["args"],
+            "param" => [PARAMTYPE::ARGS],
             "scope" => ["survey","data-entry"],
             "args-limit" => "same-scope-field",
             "field-types" => ["text","textarea"],
         ),
         "@FORCE-MINMAX" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["survey","data-entry","import"],
             "field-types" => ["text"],
         ),
         "@HIDDEN" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@HIDDEN-APP" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@HIDDEN-FORM" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["data-entry"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@HIDDEN-PDF" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["pdf"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@HIDDEN-SURVEY" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["survey"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@HIDEBUTTON" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@HIDECHOICE" => array(
-            "param" => ["quoted-string"],
+            "param" => [PARAMTYPE::QUOTED_STRING],
             "scope" => ["survey","data-entry"],
             "field-types" => ["checkbox","radio","select","truefalse","yesno"],
         ),
         "@HIDDEN" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@IF" => array(
-            "param" => ["args"],
+            "param" => [PARAMTYPE::ARGS],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@INLINE" => array(
-            "param" => ["none","args"],
+            "param" => [PARAMTYPE::NONE,PARAMTYPE::ARGS],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["file"],
         ),
         "@LANGUAGE-CURRENT-FORM" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["data-entry"],
             "field-types" => ["radio","select","text"],
         ),
         "@LANGUAGE-CURRENT-SURVEY" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["survey"],
             "field-types" => ["radio","select","text"],
         ),
         "@LANGUAGE-FORCE" => array(
-            "param" => ["quoted-string"],
+            "param" => [PARAMTYPE::QUOTED_STRING],
             "scope" => ["survey","data-entry"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
             "max-per-form" => 1,
         ),
         "@LANGUAGE-FORCE-FORM" => array(
-            "param" => ["quoted-string"],
+            "param" => [PARAMTYPE::QUOTED_STRING],
             "scope" => ["data-entry"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
             "max-per-form" => 1,
         ),
         "@LANGUAGE-FORCE-SURVEY" => array(
-            "param" => ["quoted-string"],
+            "param" => [PARAMTYPE::QUOTED_STRING],
             "scope" => ["survey"],
             "field-types" => ["calc","checkbox","descriptive","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
             "max-per-form" => 1,
         ),
         "@LANGUAGE-SET" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["survey","data-entry"],
             "field-types" => ["radio","select"],
         ),
         "@LATITUDE" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@LONGITUDE" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@MAXCHECKED" => array(
-            "param" => ["integer","quoted-string"],
+            "param" => [PARAMTYPE::INTEGER, PARAMTYPE::QUOTED_STRING],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["checkbox"],
         ),
         "@MAXCHOICE" => array(
-            "param" => ["args"],
+            "param" => [PARAMTYPE::ARGS],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["checkbox","radio","select"],
         ),
         "@MAXCHOICE-SURVEY-COMPLETE" => array(
-            "param" => ["args"],
+            "param" => [PARAMTYPE::ARGS],
             "scope" => ["survey"],
             "field-types" => ["checkbox","radio","select"],
         ),
         "@NOMISSING" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@NONEOFTHEABOVE" => array(
-            "param" => ["integer","unquoted-string","quoted-string"],
+            "param" => [PARAMTYPE::INTEGER, PARAMTYPE::QUOTED_STRING, PARAMTYPE::UNQUOTED_STRING],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["checkbox"],
         ),
         "@NOW" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@NOW-SERVER" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@NOW-UTC" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@PASSWORDMASK" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@PLACEHOLDER" => array(
-            "param" => ["quoted-string"],
+            "param" => [PARAMTYPE::QUOTED_STRING],
             "supports-piping" => true,
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text","textarea"],
         ),
         "@PREFILL" => array(
-            "param" => ["quoted-string"],
+            "param" => [PARAMTYPE::QUOTED_STRING],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["checkbox","radio","select","slider","sql","text","textarea","truefalse","yesno"],
             "deprecated" => true,
             "equivalent-to" => "@SETVALUE",
         ),
         "@RANDOMORDER" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["checkbox","radio","select","truefalse","yesno"],
         ),
         "@READONLY" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@READONLY-APP" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app"],
             "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@READONLY-FORM" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["data-entry"],
             "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@READONLY-SURVEY" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["survey"],
             "field-types" => ["checkbox","file","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@RICHTEXT" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["survey","data-entry"],
             "field-types" => ["textarea"],
         ),
         "@SETVALUE" => array(
-            "param" => ["quoted-string"],
+            "param" => [PARAMTYPE::QUOTED_STRING],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["checkbox","radio","select","slider","sql","text","textarea","truefalse","yesno"],
         ),
         "@SYNC-APP" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app"],
             "field-types" => ["file"],
         ),
         "@TODAY" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@TODAY-SERVER" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@TODAY-UTC" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["text"],
         ),
         "@USERNAME" => array(
-            "param" => ["none"],
+            "param" => [PARAMTYPE::NONE],
             "scope" => ["mobile-app","survey","data-entry"],
             "field-types" => ["radio","select","sql","text","textarea"],
         ),
         "@WORDLIMIT" => array(
-            "param" => ["integer","quoted-string"],
+            "param" => [PARAMTYPE::INTEGER, PARAMTYPE::QUOTED_STRING],
             "supports-piping" => false,
             "scope" => ["mobile-app","survey","data-entry"],
             "not-together-with" => ["@CHARLIMIT"],
@@ -334,6 +356,10 @@ class ActionTagParser {
         $param_start = -1;
         /** @var int Number of open brackets (parenthesis or curly braces) */
         $param_nop = 0;
+        /** @var string The JSON start character, [ or { */
+        $param_json_start = "";
+        /** @var string The expected JSON end character, ] or }, depending on start character */
+        $param_json_expected_end = "";
         /** @var array Parts */
         $parts = array();
         /** @var array|null The currently worked-on tag */
@@ -390,7 +416,7 @@ class ActionTagParser {
                             // Cannot be an action tag. Add the previous segment, this non-starter as an annotated segment, and start a new segment
                             if ($seg_text != "") {
                                 $parts[] = array(
-                                    "type" => "ots", // outside tag segment
+                                    "type" => SEGTYPE::OTS,
                                     "start" => $seg_start,
                                     "end" => $pos - 1,
                                     "text" => $seg_text,
@@ -398,7 +424,7 @@ class ActionTagParser {
                                 );
                             }
                             $parts[] = array(
-                                "type" => "ots", // outside tag segment
+                                "type" => SEGTYPE::OTS,
                                 "start" => $pos,
                                 "end" => $pos,
                                 "text" => $c,
@@ -420,7 +446,7 @@ class ActionTagParser {
                             // Let's add the previous segment to the parts
                             if (mb_strlen($seg_text)) {
                                 $parts[] = array(
-                                    "type" => "ots", // outside tag segment
+                                    "type" => SEGTYPE::OTS,
                                     "start" => $seg_start,
                                     "end" => $pos - 1,
                                     "text" => $seg_text,
@@ -446,7 +472,7 @@ class ActionTagParser {
                     // Anything in a last segment?
                     if (strlen($seg_text)) {
                         $parts[] = array(
-                            "type" => "ots",
+                            "type" => SEGTYPE::OTS,
                             "start" => $seg_start,
                             "end" => $pos - 1,
                             "text" => $seg_text,
@@ -467,7 +493,7 @@ class ActionTagParser {
                     if (mb_strpos(self::at_valid_first_last, $prev) !== false) {
                         // Valid name, prepare tag
                         $tag = array(
-                            "type" => "tag",
+                            "type" => SEGTYPE::TAG,
                             "param" => "",
                             "start" => $at_name_start,
                             "end" => $at_name_end,
@@ -475,9 +501,9 @@ class ActionTagParser {
                         );
                     }
                     else {
-                        // Not a valid name, add as ots part
+                        // Not a valid name, add as OTS part
                         $parts[] = array(
-                            "type" => "ots",
+                            "type" => SEGTYPE::OTS,
                             "start" => $at_name_start,
                             "end" => $at_name_end,
                             "text" => $at_name,
@@ -508,12 +534,12 @@ class ActionTagParser {
                     $prev = $c;
                     continue;
                 }
-                // Not a valid tag name, convert to ots and continue
+                // Not a valid tag name, convert to OTS and continue
                 else {
                     $in_tag_name = false;
                     $outside_tag = true;
                     $parts[] = array(
-                        "type" => "ots",
+                        "type" => SEGTYPE::OTS,
                         "start" => $at_name_start,
                         "end" => $pos - 1,
                         "text" => $at_name,
@@ -540,7 +566,7 @@ class ActionTagParser {
                     $searching_param = false;
                     $seg_end = $pos - 1;
                     // Start param mode
-                    $in_param = "quoted-string";
+                    $in_param = PARAMTYPE::QUOTED_STRING;
                     $param_quotetype = $c;
                     $param_text = $c;
                     $param_start = $pos;
@@ -555,14 +581,16 @@ class ActionTagParser {
                     $prev = $c;
                     continue;
                 }
-                // Is the char an opening curly brace (potential JSON paramater)?
-                else if ($c === "{") {
+                // Is the char an opening curly brace or square bracket (potential JSON paramater)?
+                else if ($c === "{" || $c === "[") {
                     // This is the start of a JSON parameter
                     // End segment and mode
                     $searching_param = false;
                     $seg_end = $pos - 1;
                     // Start param mode
-                    $in_param = "json";
+                    $in_param = PARAMTYPE::JSON;
+                    $param_json_start = $c;
+                    $param_json_expected_end = $c === "{" ? "}" : "]";
                     $param_text = $c;
                     $param_start = $pos;
                     $param_nop = 1;
@@ -578,7 +606,7 @@ class ActionTagParser {
                     $searching_param = false;
                     $seg_end = $pos - 1;
                     // Start param mode
-                    $in_param = "integer";
+                    $in_param = PARAMTYPE::INTEGER;
                     $param_text = $c;
                     $param_start = $pos;
                     $param_nop = 0;
@@ -594,7 +622,7 @@ class ActionTagParser {
                     $searching_param = false;
                     $seg_end = $pos - 1;
                     // Start param mode
-                    $in_param = "unquoted-string";
+                    $in_param = PARAMTYPE::UNQUOTED_STRING;
                     $param_text = $c;
                     $param_start = $pos;
                     $param_nop = 0;
@@ -630,7 +658,7 @@ class ActionTagParser {
                     $searching_param = false;
                     $seg_end = $pos - 1;
                     // Start param mode
-                    $in_param = "args";
+                    $in_param = PARAMTYPE::ARGS;
                     $param_text = $c;
                     $param_start = $pos;
                     $param_nop = 1;
@@ -658,11 +686,11 @@ class ActionTagParser {
             
             #region Parameter parsing ...
             // Integer parameter
-            if ($in_param == "integer") {
+            if ($in_param == PARAMTYPE::INTEGER) {
                 // End of string reached or a whitespace character
                 if ($c === "" || mb_strpos(self::at_valid_pre, $c) !== false) {
                     $tag["param"] = array(
-                        "type" => "integer",
+                        "type" => PARAMTYPE::INTEGER,
                         "start" => $param_start,
                         "end" => $pos - 1,
                         "text" => $param_text,
@@ -694,18 +722,18 @@ class ActionTagParser {
                 }
                 // Any other character is illegal here - we switch over to the unquoted string parameter type
                 else {
-                    $in_param = "unquoted-string";
+                    $in_param = PARAMTYPE::UNQUOTED_STRING;
                     $param_text .= $c;
                     $prev = $c;
                     continue;
                 }
             }
             // Integer parameter
-            else if ($in_param == "unquoted-string") {
+            else if ($in_param == PARAMTYPE::UNQUOTED_STRING) {
                 // End of string reached or a whitespace character
                 if ($c === "" || mb_strpos(self::at_valid_pre, $c) !== false) {
                     $tag["param"] = array(
-                        "type" => "unquoted-string",
+                        "type" => PARAMTYPE::UNQUOTED_STRING,
                         "start" => $param_start,
                         "end" => $pos - 1,
                         "text" => $param_text,
@@ -735,7 +763,7 @@ class ActionTagParser {
                 continue;
             }
             // String parameter
-            else if ($in_param == "quoted-string") {
+            else if ($in_param == PARAMTYPE::QUOTED_STRING) {
                 // End of string reached
                 if ($c === "") {
                     // This is premature. We have a "broken" parameter.
@@ -745,7 +773,7 @@ class ActionTagParser {
                     $seg_text .= $param_text;
                     $seg_end = $pos - 1;
                     $parts[] = array(
-                        "type" => "ots",
+                        "type" => SEGTYPE::OTS,
                         "start" => $seg_start,
                         "end" => $seg_end,
                         "text" => $seg_text,
@@ -779,7 +807,7 @@ class ActionTagParser {
                         // End of parameter reached
                         $param_text .= $c;
                         $tag["param"] = array(
-                            "type" => "quoted-string",
+                            "type" => PARAMTYPE::QUOTED_STRING,
                             "start" => $param_start,
                             "end" => $pos,
                             "text" => $param_text,
@@ -809,9 +837,9 @@ class ActionTagParser {
                     continue;
                 }
             }
-            // JSON parameter. The idea here is to count the "open" curly braces (outside of string literals).
+            // JSON parameter. The idea here is to count the "open" curly braces or square brackets (outside of string literals).
             // Entering, the counter is at 1. When 0 is reached, the JSON parameter ends.
-            else if ($in_param == "json") {
+            else if ($in_param == PARAMTYPE::JSON) {
                 // Is char the escape character?
                 if ($c === self::esc) {
                     // Escaping in a JSON candidate is ONLY possible in a string literal! See https://www.json.org/
@@ -895,21 +923,21 @@ class ActionTagParser {
                     $prev = $c;
                     continue;
                 }
-                // Is char an opening curly brace?
-                else if ($c === "{") {
+                // Is char an opening [json start character]?
+                else if ($c === $param_json_start) {
                     $param_text .= $c;
-                    // Increase open bracket count, but only when not inside a string literal
+                    // Increase open count, but only when not inside a string literal
                     $param_nop += ($in_string_literal ? 0 : 1);
                     $prev = $c;
                     continue;
                 }
-                // Is char a closing curly brace?
-                else if ($c === "}") {
+                // Is char a closing [json start character]?
+                else if ($c === $param_json_expected_end) {
                     $param_text .= $c;
                     // Decrease open bracket count, but only when not inside a string literal
                     $param_nop -= ($in_string_literal ? 0 : 1);
                     $prev = $c;
-                    // Are we at the closing brace?
+                    // Are we at the closing character?
                     if ($param_nop == 0) {
                         // The JSON parameter is complete
                         // Test for valid JSON
@@ -923,7 +951,7 @@ class ActionTagParser {
                             $json_error = $ex->getMessage();
                         }
                         $tag["param"] = array(
-                            "type" => "json",
+                            "type" => PARAMTYPE::JSON,
                             "start" => $param_start,
                             "end" => $pos,
                             "text" => $param_text,
@@ -945,7 +973,7 @@ class ActionTagParser {
                 // End of string
                 else if ($c === "") {
                     // This is premature. We have a "broken" parameter.
-                    // Move any warnings from tag to ots
+                    // Move any warnings from tag to OTS
                     $warnings = [];
                     if (isset($tag["warnings"])) {
                         $warnings = $tag["warnings"];
@@ -957,11 +985,11 @@ class ActionTagParser {
                     $seg_text .= $param_text;
                     $seg_end = $pos - 1;
                     $parts[] = array(
-                        "type" => "ots",
+                        "type" => SEGTYPE::OTS,
                         "start" => $seg_start,
                         "end" => $seg_end,
                         "text" => $seg_text,
-                        "annotation" => "Incomplete potential JSON parameter.",
+                        "annotation" => "Incomplete or broken potential JSON parameter.",
                         "warnings" => $warnings,
                     );
                     break;
@@ -974,11 +1002,11 @@ class ActionTagParser {
                 }
             }
             // Argument-style parameter. The idea here is to count the "open" parentheses (outside of string literals).
-            // Entering, the counter is at 1. When 0 is reached, the args parameter ends.
-            else if ($in_param == "args") {
+            // Entering, the counter is at 1. When 0 is reached, the ARGS parameter ends.
+            else if ($in_param == PARAMTYPE::ARGS) {
                 // Is char the escape character?
                 if ($c === self::esc) {
-                    // Escaping in an args candidate is ONLY possible in a string literal, and only for the (current) quote character
+                    // Escaping in an ARGS candidate is ONLY possible in a string literal, and only for the (current) quote character
                     if (!$in_string_literal) {
                         // We only warn about this, but do not take any further action
                         $tag["warnings"][] = array(
@@ -1052,9 +1080,9 @@ class ActionTagParser {
                     $prev = $c;
                     // Are we at the closing brace?
                     if ($param_nop == 0) {
-                        // The args parameter is complete
+                        // The ARGS parameter is complete
                         $tag["param"] = array(
-                            "type" => "args",
+                            "type" => PARAMTYPE::ARGS,
                             "start" => $param_start,
                             "end" => $pos,
                             "text" => $param_text,
@@ -1076,7 +1104,7 @@ class ActionTagParser {
                 // End of string
                 else if ($c === "") {
                     // This is premature. We have a "broken" parameter.
-                    // Move any warnings from tag to ots
+                    // Move any warnings from tag to OTS
                     $warnings = [];
                     if (isset($tag["warnings"])) {
                         $warnings = $tag["warnings"];
@@ -1088,7 +1116,7 @@ class ActionTagParser {
                     $seg_text .= $param_text;
                     $seg_end = $pos - 1;
                     $parts[] = array(
-                        "type" => "ots",
+                        "type" => SEGTYPE::OTS,
                         "start" => $seg_start,
                         "end" => $seg_end,
                         "text" => $seg_text,
@@ -1105,6 +1133,15 @@ class ActionTagParser {
                 }
             }
             #endregion
+        }
+
+        // At "full" to all tags
+        foreach ($parts as &$part) {
+            if ($part["type"] == SEGTYPE::TAG) {
+                $start = $part["start"];
+                $end = is_array($part["param"]) ? $part["param"]["end"] : $part["end"];
+                $part["full"] = mb_substr($orig, $start, $end - $start + 1);
+            }
         }
 
         #endregion
