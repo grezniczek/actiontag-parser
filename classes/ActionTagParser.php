@@ -313,7 +313,7 @@ class ActionTagParser {
      * @param string $s The string to be parsed
      * @return array
      */
-    public static function parse($orig) {
+    public static function parse($orig, $tags_only = false) {
 
         #region State
 
@@ -1135,12 +1135,14 @@ class ActionTagParser {
             #endregion
         }
 
-        // At "full" to all tags
-        foreach ($parts as &$part) {
-            if ($part["type"] == SEGTYPE::TAG) {
-                $start = $part["start"];
-                $end = is_array($part["param"]) ? $part["param"]["end"] : $part["end"];
-                $part["full"] = mb_substr($orig, $start, $end - $start + 1);
+        if (!$tags_only) {
+            // At "full" to all tags
+            foreach ($parts as &$part) {
+                if ($part["type"] == SEGTYPE::TAG) {
+                    $start = $part["start"];
+                    $end = is_array($part["param"]) ? $part["param"]["end"] : $part["end"];
+                    $part["full"] = mb_substr($orig, $start, $end - $start + 1);
+                }
             }
         }
 

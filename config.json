@@ -23,6 +23,13 @@
                 "icon": "fas fa-bug",
                 "url": "explain.php",
                 "show-header-and-footer": true
+            },
+            {
+                "name": "Benchmark",
+                "key": "benchmark",
+                "icon": "fa-solid fa-gauge-simple-high",
+                "url": "benchmark.php",
+                "show-header-and-footer": true
             }
         ],
         "system": [

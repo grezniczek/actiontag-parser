@@ -3,6 +3,7 @@
 use ExternalModules\AbstractExternalModule;
 
 require_once "classes/ActionTagParser.php";
+require_once "classes/ActionTagHelper.php";
 
 use ActionTagParser\ActionTagParser;
 
@@ -46,5 +47,41 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             print_r($result["parts"]);
             print "</pre>";
         }
+    }
+
+    function benchmark() {
+        $project_id = $this->fw->getProjectId();
+
+        // Get all fields that have an action tag
+
+        $n = 1000;
+
+        $start = microtime(true);
+
+        $q = \REDCap::getDataDictionary('json', false);
+        $metadata = json_decode($q,true);
+
+        for ($i = 0; $i < $n; $i++) {
+            $parser_tags = [];
+            foreach ($metadata as $meta) {
+                $result = ActionTagParser::parse($meta["field_annotation"], true);
+                // foreach ($result["parts"] as $part) {
+                //     if ($part["type"] == "TAG") {
+                //         $parser_tags[] = $part;
+                //     }
+                // }
+            }
+        }
+        $end = microtime(true);
+        print "<p>Parser: Time: ".($end-$start)."</p>";
+        
+        $start = microtime(true);
+
+        for ($i = 0; $i < $n; $i++) {
+            $helper_tags = ActionTagHelper::getActionTags();
+        }
+
+        $end = microtime(true);
+        print "<p>Helper: Time: ".($end-$start)."</p>";
     }
 }
