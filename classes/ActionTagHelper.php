@@ -28,11 +28,11 @@ class ActionTagHelper
     static function getActionTags($tags = NULL, $fields = NULL, $instruments = NULL, $context = NULL) {
 
         // Check to see if this search has been cached
-        // $arg_key = md5(json_encode(func_get_args()));
-        // if (isset(self::$cache[$arg_key])) {
-        //     // \Plugin::log($arg_key, "DEBUG", "Using Cache");
-        //     return self::$cache[$arg_key];
-        // }
+        $arg_key = md5(json_encode(func_get_args()));
+        if (isset(self::$cache[$arg_key])) {
+            // \Plugin::log($arg_key, "DEBUG", "Using Cache");
+            return self::$cache[$arg_key];
+        }
 
         // Convert tag_filter into uppercase array
         if (!empty($tags)) {
@@ -77,7 +77,7 @@ class ActionTagHelper
         }
 
         // Cache this search
-        // self::$cache[$arg_key] = $action_tags;
+        self::$cache[$arg_key] = $action_tags;
 
         return $action_tags;
     }

@@ -41,7 +41,7 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         ksort($fields);
         foreach ($fields as $_ => $meta) {
             print "<hr><p class=\"ml-2\">Field: <b>{$meta["field_name"]}</b></p><pre class=\"mr-2\">";
-            $result = ActionTagParser::parse($meta["misc"]);
+            $result = ActionTagParser::parse_optimized($meta["misc"]);
             print_r($result["orig"]);
             print "<hr>";
             print_r($result["parts"]);
@@ -50,38 +50,55 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
     }
 
     function benchmark() {
-        $project_id = $this->fw->getProjectId();
 
-        // Get all fields that have an action tag
+        $n = max(intval($_GET["n"]), 1);
 
-        $n = 1000;
+        print "<h5>Timing ($n iterations)</h5>";
+        print "<p>Set the number of iterations as GET parameter '<i>n</i>'.</p>";
 
         $start = microtime(true);
 
-        $q = \REDCap::getDataDictionary('json', false);
-        $metadata = json_decode($q,true);
-
         for ($i = 0; $i < $n; $i++) {
-            $parser_tags = [];
-            foreach ($metadata as $meta) {
-                $result = ActionTagParser::parse($meta["field_annotation"], true);
-                // foreach ($result["parts"] as $part) {
-                //     if ($part["type"] == "TAG") {
-                //         $parser_tags[] = $part;
-                //     }
-                // }
-            }
+            $parser_tags = ActionTagParser::getActionTags(null, null, null, null, false, $i);
         }
+
         $end = microtime(true);
-        print "<p>Parser: Time: ".($end-$start)."</p>";
+        print "<p>Parser: ".round(($end-$start) * 1000, 2)." µs</p>";
         
         $start = microtime(true);
 
         for ($i = 0; $i < $n; $i++) {
-            $helper_tags = ActionTagHelper::getActionTags();
+            $parser_tags = ActionTagParser::getActionTags(null, null, null, null, true, $i);
         }
 
         $end = microtime(true);
-        print "<p>Helper: Time: ".($end-$start)."</p>";
+        print "<p>Parser (Optimized): ".round(($end-$start) * 1000, 2)." µs</p>";
+        
+        $start = microtime(true);
+        
+        for ($i = 0; $i < $n; $i++) {
+            $helper_tags = ActionTagHelper::getActionTags(null, null, null, null, $i);
+        }
+        
+        $end = microtime(true);
+        print "<p>Helper: ".round(($end-$start) * 1000, 2)." µs</p>";
+        
+
+        $print = function($tags) {
+            foreach ($tags as $tag => $fields) {
+                print "<p><b>$tag</b></p>";
+                foreach ($fields as $field => $params) {
+                    print "<p class=\"ml-2\"><i>$field</i>";
+                    if ($params['params'] != "") print " - <code>".htmlentities(str_replace("\n", " ", $params['params']))."</code>";
+                    print "</p>";
+                }
+            }
+        };
+
+        print "<hr>";
+        print "<h5>Parser:</h5>";
+        $print($parser_tags);
+        print "<h5>Helper:</h5>";
+        $print($helper_tags);
     }
 }
