@@ -52,6 +52,9 @@ class ActionTagParser {
     const at_json_allowed_escaped = "/bfnrtu";
     const at_json_allowed_escaped_array = ["/", "b","f","n","r","t","u"];
 
+    /** @var string Regular expression to split a string into segments at @ACTION-TAGS */
+    const splitter = '/(\s+@(?:[A-Z]+(?:[-_][A-Z]+)*))|([\]})])/u';
+
     #region Action Tag Info
 
     const at_info = array(
@@ -322,6 +325,7 @@ class ActionTagParser {
     );
 
     #endregion
+
 
     /**
      * Parses a string for action tags and returns all action tag candidates with their parameters.
@@ -2034,7 +2038,7 @@ class ActionTagParser {
 
     private static $cache = [];
 
-    public static function getActionTags($tags = null, $fields = null, $instruments = null, $context = null, $optimized = true, $cachebuster = null) {
+    public static function getActionTags($tags = null, $fields = null, $instruments = null, $context = null, $optimized = false, $cachebuster = null) {
 
         // Check to see if this search has been cached
         $arg_key = md5(json_encode(func_get_args()));
@@ -2056,7 +2060,6 @@ class ActionTagParser {
                 $field_annotation = \Form::replaceIfActionTag($field_annotation, $context['project_id'] ?? null, $context['record'] ?? null, $context['event_id'] ?? null, $context['instrument'] ?? null, $context['instance'] ?? 1);
             }
             $parsed_tags = $optimized ? self::parse_optimized($field_annotation, true) : self::parse($field_annotation, true);
-
             foreach ($parsed_tags as $tag) {
                 $action_tag = $tag['text'];
                 // Tag filtering

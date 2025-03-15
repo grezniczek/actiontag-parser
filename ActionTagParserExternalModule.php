@@ -72,7 +72,7 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             $end = microtime(true);
             $timings["Parser (Optimized)"][] = $end-$start;
         }
-        
+
         for ($i = 0; $i < $n; $i++) {
             $start = microtime(true);
             $helper_tags = ActionTagHelper::getActionTags(null, null, null, null, $i);
