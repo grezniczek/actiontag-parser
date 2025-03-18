@@ -395,7 +395,9 @@ class ActionTagParser {
         #region Main Loop
 
         // Walk through each char
-        for ($pos = 0; $pos <= $len; $pos++) {
+        $pos = -1;
+        while ($pos <= $len) {
+            $pos++;
             // Get chars at current and next pos
             $c = $pos == 0 ? $chars[0] : $next;
             $next = $pos < $len - 1 ? $chars[$pos + 1] : "";
@@ -705,6 +707,7 @@ class ActionTagParser {
                     $outside_tag = true;
                     // To get the current char into the appropriate logic, we need to set the loop back one position
                     $pos -= 1;
+                    $next = $c;
                     // We do not need to set the previous char
                     continue;
                 }
@@ -738,6 +741,7 @@ class ActionTagParser {
                     }
                     else {
                         $pos -= 1;
+                        $next = $c;
                         continue;
                     }
                 }
@@ -781,6 +785,7 @@ class ActionTagParser {
                     }
                     else {
                         $pos -= 1;
+                        $next = $c;
                         continue;
                     }
                 }
