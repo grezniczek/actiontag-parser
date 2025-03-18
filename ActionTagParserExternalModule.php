@@ -18,6 +18,7 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
         // Potential hook for action tags .. get's called from redcap_data_entry_form_top / redcap_survey_page_top only (we need full context)
         // Will only get called when one of the declared action tags is present on the given instrument.
+        // @IF is taken care of
         
         /* $action_tags is an array
          *

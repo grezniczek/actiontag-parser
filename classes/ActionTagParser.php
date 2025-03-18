@@ -84,7 +84,6 @@ class ActionTagParser {
             "param" => [PARAMTYPE::INTEGER, PARAMTYPE::QUOTED_STRING],
             "supports-piping" => false,
             "scope" => ["mobile-app","survey","data-entry"],
-            "not-together-with" => ["@WORDLIMIT"],
             "field-types" => ["text","textarea"],
         ),
         "@DEFAULT" => array(
