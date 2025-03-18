@@ -9,39 +9,58 @@ use ActionTagParser\ActionTagParser;
 
 class ActionTagParserExternalModule extends AbstractExternalModule {
 
-    /**
-     * EM Framework (tooling support)
-     * @var \ExternalModules\Framework
-     */
-    private $fw;
-
-    function __construct() {
-        parent::__construct();
-        $this->fw = $this->framework;
-    }
 
     function redcap_every_page_top($project_id = null) {
         if ($project_id == null) return;
     }
 
+    function redcap_module_action_tag($action_tags, $project_id, $record, $instrument, $event_id, $group_id, $repeat_instance, $is_survey) {
+
+        // Potential hook for action tags .. get's called from redcap_data_entry_form_top / redcap_survey_page_top only (we need full context)
+        // Will only get called when one of the declared action tags is present on the given instrument.
+        
+        /* $action_tags is an array
+         *
+         * Andy Martin syntax: Has issues with multiple same tags on a field
+         *    [
+         *       "@ACTION-TAG" => [
+         *           "field_name" => [
+         *               "params" => any parameters next to tag (supports string, list, or json)
+         *           ]
+         *       ]
+         *    ]
+         * 
+         *  Better:
+         *    [
+         *        "@ACTION-TAG" => [
+         *            [
+         *                "field" => field_name,
+         *                "params" => any parameters next to tag (supports string, list, or json),
+         *                "on_page" => true|false (relevant for multi-page surveys; always true for data entry forms)
+         *            ]
+         *        ]
+         *    ]
+         */
+
+    }
 
     function explain() {
-        $project_id = $this->fw->getProjectId();
+        $project_id = $this->getProjectId();
 
         // Get all fields that have an action tag
 
         $fields = [];
         $Proj = new \Project($project_id);
-        foreach ($Proj->metadata as $field => $meta) {
-            $misc = $meta["misc"] ?? "";
+        foreach ($Proj->metadata as $field_name => $field_metadata) {
+            $misc = $field_metadata["misc"] ?? "";
             if (strpos($misc, "@") !== false) {
-                $fields[$meta["form_name"]."-".$meta["field_order"]] = $meta;
+                $fields[$field_metadata["form_name"]."-".$field_metadata["field_order"]] = $field_metadata;
             }
         }
         ksort($fields);
-        foreach ($fields as $_ => $meta) {
-            print "<hr><p class=\"ml-2\">Field: <b>{$meta["field_name"]}</b></p><pre class=\"mr-2\">";
-            $result = ActionTagParser::parse_optimized($meta["misc"]);
+        foreach ($fields as $_ => $field_metadata) {
+            print "<hr><p class=\"ml-2\">Field: <b>{$field_metadata["field_name"]}</b></p><pre class=\"mr-2\">";
+            $result = ActionTagParser::parse_optimized($field_metadata["misc"]);
             print_r($result["orig"]);
             print "<hr>";
             print_r($result["parts"]);
