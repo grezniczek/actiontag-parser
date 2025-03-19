@@ -337,6 +337,7 @@ class ActionTagParser {
         // @IF needs special handling ... use character parser and feed it additional chunks until its param is done
 
 
+        $re_for_splitting_action_tags = '/(@(?:[A-Z]+(?:[-_][A-Z]+)*))/';
 
 
     }
