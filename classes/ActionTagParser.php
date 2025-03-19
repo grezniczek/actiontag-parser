@@ -326,6 +326,22 @@ class ActionTagParser {
     #endregion
 
 
+
+    public static function parse_optimized_more($orig, $tags_only = false) {
+
+        // Split input using an action tag regex ... something like /(\@[A-Z][-_A-Z0-9])*/
+        // To qualify as an action tag, there must be string start or whitespace before, and whitespace or [=(] after
+        // Parameters must start with = or ( and may be quoted (singe/double) or not
+        // Add to array (including splitters)
+        // Process, check against known tags to be smarter about params
+        // @IF needs special handling ... use character parser and feed it additional chunks until its param is done
+
+
+
+
+    }
+
+
     /**
      * Parses a string for action tags and returns all action tag candidates with their parameters.
      * Backslash (\) can be used as escape character ONLY inside tag parameters and only in front of quotes [",'] and 
