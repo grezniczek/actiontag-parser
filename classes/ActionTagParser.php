@@ -350,7 +350,7 @@ class ActionTagParser {
      * @param string $s The string to be parsed
      * @return array
      */
-    public static function parse_optimized($orig, $tags_only = false) {
+    public static function parse_optimized($orig, $tags_only = false, $nested_start = 0) {
 
         #region State
 
@@ -396,6 +396,10 @@ class ActionTagParser {
         $param_start = -1;
         /** @var int Number of open brackets (parenthesis or curly braces) */
         $param_nop = 0;
+        /** @var string The current line in an ARGS-type parameter */
+        $param_line = [];
+        /** @var bool Whether inside a comment */
+        $param_comment = false;
         /** @var string The JSON start character, [ or { */
         $param_json_start = "";
         /** @var string The expected JSON end character, ] or }, depending on start character */
@@ -462,16 +466,16 @@ class ActionTagParser {
                             if (count($seg_text)) {
                                 $parts[] = array(
                                     "type" => SEGTYPE::OTS,
-                                    "start" => $seg_start,
-                                    "end" => $pos - 1,
+                                    "start" => $seg_start + $nested_start,
+                                    "end" => $pos + $nested_start - 1,
                                     "text" => join("", $seg_text),
                                     "warnings" => [],
                                 );
                             }
                             $parts[] = array(
                                 "type" => SEGTYPE::OTS,
-                                "start" => $pos,
-                                "end" => $pos,
+                                "start" => $pos + $nested_start,
+                                "end" => $pos + $nested_start,
                                 "text" => $c,
                                 "annotation" => "Did not qualify as Action Tag starter.",
                                 "warnings" => [],
@@ -492,8 +496,8 @@ class ActionTagParser {
                             if (count($seg_text)) {
                                 $parts[] = array(
                                     "type" => SEGTYPE::OTS,
-                                    "start" => $seg_start,
-                                    "end" => $pos - 1,
+                                    "start" => $seg_start + $nested_start,
+                                    "end" => $pos + $nested_start - 1,
                                     "text" => join("", $seg_text),
                                     "annotation" => null,
                                     "warnings" => [],
@@ -518,8 +522,8 @@ class ActionTagParser {
                     if (count($seg_text)) {
                         $parts[] = array(
                             "type" => SEGTYPE::OTS,
-                            "start" => $seg_start,
-                            "end" => $pos - 1,
+                            "start" => $seg_start + $nested_start,
+                            "end" => $pos + $nested_start - 1,
                             "text" => join("", $seg_text),
                             "annotation" => null,
                             "warnings" => [],
@@ -531,7 +535,7 @@ class ActionTagParser {
             }
             else if ($in_tag_name) {
                 // Is the character a valid after-tag-name character (or are we at the end of the string)?
-                if ($c === "" || strpos(self::at_valid_post, $c) !== false) {
+                if ($c === "" || strpos(self::at_valid_post, $c) !== false || ($nested_start > 0 && $c === ",")) {
                     $at_name_end = $pos - 1;
                     $in_tag_name = false;
                     // Does the tag name end with a valid character?
@@ -540,8 +544,8 @@ class ActionTagParser {
                         $tag = array(
                             "type" => SEGTYPE::TAG,
                             "param" => "",
-                            "start" => $at_name_start,
-                            "end" => $at_name_end,
+                            "start" => $at_name_start + $nested_start,
+                            "end" => $at_name_end + $nested_start,
                             "text" => join("", $at_name),
                         );
                     }
@@ -549,8 +553,8 @@ class ActionTagParser {
                         // Not a valid name, add as OTS part
                         $parts[] = array(
                             "type" => SEGTYPE::OTS,
-                            "start" => $at_name_start,
-                            "end" => $at_name_end,
+                            "start" => $at_name_start + $nested_start,
+                            "end" => $at_name_end + $nested_start,
                             "text" => join("", $at_name),
                             "annotation" => "Did not qualify as a valid Action Tag name.",
                             "warnings" => []
@@ -585,8 +589,8 @@ class ActionTagParser {
                     $outside_tag = true;
                     $parts[] = array(
                         "type" => SEGTYPE::OTS,
-                        "start" => $at_name_start,
-                        "end" => $pos - 1,
+                        "start" => $at_name_start + $nested_start,
+                        "end" => $pos + $nested_start - 1,
                         "text" => join("", $at_name),
                         "annotation" => "Did not qualify as a valid Action Tag name.",
                         "warnings" => [],
@@ -707,6 +711,7 @@ class ActionTagParser {
                     $param_text[] = $c;
                     $param_start = $pos;
                     $param_nop = 1;
+                    $param_line = [];
                     $in_string_literal = false;
                     // Set previous and continue
                     $prev = $c;
@@ -729,7 +734,7 @@ class ActionTagParser {
                 }
             }
             #endregion
-            
+
             #region Parameter parsing ...
             // Integer parameter
             if ($in_param == PARAMTYPE::INTEGER) {
@@ -737,8 +742,8 @@ class ActionTagParser {
                 if ($c === "" || strpos(self::at_valid_pre, $c) !== false) {
                     $tag["param"] = array(
                         "type" => PARAMTYPE::INTEGER,
-                        "start" => $param_start,
-                        "end" => $pos - 1,
+                        "start" => $param_start + $nested_start,
+                        "end" => $pos + $nested_start - 1,
                         "text" => $param_text,
                     );
                     $param_start = -1;
@@ -781,8 +786,8 @@ class ActionTagParser {
                 if ($c === "" || strpos(self::at_valid_pre, $c) !== false) {
                     $tag["param"] = array(
                         "type" => PARAMTYPE::UNQUOTED_STRING,
-                        "start" => $param_start,
-                        "end" => $pos - 1,
+                        "start" => $param_start + $nested_start,
+                        "end" => $pos + $nested_start - 1,
                         "text" => join("", $param_text),
                     );
                     $param_start = -1;
@@ -822,8 +827,8 @@ class ActionTagParser {
                     $seg_end = $pos - 1;
                     $parts[] = array(
                         "type" => SEGTYPE::OTS,
-                        "start" => $seg_start,
-                        "end" => $seg_end,
+                        "start" => $seg_start + $nested_start,
+                        "end" => $seg_end + $nested_start,
                         "text" => join("", $seg_text),
                         "annotation" => "Incomplete potential parameter. Missing end quote [{$param_quotetype}].",
                         "warnings" => [],
@@ -856,8 +861,8 @@ class ActionTagParser {
                         $param_text[] = $c;
                         $tag["param"] = array(
                             "type" => PARAMTYPE::QUOTED_STRING,
-                            "start" => $param_start,
-                            "end" => $pos,
+                            "start" => $param_start + $nested_start,
+                            "end" => $pos + $nested_start,
                             "text" => join("", $param_text),
                         );
                         $param_start = -1;
@@ -894,8 +899,8 @@ class ActionTagParser {
                     if (!$in_string_literal) {
                         // Add a warning to the tag, for the user's benefit
                         $tag["warnings"][] = array(
-                            "start" => $pos,
-                            "end" => $pos,
+                            "start" => $pos + $nested_start,
+                            "end" => $pos + $nested_start,
                             "text" => "Invalid JSON syntax: Escape character '\\' may only occur inside string literals.",
                         );
                         // Simply add and continue. The JSON check will catch this, too
@@ -951,8 +956,8 @@ class ActionTagParser {
                     if (strpos(self::at_json_allowed_escaped, $c) === false) {
                         // Illegal character - add a warning
                         $tag["warnings"][] = array(
-                            "start" => $pos - 1,
-                            "end" => $pos,
+                            "start" => $pos + $nested_start - 1,
+                            "end" => $pos + $nested_start,
                             "text" => "Invalid escape sequence. See https://json.org for a list of allowed escape sequences inside JSON strings.",
                         );
                     }
@@ -962,8 +967,8 @@ class ActionTagParser {
                     if (!$in_string_literal) {
                         // Single quote outside of a string literal is not valid JSON. We kindly inform about this, as it might be a common mistake
                         $tag["warnings"][] = array(
-                            "start" => $pos,
-                            "end" => $pos,
+                            "start" => $pos + $nested_start,
+                            "end" => $pos + $nested_start,
                             "text" => "Invalid JSON syntax. Single quotes are only allowed inside strings. Did you mean to use a double quote?",
                         );
                     }
@@ -1001,8 +1006,8 @@ class ActionTagParser {
                         }
                         $tag["param"] = array(
                             "type" => PARAMTYPE::JSON,
-                            "start" => $param_start,
-                            "end" => $pos,
+                            "start" => $param_start + $nested_start,
+                            "end" => $pos + $nested_start,
                             "text" => join("", $param_text),
                             "valid" => $valid_json,
                             "annotation" => $json_error,
@@ -1035,8 +1040,8 @@ class ActionTagParser {
                     $seg_end = $pos - 1;
                     $parts[] = array(
                         "type" => SEGTYPE::OTS,
-                        "start" => $seg_start,
-                        "end" => $seg_end,
+                        "start" => $seg_start + $nested_start,
+                        "end" => $seg_end + $nested_start,
                         "text" => join("", $seg_text),
                         "annotation" => "Incomplete or broken potential JSON parameter.",
                         "warnings" => $warnings,
@@ -1052,15 +1057,31 @@ class ActionTagParser {
             }
             // Argument-style parameter. The idea here is to count the "open" parentheses (outside of string literals).
             // Entering, the counter is at 1. When 0 is reached, the ARGS parameter ends.
+            // We need to consider comments that can start with # or // (and may only have whitespace before them on any line;
+            // which means we must track newlines).
             else if ($in_param == PARAMTYPE::ARGS) {
+                // Comment handling
+                if ($c === "\n") {
+                    $param_line = [];
+                    $param_comment = false;
+                }
+                else {
+                    $param_line[] = $c;
+                }
+                if (!$in_string_literal && !$param_comment && ($c === "#" || ($c === "/" && $prev === "/"))) {
+                    // Are we inside a comment?
+                    if (trim(join("", $param_line)) === ($c == "#" ? "#" : "//")) {
+                        $param_comment = true;
+                    }
+                }
                 // Is char the escape character?
                 if ($c === self::esc) {
                     // Escaping in an ARGS candidate is ONLY possible in a string literal, and only for the (current) quote character
                     if (!$in_string_literal) {
                         // We only warn about this, but do not take any further action
                         $tag["warnings"][] = array(
-                            "start" => $pos,
-                            "end" => $pos,
+                            "start" => $pos + $nested_start,
+                            "end" => $pos + $nested_start,
                             "text" => "Invalid parameter syntax: Escape character '\\' may only occur inside string literals."
                         );
                         // Add it and continue, but do not switch into escaped mode
@@ -1117,25 +1138,25 @@ class ActionTagParser {
                 // Is char an opening parenthesis?
                 if ($c === "(") {
                     $param_text[] = $c;
-                    // Increase open bracket count, but only when not inside a string literal
-                    $param_nop += ($in_string_literal ? 0 : 1);
+                    // Increase open bracket count, but only when not inside a string literal or a comment
+                    $param_nop += (($in_string_literal || $param_comment) ? 0 : 1);
                     $prev = $c;
                     continue;
                 }
                 // Is char a closing parenthesis?
                 else if ($c === ")") {
                     $param_text[] = $c;
-                    // Decrease open bracket count, but only when not inside a string literal
-                    $param_nop -= ($in_string_literal ? 0 : 1);
+                    // Decrease open bracket count, but only when not inside a string literal or a comment
+                    $param_nop -= (($in_string_literal || $param_comment) ? 0 : 1);
                     $prev = $c;
                     // Are we at the closing brace?
                     if ($param_nop == 0) {
                         // The ARGS parameter is complete
                         $tag["param"] = array(
                             "type" => PARAMTYPE::ARGS,
-                            "start" => $param_start,
-                            "end" => $pos,
-                            "text" => join("", $param_text),
+                            "start" => $param_start + $nested_start + 1,
+                            "end" => $pos + $nested_start - 1,
+                            "text" => substr(join("", $param_text), 1, count($param_text) - 2),
                             "valid" => null, // TODO - any sensible checks? AT-provided callback?
                             "annotation" => "",
                         );
@@ -1167,8 +1188,8 @@ class ActionTagParser {
                     $seg_end = $pos - 1;
                     $parts[] = array(
                         "type" => SEGTYPE::OTS,
-                        "start" => $seg_start,
-                        "end" => $seg_end,
+                        "start" => $seg_start + $nested_start,
+                        "end" => $seg_end + $nested_start,
                         "text" => join("", $seg_text),
                         "annotation" => "Incomplete potential argument-style parameter (inside parentheses).",
                         "warnings" => $warnings,
@@ -1194,12 +1215,18 @@ class ActionTagParser {
             });
         }
 
-        // Add "full" to all tags and isolate action tags
+        // Add "full" string to all tags and process @IF
         foreach ($parts as &$part) {
             if ($part["type"] == SEGTYPE::TAG) {
-                $start = $part["start"];
-                $end = is_array($part["param"]) ? $part["param"]["end"] : $part["end"];
+                $start = $part["start"] - $nested_start;
+                $end = (is_array($part["param"]) 
+                    ? ($part["param"]["end"] + ($part["param"]["type"] == PARAMTYPE::ARGS ? 1 : 0))
+                    : ($part["end"])
+                ) - $nested_start;
                 $part["full"] = join("", array_slice($chars, $start, $end - $start + 1));
+                if ($part["text"] == "@IF" && $part["param"]["type"] == PARAMTYPE::ARGS) {
+                    $part["if"] = self::parse_optimized($part["param"]["text"], false, $part["param"]["start"])["parts"];
+                }
             }
         }
 
