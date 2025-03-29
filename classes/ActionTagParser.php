@@ -1258,8 +1258,10 @@ class ActionTagParser {
         $current = [];
         $insideString = false;
         $quoteChar = '';
-        for ($i = 0, $len = strlen($ifBody); $i < $len; $i++) {
-            $char = $ifBody[$i];
+        $chars = mb_str_split($ifBody);
+        $len = count($chars);
+        for ($i = 0; $i < $len; $i++) {
+            $char = $chars[$i];
             // Handle quoted strings
             if (($char === '"' || $char === "'") && (!$insideString || $quoteChar === $char)) {
                 $insideString = !$insideString;
