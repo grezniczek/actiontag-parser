@@ -1210,22 +1210,36 @@ class ActionTagParser {
 
         // Tags only
         if ($tags_only) {
-            return array_filter($parts, function($part) {
+            $parts = array_filter($parts, function($part) {
                 return $part["type"] == SEGTYPE::TAG;
             });
         }
 
-        // Add "full" string to all tags and process @IF
+        // Add "length", "full" string to all tags and process @IF
         foreach ($parts as &$part) {
+            $start = $part["start"] - $nested_start;
+            $end = (is_array($part["param"]) 
+            ? ($part["param"]["end"] + ($part["param"]["type"] == PARAMTYPE::ARGS ? 1 : 0))
+            : ($part["end"])
+            ) - $nested_start;
+            $part["full"] = join("", array_slice($chars, $start, $end - $start + 1));
+            $part["length"] =  $end - $start + 1;
             if ($part["type"] == SEGTYPE::TAG) {
-                $start = $part["start"] - $nested_start;
-                $end = (is_array($part["param"]) 
-                    ? ($part["param"]["end"] + ($part["param"]["type"] == PARAMTYPE::ARGS ? 1 : 0))
-                    : ($part["end"])
-                ) - $nested_start;
-                $part["full"] = join("", array_slice($chars, $start, $end - $start + 1));
                 if ($part["text"] == "@IF" && $part["param"]["type"] == PARAMTYPE::ARGS) {
-                    $part["if"] = self::parse_optimized($part["param"]["text"], false, $part["param"]["start"])["parts"];
+                    // Parse @IF parts
+                    $ifParts = self::splitIfContent($part["param"]["text"]);
+                    if (count($ifParts) == 3) {
+                        $if_then_start = $part["param"]["start"] + strpos($part["param"]["text"], $ifParts[1]);
+                        $if_else_start = $part["param"]["start"] + strpos($part["param"]["text"], $ifParts[2]);
+                        $part["if_condition"] = $ifParts[0];
+                        $part["if_then_text"] = $ifParts[1];
+                        $part["if_then"] = self::parse_optimized($part["if_then_text"], $tags_only, $if_then_start)["parts"];
+                        $part["if_else_text"] = $ifParts[2];
+                        $part["if_else"] = self::parse_optimized($part["if_else_text"], $tags_only, $if_else_start)["parts"];
+                    }
+                    else {
+                        $part["warnings"][] = "Invalid @IF syntax.";
+                    }
                 }
             }
         }
@@ -1233,6 +1247,41 @@ class ActionTagParser {
         return array("orig" => $orig, "parts" => $parts);
     }
 
+    private static function splitIfContent($ifBody) {
+        $parts = [];
+        $stack = [];
+        $current = [];
+        $insideString = false;
+        $quoteChar = '';
+        for ($i = 0, $len = strlen($ifBody); $i < $len; $i++) {
+            $char = $ifBody[$i];
+            // Handle quoted strings
+            if (($char === '"' || $char === "'") && (!$insideString || $quoteChar === $char)) {
+                $insideString = !$insideString;
+                $quoteChar = $insideString ? $char : '';
+            }
+    
+            if (!$insideString) {
+                if ($char === '(') {
+                    $stack[] = $char;
+                } elseif ($char === ')') {
+                    array_pop($stack);
+                }
+    
+                if (empty($stack) && $char === ',') {
+                    $parts[] = join("", $current);
+                    $current = [];
+                    continue;
+                }
+            }
+            $current[] = $char;
+        }
+    
+        if (count($current)) {
+            $parts[] = join("", $current);
+        }
+        return $parts;
+    }
 
     /**
      * Parses a string for action tags and returns all action tag candidates with their parameters.
