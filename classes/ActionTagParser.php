@@ -1247,6 +1247,11 @@ class ActionTagParser {
         return array("orig" => $orig, "parts" => $parts);
     }
 
+    /**
+     * Splits an @IF expression into its parts
+     * @param string $ifBody 
+     * @return string[] 0 = condition, 1 = then, 2 = else
+     */
     private static function splitIfContent($ifBody) {
         $parts = [];
         $stack = [];
@@ -1260,7 +1265,6 @@ class ActionTagParser {
                 $insideString = !$insideString;
                 $quoteChar = $insideString ? $char : '';
             }
-    
             if (!$insideString) {
                 if ($char === '(') {
                     $stack[] = $char;
@@ -1276,7 +1280,6 @@ class ActionTagParser {
             }
             $current[] = $char;
         }
-    
         if (count($current)) {
             $parts[] = join("", $current);
         }
