@@ -61,7 +61,7 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         ksort($fields);
         foreach ($fields as $_ => $field_metadata) {
             print "<hr><p class=\"ml-2\">Field: <b>{$field_metadata["field_name"]}</b></p><pre class=\"mr-2\">";
-            $result = ActionTagParser::parse_optimized($field_metadata["misc"]);
+            $result = ActionTagParser::parse_optimized($field_metadata["misc"], isset($_GET["tags_only"]));
             print_r($result["orig"]);
             print "<hr>";
             print_r($result["parts"]);
