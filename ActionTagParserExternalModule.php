@@ -61,10 +61,10 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         ksort($fields);
         foreach ($fields as $_ => $field_metadata) {
             print "<hr><p class=\"ml-2\">Field: <b>{$field_metadata["field_name"]}</b></p><pre class=\"mr-2\">";
-            $result = ActionTagParser::parse_optimized($field_metadata["misc"], isset($_GET["tags_only"]));
-            print_r($result["orig"]);
+            $result = ActionTagParser::parse($field_metadata["misc"]);
+            print_r($field_metadata["misc"]);
             print "<hr>";
-            print_r($result["parts"]);
+            print_r($result);
             print "</pre>";
         }
     }
@@ -74,28 +74,27 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         $n = max(intval($_GET["n"]), 1);
         $timings = [];
 
+        $context = [
+            "project_id" => $this->getProjectId(),
+        ];
+
+        $filter = [];
+
         print "<h5>Timing ($n iterations)</h5>";
         print "<p>Set the number of iterations as GET parameter '<i>n</i>'.</p>";
 
-        
+        ActionTagParser::setCacheDisabled();
         for ($i = 0; $i < $n; $i++) {
             $start = microtime(true);
-            $parser_tags = ActionTagParser::getActionTags(null, null, null, null, false, $i);
+            $parser_tags = ActionTagParser::getActionTags($context, $filter);
             $end = microtime(true);
             $timings["Parser"][] = $end-$start;
         }
-        
-        
-        for ($i = 0; $i < $n; $i++) {
-            $start = microtime(true);
-            $parser_tags = ActionTagParser::getActionTags(null, null, null, null, true, $i);
-            $end = microtime(true);
-            $timings["Parser (Optimized)"][] = $end-$start;
-        }
+        ActionTagParser::setCacheEnabled();
 
         for ($i = 0; $i < $n; $i++) {
             $start = microtime(true);
-            $helper_tags = ActionTagHelper::getActionTags(null, null, null, null, $i);
+            $helper_tags = ActionTagHelper::getActionTags($filter["tags"] ?? null, $filter["fields"] ?? null, $filter["instruments"] ?? null, null, $i);
             $end = microtime(true);
             $timings["Helper"][] = $end-$start;
         }
@@ -122,7 +121,7 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         }
         print "</table>";
 
-        $print = function($tags) {
+        $print_helper = function($tags) {
             foreach ($tags as $tag => $fields) {
                 print "<p><b>$tag</b></p>";
                 foreach ($fields as $field => $params) {
@@ -133,10 +132,21 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             }
         };
 
+        $print = function($tags) {
+            foreach ($tags as $tag => $fields) {
+                print "<p><b>$tag</b></p>";
+                foreach ($fields as $field) {
+                    print "<p class=\"ml-2\"><i>{$field["field"]}</i>";
+                    if ($field["params"] != "") print " - <code>".htmlentities(str_replace("\n", " ", $field['params']))."</code>";
+                    print "</p>";
+                }
+            }
+        };
+
         print "<h5>Parser:</h5>";
         $print($parser_tags);
         print "<hr>";
         print "<h5>Helper:</h5>";
-        $print($helper_tags);
+        $print_helper($helper_tags);
     }
 }
