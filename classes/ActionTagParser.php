@@ -1384,21 +1384,37 @@ class ActionTagParser {
                 $misc = \Form::replaceIfActionTag($misc, $project_id, $record, $event_id, $instrument, $instance);
             }
             $parts = self::parse($misc);
-            foreach ($parts as $tag) {
-                if ($tag["type"] != SEGTYPE::TAG) continue;
-                $action_tag = $tag['text'];
-                // Tag filtering
-                if ($tags && !in_array($action_tag, $tags)) continue;
-                // Initialize the action_tag node
-                if (!array_key_exists($action_tag, $action_tags)) $action_tags[$action_tag] = [];
-                // Merge action_tag into action_tags
-                $action_tags[$action_tag][] = [
-                    "field" => $field,
-                    "params" => is_array($tag['param']) ? $tag['param']['text'] : ""
-                ];
-            }
+            $i = 0;
+            /**
+             * Recursive function to add action tags to the action_tags array
+             * @param string[] $parts The action tag parts
+             * @param bool $nested True if the action tag is nested inside an @IF
+             */
+            $add_tag = function($parts, $nested = false) use (&$add_tag, $field, &$action_tags, $tags, &$i) {
+                foreach ($parts as $tag) {
+                    if ($tag["type"] != SEGTYPE::TAG) continue;
+                    $action_tag = $tag['text'];
+                    // Tag filtering
+                    if ($tags && !in_array($action_tag, $tags)) continue;
+                    // Initialize the action_tag node
+                    if (!array_key_exists($action_tag, $action_tags)) $action_tags[$action_tag] = [];
+                    // Merge action_tag into action_tags
+                    $action_tags[$action_tag][] = [
+                        "field" => $field,
+                        "params" => is_array($tag['param']) ? $tag['param']['text'] : "",
+                        "nested" => $nested,
+                    ];
+                    $i++;
+                    if (is_array($tag["if_then"] ?? null)) {
+                        $add_tag($tag["if_then"], true);
+                    }
+                    if (is_array($tag["if_else"] ?? null)) {
+                        $add_tag($tag["if_else"], true);
+                    }
+                }
+            };
+            $add_tag($parts);
         }
-
 
         // Cache this search
         self::$cache[$arg_key] = $action_tags;
