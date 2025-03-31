@@ -87,27 +87,30 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         print "<h5>Timing ($n iterations)</h5>";
         print "<p>Set the number of iterations as GET parameter '<i>n</i>'.</p>";
 
-        ActionTagParser::setCacheDisabled();
-        for ($i = 0; $i < $n; $i++) {
-            $start = microtime(true);
-            $parser_tags = ActionTagParser::getActionTags($context, $filter);
-            $end = microtime(true);
-            $timings["Parser"][] = $end-$start;
-        }
-        for ($i = 0; $i < $n; $i++) {
-            $start = microtime(true);
-            $parser_int_tags = ActionTagParser::getActionTags($context, $filter, true);
-            $end = microtime(true);
-            $timings["Parser (internal)"][] = $end-$start;
-        }
-        ActionTagParser::setCacheEnabled();
-
         for ($i = 0; $i < $n; $i++) {
             $start = microtime(true);
             $helper_tags = ActionTagHelper::getActionTags($filter["tags"] ?? null, $filter["fields"] ?? null, $filter["instruments"] ?? null, $context, $i);
             $end = microtime(true);
             $timings["Helper"][] = $end-$start;
         }
+
+        ActionTagParser::setCacheDisabled();
+        for ($i = 0; $i < $n; $i++) {
+            $start = microtime(true);
+            $parser_int_tags = ActionTagParser::getActionTags($context, $filter, true);
+            $end = microtime(true);
+            $timings["Parser (internal)"][] = $end-$start;
+
+        }
+        for ($i = 0; $i < $n; $i++) {
+            $start = microtime(true);
+            $parser_tags = ActionTagParser::getActionTags($context, $filter);
+            $end = microtime(true);
+            $timings["Parser"][] = $end-$start;
+        }
+        ActionTagParser::setCacheEnabled();
+        
+        $by_field = ActionTagParser::getActionTagsByField($context, $filter, true);
 
         // Calculat averange and standard deviation
         $avg = function($arr) {

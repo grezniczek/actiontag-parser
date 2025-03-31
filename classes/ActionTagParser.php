@@ -1322,7 +1322,8 @@ class ActionTagParser {
      *  - tags: string|string[]|null The tag(s) to filter by
      *  - fields: string|string[]|null The field(s) to filter by
      *  - instruments: string|string[]|null The form(s) to filter by
-     * @return array
+     * @param bool $use_internal_if_resolver Whether to use the internal @IF resolver (Note: This may give different results than the REDCap @IF resolver for nested @IF expressions)
+     * @return array An array of action tags (keyed by action tag name)
      * @throws Exception 
      */
     public static function getActionTags($context, $filter = null, $use_internal_if_resolver = false) {
@@ -1343,7 +1344,7 @@ class ActionTagParser {
         $record = $context["record"] ?? null;
         $event_id = $context["event_id"] ?? null;
         $instrument = $context["instrument"] ?? null;
-        $instance = $context["instance"] ?? 1;
+        $instance = intval($context["instance"]) ?? 1;
         $full_context = "$record" != "" && intval($event_id) != 0 && "$instrument" != "";
 
         // Get metadata
@@ -1379,20 +1380,80 @@ class ActionTagParser {
             $tags = is_array($filter["tags"]) ? $filter["tags"] : [$filter["tags"]];
         }
 
+        // Check hidden edit global - if it is "0", we need to change it for Form::replaceIfActionTag() to work
+        $hidden_edit = isset($GLOBALS['hidden_edit']) ? $GLOBALS['hidden_edit'] : null;
+        if ($hidden_edit == "0") {
+            $GLOBALS["hidden_edit"] = "dummy";
+        }
+
         // Assemble action tags
         $action_tags = array();
+        /** @var int $i Action tag id (a simple counter) */
+        $i = 0;
         foreach ($fields as $field) {
             $misc = $metadata[$field]["misc"] ?? "";
-            if ($full_context && !$use_internal_if_resolver && strpos($misc, "@IF") !== false) {
+            if (strpos($misc, "@") === false) continue;
+            $resolve_if = $full_context && strpos($misc, "@IF") !== false;
+            // External (REDCap) @IF resolving
+            if ($resolve_if && !$use_internal_if_resolver) {
                 $misc = \Form::replaceIfActionTag($misc, $project_id, $record, $event_id, $instrument, $instance);
             }
+            // Parse
             $parts = self::parse($misc);
+            // Internal @IF resolving
+            if ($resolve_if && $use_internal_if_resolver) {
+                // Get conditions of all @IF
+                $conditions = [];
+                $gather = function($parts) use (&$gather, &$conditions) {
+                    foreach ($parts as $part) {
+                        if ($part["type"] != SEGTYPE::TAG) continue;
+                        if (isset($part["if_condition"])) {
+                            $conditions[] = $part["if_condition"];
+                            $gather($part["if_then"]);
+                            $gather($part["if_else"]);
+                        }
+                    }
+                };
+                $gather($parts);
+                $conditions = join(" ", $conditions);
+                $conditions = \Piping::pipeSpecialTags($conditions, $context["project_id"], $context["record"], $context["event_id"], $context["instance"], null, true, null, $context["instrument"], false, false, false, true, false, false, true); 
+                $condition_fields = array_unique(array_keys(getBracketedFields($conditions, true, true, false)));
+                $record_data = null;
+                if (count($condition_fields) > 0) {
+                    $getDataParams = [
+                        'project_id' => $Proj->project_id,
+                        'records' => [$context["record"]],
+                        'fields' => $condition_fields,
+                        'events' => [$context["event_id"]],
+                        'returnEmptyEvents' => true,
+                        'decimalCharacter' => '.'
+                    ];
+                    $record_data = \Records::getData($getDataParams);
+                }
+                // Resolve @IF recursively
+                $resolved_parts = [];
+                $resolve = function($parts) use (&$resolve, &$resolved_parts, $context, $Proj, $record_data) {
+                    foreach ($parts as $part) {
+                        if ($part["type"] != SEGTYPE::TAG) continue;
+                        if (isset($part["if_condition"])) {
+                            $result = \REDCap::evaluateLogic($part["if_condition"],  $context["project_id"], $context["record"], $context["event_id"], $context["instance"], ($Proj->isRepeatingForm($context["event_id"], $context["instrument"]) ? $context["instrument"] : ""), $context["instrument"], $record_data);
+                            $resolve($result == "1" ? $part["if_then"] : $part["if_else"]);
+                        }
+                        else {
+                            $resolved_parts[] = $part;
+                        }
+                    }
+                };
+                $resolve($parts);
+                $parts = $resolved_parts;
+            }
+            // Helpers to add action tags
             /**
              * Recursive function to add action tags to the action_tags array
              * @param string[] $parts The action tag parts
              * @param bool $nested True if the action tag is nested inside an @IF
              */
-            $add_tag = function($parts, $nested = null) use (&$add_tag, $field, &$action_tags, $tags) {
+            $add_tag_no_context = function($parts, $nested = null) use (&$add_tag_no_context, $field, &$action_tags, $tags, &$i) {
                 foreach ($parts as $tag) {
                     if ($tag["type"] != SEGTYPE::TAG) continue;
                     $action_tag = $tag['text'];
@@ -1401,22 +1462,61 @@ class ActionTagParser {
                     // Initialize the action_tag node
                     if (!array_key_exists($action_tag, $action_tags)) $action_tags[$action_tag] = [];
                     // Merge action_tag into action_tags
-                    $guid = \Crypto::getGuid();
                     $action_tags[$action_tag][] = [
-                        "guid" => $guid,
+                        "id" => $i,
                         "field" => $field,
                         "params" => is_array($tag['param']) ? $tag['param']['text'] : "",
                         "nested" => $nested,
                     ];
-                    if (is_array($tag["if_then"] ?? null)) {
-                        $add_tag($tag["if_then"], $guid);
+                    $current = $i;
+                    $i++;
+                    if (is_array($tag["if_then"])) {
+                        $add_tag_no_context($tag["if_then"], $current);
                     }
-                    if (is_array($tag["if_else"] ?? null)) {
-                        $add_tag($tag["if_else"], $guid);
+                    if (is_array($tag["if_else"])) {
+                        $add_tag_no_context($tag["if_else"], $current);
                     }
                 }
             };
-            $add_tag($parts);
+            /**
+             * Recursive function (optimized for full context) to add action tags to the action_tags array
+             * @param string[] $parts The action tag parts
+             */
+            $add_tag_full_context = function($parts) use (&$add_tag_full_context, $field, &$action_tags, $tags, &$i) {
+                foreach ($parts as $tag) {
+                    if ($tag["type"] != SEGTYPE::TAG) continue;
+                    $action_tag = $tag['text'];
+                    // Tag filtering
+                    if ($tags && !in_array($action_tag, $tags)) continue;
+                    // Initialize the action_tag node
+                    if (!array_key_exists($action_tag, $action_tags)) $action_tags[$action_tag] = [];
+                    // Merge action_tag into action_tags
+                    $action_tags[$action_tag][] = [
+                        "id" => $i,
+                        "field" => $field,
+                        "params" => is_array($tag['param']) ? $tag['param']['text'] : "",
+                        "nested" => null,
+                    ];
+                    $i++;
+                    if (is_array($tag["if_then"])) {
+                        $add_tag_full_context($tag["if_then"]);
+                    }
+                    if (is_array($tag["if_else"])) {
+                        $add_tag_full_context($tag["if_else"]);
+                    }
+                }
+            };
+            if ($full_context && $use_internal_if_resolver) {
+                $add_tag_full_context($parts);
+            }
+            else {
+                $add_tag_no_context($parts);
+            }
+        }
+
+        // Reset hidden edit
+        if ($hidden_edit !== null) {
+            $GLOBALS["hidden_edit"] = $hidden_edit;
         }
 
         // Cache this search
@@ -1425,5 +1525,28 @@ class ActionTagParser {
         return $action_tags;
     }
 
+
+    /**
+     * Gets all action tags, optionally filtered by tags, fields, instruments, and processed for the given context (i.e., with @IF resolved)
+     * @param array $context The current context (project_id, record, event_id, instrument, instance). A project_id must be provided. When record, event_id, instrument, and instance are provided, any @IF action tags will be resolved.
+     * @param array|null $filter An array of filters to apply. Valid keys are:
+     *  - tags: string|string[]|null The tag(s) to filter by
+     *  - fields: string|string[]|null The field(s) to filter by
+     *  - instruments: string|string[]|null The form(s) to filter by
+     * @param bool $use_internal_if_resolver Whether to use the internal @IF resolver (Note: This may give different results than the REDCap @IF resolver for nested @IF expressions)
+     * 
+     * @return array An array of action tags (keyed by field, then action tag name)
+     * @throws Exception 
+     */
+    public static function getActionTagsByField($context, $filter = null, $use_internal_if_resolver = false) {
+        $by_actiontag = self::getActionTags($context, $filter, $use_internal_if_resolver);
+        $by_field = [];
+        foreach ($by_actiontag as $action_tag => $tags) {
+            foreach ($tags as $tag) {
+                $by_field[$tag["field"]][$action_tag][] = $tag;
+            }
+        }
+        return $by_field;
+    }
 
 }
