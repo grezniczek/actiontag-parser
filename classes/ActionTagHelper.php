@@ -51,7 +51,7 @@ class ActionTagHelper
         foreach ($metadata as $field) {
             $field_name = $field['field_name'];
             $field_annotation = $field['field_annotation'];
-            if (is_array($context) && strpos($field_annotation, "@IF") !== false) {
+            if (is_array($context) && isset($context["instrument"]) && strpos($field_annotation, "@IF") !== false) {
                 $field_annotation = \Form::replaceIfActionTag($field_annotation, $context['project_id'] ?? null, $context['record'] ?? null, $context['event_id'] ?? null, $context['instrument'] ?? null, $context['instance'] ?? 1);
             }
             $parsed_tags = self::parseActionTags($field_annotation);
