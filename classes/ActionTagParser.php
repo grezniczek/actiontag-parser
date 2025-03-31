@@ -350,6 +350,7 @@ class ActionTagParser {
     #endregion
 
 
+    #region Parsing
 
     public static function parse_optimized_more($orig, $tags_only = false) {
 
@@ -1309,6 +1310,8 @@ class ActionTagParser {
         return $parts;
     }
 
+    #endregion
+
 
     private static $cache = [];
 
@@ -1322,7 +1325,7 @@ class ActionTagParser {
      * @return array
      * @throws Exception 
      */
-    public static function getActionTags($context, $filter = null) {
+    public static function getActionTags($context, $filter = null, $use_internal_if_resolver = false) {
 
         // Check to see if this search has been cached
         $arg_key = md5(json_encode(func_get_args()));
@@ -1380,7 +1383,7 @@ class ActionTagParser {
         $action_tags = array();
         foreach ($fields as $field) {
             $misc = $metadata[$field]["misc"] ?? "";
-            if ($full_context && strpos($misc, "@IF") !== false) {
+            if ($full_context && !$use_internal_if_resolver && strpos($misc, "@IF") !== false) {
                 $misc = \Form::replaceIfActionTag($misc, $project_id, $record, $event_id, $instrument, $instance);
             }
             $parts = self::parse($misc);
@@ -1390,7 +1393,7 @@ class ActionTagParser {
              * @param string[] $parts The action tag parts
              * @param bool $nested True if the action tag is nested inside an @IF
              */
-            $add_tag = function($parts, $nested = false) use (&$add_tag, $field, &$action_tags, $tags, &$i) {
+            $add_tag = function($parts, $nested = null) use (&$add_tag, $field, &$action_tags, $tags, &$i) {
                 foreach ($parts as $tag) {
                     if ($tag["type"] != SEGTYPE::TAG) continue;
                     $action_tag = $tag['text'];
@@ -1399,18 +1402,20 @@ class ActionTagParser {
                     // Initialize the action_tag node
                     if (!array_key_exists($action_tag, $action_tags)) $action_tags[$action_tag] = [];
                     // Merge action_tag into action_tags
+                    $guid = \Crypto::getGuid();
                     $action_tags[$action_tag][] = [
+                        "guid" => $guid,
                         "field" => $field,
                         "params" => is_array($tag['param']) ? $tag['param']['text'] : "",
                         "nested" => $nested,
                     ];
-                    $i++;
                     if (is_array($tag["if_then"] ?? null)) {
-                        $add_tag($tag["if_then"], true);
+                        $add_tag($tag["if_then"], $guid);
                     }
                     if (is_array($tag["if_else"] ?? null)) {
-                        $add_tag($tag["if_else"], true);
+                        $add_tag($tag["if_else"], $guid);
                     }
+                    $i++;
                 }
             };
             $add_tag($parts);

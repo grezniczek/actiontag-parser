@@ -140,7 +140,8 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             foreach ($tags as $tag => $fields) {
                 print "<p><b>$tag</b></p>";
                 foreach ($fields as $field) {
-                    print "<p class=\"ml-2\"><i>{$field["field"]}</i>";
+                    $nested = ($field["nested"] ?? false) ? " (nested)" : "";
+                    print "<p class=\"ml-2\"><i>{$field["field"]}$nested</i>";
                     if ($field["params"] != "") print " - <code>".htmlentities(str_replace("\n", " ", $field['params']))."</code>";
                     print "</p>";
                 }
