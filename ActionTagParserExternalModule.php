@@ -76,10 +76,10 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
         $context = [
             "project_id" => $this->getProjectId(),
-            // "record" => "1",
-            // "instrument" => "form_1",
-            // "event_id" => "118",
-            // "instance" => "1",
+            "record" => "2",
+            "instrument" => "form_1",
+            "event_id" => "1267",
+            "instance" => "1",
         ];
 
         $filter = [];
@@ -94,11 +94,17 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             $end = microtime(true);
             $timings["Parser"][] = $end-$start;
         }
+        for ($i = 0; $i < $n; $i++) {
+            $start = microtime(true);
+            $parser_int_tags = ActionTagParser::getActionTags($context, $filter, true);
+            $end = microtime(true);
+            $timings["Parser (internal)"][] = $end-$start;
+        }
         ActionTagParser::setCacheEnabled();
 
         for ($i = 0; $i < $n; $i++) {
             $start = microtime(true);
-            $helper_tags = ActionTagHelper::getActionTags($filter["tags"] ?? null, $filter["fields"] ?? null, $filter["instruments"] ?? null, null, $i);
+            $helper_tags = ActionTagHelper::getActionTags($filter["tags"] ?? null, $filter["fields"] ?? null, $filter["instruments"] ?? null, $context, $i);
             $end = microtime(true);
             $timings["Helper"][] = $end-$start;
         }
@@ -150,6 +156,9 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
         print "<h5>Parser:</h5>";
         $print($parser_tags);
+        print "<hr>";
+        print "<h5>Parser (internal):</h5>";
+        $print($parser_int_tags);
         print "<hr>";
         print "<h5>Helper:</h5>";
         $print_helper($helper_tags);
