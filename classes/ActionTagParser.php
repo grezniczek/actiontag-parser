@@ -1387,13 +1387,12 @@ class ActionTagParser {
                 $misc = \Form::replaceIfActionTag($misc, $project_id, $record, $event_id, $instrument, $instance);
             }
             $parts = self::parse($misc);
-            $i = 0;
             /**
              * Recursive function to add action tags to the action_tags array
              * @param string[] $parts The action tag parts
              * @param bool $nested True if the action tag is nested inside an @IF
              */
-            $add_tag = function($parts, $nested = null) use (&$add_tag, $field, &$action_tags, $tags, &$i) {
+            $add_tag = function($parts, $nested = null) use (&$add_tag, $field, &$action_tags, $tags) {
                 foreach ($parts as $tag) {
                     if ($tag["type"] != SEGTYPE::TAG) continue;
                     $action_tag = $tag['text'];
@@ -1415,7 +1414,6 @@ class ActionTagParser {
                     if (is_array($tag["if_else"] ?? null)) {
                         $add_tag($tag["if_else"], $guid);
                     }
-                    $i++;
                 }
             };
             $add_tag($parts);
