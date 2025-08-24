@@ -76,10 +76,10 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
         $context = [
             "project_id" => $this->getProjectId(),
-            // "record" => "1",
-            // "instrument" => "form_1",
-            // "event_id" => "118",
-            // "instance" => "1",
+            "record" => "2",
+            "instrument" => "form_1",
+            "event_id" => "1267",
+            "instance" => "1",
         ];
 
         $filter = [];
@@ -87,7 +87,21 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         print "<h5>Timing ($n iterations)</h5>";
         print "<p>Set the number of iterations as GET parameter '<i>n</i>'.</p>";
 
+        for ($i = 0; $i < $n; $i++) {
+            $start = microtime(true);
+            $helper_tags = ActionTagHelper::getActionTags($filter["tags"] ?? null, $filter["fields"] ?? null, $filter["instruments"] ?? null, $context, $i);
+            $end = microtime(true);
+            $timings["Helper"][] = $end-$start;
+        }
+
         ActionTagParser::setCacheDisabled();
+        for ($i = 0; $i < $n; $i++) {
+            $start = microtime(true);
+            $parser_int_tags = ActionTagParser::getActionTags($context, $filter, true);
+            $end = microtime(true);
+            $timings["Parser (internal)"][] = $end-$start;
+
+        }
         for ($i = 0; $i < $n; $i++) {
             $start = microtime(true);
             $parser_tags = ActionTagParser::getActionTags($context, $filter);
@@ -95,13 +109,8 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             $timings["Parser"][] = $end-$start;
         }
         ActionTagParser::setCacheEnabled();
-
-        for ($i = 0; $i < $n; $i++) {
-            $start = microtime(true);
-            $helper_tags = ActionTagHelper::getActionTags($filter["tags"] ?? null, $filter["fields"] ?? null, $filter["instruments"] ?? null, null, $i);
-            $end = microtime(true);
-            $timings["Helper"][] = $end-$start;
-        }
+        
+        $by_field = ActionTagParser::getActionTagsByField($context, $filter, true);
 
         // Calculat averange and standard deviation
         $avg = function($arr) {
@@ -140,7 +149,8 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             foreach ($tags as $tag => $fields) {
                 print "<p><b>$tag</b></p>";
                 foreach ($fields as $field) {
-                    print "<p class=\"ml-2\"><i>{$field["field"]}</i>";
+                    $nested = ($field["nested"] ?? false) ? " (nested)" : "";
+                    print "<p class=\"ml-2\"><i>{$field["field"]}$nested</i>";
                     if ($field["params"] != "") print " - <code>".htmlentities(str_replace("\n", " ", $field['params']))."</code>";
                     print "</p>";
                 }
@@ -149,6 +159,9 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
         print "<h5>Parser:</h5>";
         $print($parser_tags);
+        print "<hr>";
+        print "<h5>Parser (internal):</h5>";
+        $print($parser_int_tags);
         print "<hr>";
         print "<h5>Helper:</h5>";
         $print_helper($helper_tags);
