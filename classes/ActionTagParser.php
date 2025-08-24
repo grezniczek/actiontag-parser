@@ -1345,7 +1345,7 @@ class ActionTagParser {
 
         // Get metadata
         $Proj = new \Project($project_id);
-        $metadata = $Proj->getMetadata();
+        $metadata = $Proj->getMetadata(); // This is probably not what is wanted!
 
         // Set list of fields to check
         $fields = [];
