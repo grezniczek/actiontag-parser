@@ -10,10 +10,7 @@
             "institution": "Ruhr-Universität Bochum"
         }
     ],
-    "framework-version": 8,
-    "permissions": [
-        "redcap_every_page_top"
-    ],
+    "framework-version": 15,
     "enable-every-page-hooks-on-system-pages": false,
     "links": {
         "project": [
@@ -38,11 +35,5 @@
     "system-settings": [
     ],
     "project-settings": [
-    ],
-    "compatibility": {
-        "php-version-min": "7.4.0",
-        "php-version-max": "",
-        "redcap-version-min": "12.0.1",
-        "redcap-version-max": ""
-     }
+    ]
 }
