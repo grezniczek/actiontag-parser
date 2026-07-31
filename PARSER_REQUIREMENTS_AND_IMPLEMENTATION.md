@@ -74,9 +74,9 @@ Supported parameter shapes are:
 
 Whitespace between a tag name and its introducer (`=` or `(`) is accepted where existing REDCap behavior accepts it, notably `@IF (...)`. Parameter syntax is captured structurally; whether it is allowed for a particular tag is a validator concern.
 
-Unquoted assignment values remain accepted for compatibility, but diagnostic mode emits the `deprecated_unquoted_parameter` warning. An unquoted value beginning with `[` is always parsed as a JSON-array candidate; it must never fall back to a generic unquoted string. An unquoted value beginning with `{` is likewise a JSON-object candidate. A bounded but invalid JSON candidate is retained as raw text and receives `invalid_json_parameter`.
+Unquoted assignment values remain accepted for compatibility, but diagnostic mode emits the `deprecated_unquoted_parameter` warning. An unquoted value that begins with `[` or `{` is classified as JSON only when its complete parameter text successfully decodes as JSON. Otherwise it remains an unquoted string. Thus `@TAG=[1,2]` is a JSON array, while `@TAG=[whatever]` is an unquoted string; the parser does not treat JSON-like text as invalid merely because it fails to decode.
 
-Single-quoted JSON wrappers are also accepted for compatibility, for example `@TAG='{"key":"value"}'` and `@TAG='[1,2]'`. A single-quoted value whose content begins with `{` or `[` is treated as a JSON candidate, and diagnostic mode emits `deprecated_single_quoted_json_parameter`. A regular single-quoted string that does not begin with either delimiter remains an ordinary quoted string.
+Single-quoted JSON **object** wrappers are also accepted for compatibility, for example `@TAG='{"key":"value"}'`. A single-quoted value is classified as JSON only when its content begins with `{` and successfully decodes to an object; diagnostic mode then emits `deprecated_single_quoted_json_object_parameter`. All other quoted values are strings, including `@TAG='[1,2]'`, `@TAG='[whatever]'`, and double-quoted JSON-looking text.
 
 ## Core Deactivation Syntax
 
@@ -194,7 +194,7 @@ The exact PHP array keys are part of the public contract once implementation beg
 ]
 ```
 
-`parameter`, when present, includes a `kind` (`assignment`, `quoted`, `unquoted`, `json`, or `arguments` as applicable), its raw source range/text, and parsed value data only where parsing is unambiguous. JSON decoding failure is reported as a diagnostic; the raw parameter is still retained.
+`parameter`, when present, includes a `kind` (`assignment`, `quoted`, `unquoted`, `json`, or `arguments` as applicable), its raw source range/text, and parsed value data only where parsing is unambiguous. JSON is assigned as the kind only after successful decoding; JSON-like text that fails to decode retains its ordinary quoted or unquoted string kind.
 
 ### Fast-mode result
 
@@ -268,9 +268,8 @@ The initial diagnostic-code set should include:
 | `unterminated_quoted_parameter` | A quoted parameter reaches its recovery boundary without a matching quote. |
 | `unterminated_parenthesized_parameter` | A parenthesized argument does not close. |
 | `unbalanced_parameter_delimiter` | An unexpected closing delimiter or impossible nesting state occurs. |
-| `invalid_json_parameter` | A JSON-shaped parameter is structurally bounded but cannot be decoded as JSON. |
 | `deprecated_unquoted_parameter` | An unquoted assignment parameter was accepted for compatibility. |
-| `deprecated_single_quoted_json_parameter` | A single-quoted JSON wrapper was accepted for compatibility. |
+| `deprecated_single_quoted_json_object_parameter` | A single-quoted JSON object wrapper was accepted for compatibility. |
 | `unterminated_if` | `@IF(` does not reach its matching closing parenthesis. |
 | `if_missing_condition` | An `@IF` condition arm is empty. |
 | `if_missing_then` | An `@IF` true branch is absent. |
@@ -348,7 +347,7 @@ The first fixture suite must cover at least:
 7. Diagnostic-tree retention of all valid `@IF` nodes, contrasted with their absence from fast-mode `tags`.
 8. Invalid `@IF` wrappers: missing comma, missing arm, extra top-level comma, unclosed outer parenthesis, and quotes/parentheses within the opaque condition.
 9. Recovery after malformed ordinary tags and malformed `@IF` constructs, with a following valid tag still located.
-10. Deprecated parameter forms: unquoted values, unquoted JSON arrays, and single-quoted JSON wrappers, including their diagnostic warnings and invalid-JSON handling.
+10. Deprecated parameter forms: unquoted values and successfully decoded single-quoted JSON objects. Include unquoted valid JSON arrays/objects plus quoted arrays and JSON-like values that must remain ordinary strings.
 11. The default rejected two-arm `@IF`, an explicit empty quoted false branch, and the accepted shorthand behavior when the internal switch is enabled in a dedicated test configuration.
 12. Limit and performance tests for deeply nested, oversized, and adversarial inputs.
 
