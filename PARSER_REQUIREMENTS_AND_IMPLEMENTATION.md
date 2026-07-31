@@ -4,7 +4,7 @@
 
 This is the first implementation-design draft for the parser to be built in this External Module. It turns the core-integration plan into an implementable contract, but it deliberately does not prescribe semantic rules for individual action tags.
 
-The parser will be portable PHP: it may not read REDCap metadata, access a database, use globals, evaluate logic or piping, or depend on the External Module framework. Its only input is annotation text plus parser options. Its only output is structured parse data and, in diagnostic mode, syntax findings.
+The parser will be portable PHP 8.1+: it may not read REDCap metadata, access a database, use globals, evaluate logic or piping, or depend on the External Module framework. Its only input is annotation text plus parser options. Its only output is structured parse data and, in diagnostic mode, syntax findings.
 
 This document is intentionally written so that the resulting parser can later move unchanged to REDCap core as `Classes/ActionTagParser.php`.
 
@@ -63,7 +63,7 @@ The parser recognizes action-tag syntax independently of a tag catalog. The prov
 name := ASCII-letter (ASCII-letter | digit | '_' | '-')*
 ```
 
-Names retain their original source spelling and are normalized case-insensitively. Boundary rules must prevent incidental text such as email addresses from becoming tags while preserving current valid annotation forms. The final boundary matrix will be fixture-driven from native REDCap and External Module examples; it is not a semantic whitelist.
+Names retain their original source spelling and are normalized case-insensitively. An action tag may begin only at the start of the annotation or immediately after ASCII whitespace (space, tab, carriage return, or line feed). A bare tag name must end at annotation end or before ASCII whitespace. `=` and `(` may directly follow a tag name as parameter introducers; they are not tag separators. These explicit boundary rules prevent incidental text such as email addresses from becoming tags.
 
 Supported parameter shapes are:
 
@@ -73,6 +73,10 @@ Supported parameter shapes are:
 - parenthesized arguments: `@TAG(...)`, respecting nested delimiters, quoted strings, and escapes.
 
 Whitespace between a tag name and its introducer (`=` or `(`) is accepted where existing REDCap behavior accepts it, notably `@IF (...)`. Parameter syntax is captured structurally; whether it is allowed for a particular tag is a validator concern.
+
+Unquoted assignment values remain accepted for compatibility, but diagnostic mode emits the `deprecated_unquoted_parameter` warning. An unquoted value beginning with `[` is always parsed as a JSON-array candidate; it must never fall back to a generic unquoted string. An unquoted value beginning with `{` is likewise a JSON-object candidate. A bounded but invalid JSON candidate is retained as raw text and receives `invalid_json_parameter`.
+
+Single-quoted JSON wrappers are also accepted for compatibility, for example `@TAG='{"key":"value"}'` and `@TAG='[1,2]'`. A single-quoted value whose content begins with `{` or `[` is treated as a JSON candidate, and diagnostic mode emits `deprecated_single_quoted_json_parameter`. A regular single-quoted string that does not begin with either delimiter remains an ordinary quoted string.
 
 ## Core Deactivation Syntax
 
@@ -97,6 +101,8 @@ The existing core behavior establishes the canonical form:
 
 The parser must find the two separators only at the `@IF` argument's top level. Commas inside quoted strings, JSON-like values, balanced parentheses, or nested `@IF` constructs do not split the three arguments. The parser retains all three raw argument ranges.
 
+An explicit empty quoted false branch (`''` or `""`) is a valid three-arm `@IF` whose false annotation contains no action tags; it must not produce `if_missing_else`.
+
 The direct condition is opaque:
 
 - preserve its text and source range;
@@ -104,7 +110,15 @@ The direct condition is opaque:
 - do not diagnose invalid field references, operators, quoting, or logical precedence; and
 - only diagnose the `@IF` wrapper's own structural failures, such as missing delimiter or closing parenthesis.
 
-The `then` and `else` ranges are annotation fragments. They are recursively parsed for tags and nested `@IF` containers. A future compatibility decision may explicitly add a two-argument `@IF` form if core behavior warrants it; it must not be accepted accidentally as a malformed three-argument form.
+The `then` and `else` ranges are annotation fragments. They are recursively parsed for tags and nested `@IF` containers.
+
+The parser defines an internal, non-public implementation switch:
+
+```php
+private const ACCEPT_IF_THEN_SHORTHAND = false;
+```
+
+With its default value, a two-arm `@IF(condition, then-annotation)` is diagnosed with `if_missing_else`. When explicitly enabled in a future core release, it is accepted as shorthand for an empty false branch and is represented with `else: []`. This switch is deliberately internal rather than a public parse option: compatibility is a REDCap behavior decision, not a caller-specific interpretation of the same annotation.
 
 ## Condition Definitions and Branch References
 
@@ -255,6 +269,8 @@ The initial diagnostic-code set should include:
 | `unterminated_parenthesized_parameter` | A parenthesized argument does not close. |
 | `unbalanced_parameter_delimiter` | An unexpected closing delimiter or impossible nesting state occurs. |
 | `invalid_json_parameter` | A JSON-shaped parameter is structurally bounded but cannot be decoded as JSON. |
+| `deprecated_unquoted_parameter` | An unquoted assignment parameter was accepted for compatibility. |
+| `deprecated_single_quoted_json_parameter` | A single-quoted JSON wrapper was accepted for compatibility. |
 | `unterminated_if` | `@IF(` does not reach its matching closing parenthesis. |
 | `if_missing_condition` | An `@IF` condition arm is empty. |
 | `if_missing_then` | An `@IF` true branch is absent. |
@@ -325,14 +341,16 @@ The first fixture suite must cover at least:
 
 1. Native and External Module bare tags, mixed casing, hyphen/underscore names, and names with digits where currently used.
 2. Tags with quoted, unquoted, JSON, and parenthesized parameters, including delimiters inside quotes and escaped quotes.
-3. Multiple tags and literal/candidate `@` text, including email-like strings that must not become tags.
+3. Exact start/end/whitespace tag-boundary behavior, including email-like strings that must not become tags.
 4. Core deactivation forms: disabled individual tags omitted from fast mode but returned with `enabled: false` in diagnostic mode; a disabled `@IF` body skipped in fast mode but parsed as disabled content in diagnostic mode.
 5. A canonical true/false `@IF`, an `@IF` containing multiple tags per branch, and `@IF` inside each branch of another `@IF`.
 6. Exact source-order `conditions` entries and effective ordered `conditional` references for every nested true/false branch combination.
 7. Diagnostic-tree retention of all valid `@IF` nodes, contrasted with their absence from fast-mode `tags`.
 8. Invalid `@IF` wrappers: missing comma, missing arm, extra top-level comma, unclosed outer parenthesis, and quotes/parentheses within the opaque condition.
 9. Recovery after malformed ordinary tags and malformed `@IF` constructs, with a following valid tag still located.
-10. Limit and performance tests for deeply nested, oversized, and adversarial inputs.
+10. Deprecated parameter forms: unquoted values, unquoted JSON arrays, and single-quoted JSON wrappers, including their diagnostic warnings and invalid-JSON handling.
+11. The default rejected two-arm `@IF`, an explicit empty quoted false branch, and the accepted shorthand behavior when the internal switch is enabled in a dedicated test configuration.
+12. Limit and performance tests for deeply nested, oversized, and adversarial inputs.
 
 Before a core move, fixtures must also record any intentional behavioral differences from legacy `Form`/`ActionTags` helpers. The parser's role is a stable structural standard, not an undocumented emulation of every historical regex quirk.
 
@@ -345,3 +363,13 @@ Before a core move, fixtures must also record any intentional behavioral differe
 - Replacing `Form::replaceIfActionTag()` or legacy helper behavior in the same change that introduces this parser.
 
 Those responsibilities remain with core runtime code and the future semantic action-tag validator. The parser supplies the source-faithful structure those layers need.
+
+## EM Implementation Transition
+
+Implementation begins with a clean replacement rather than incrementally extending the current parser. As the first code change in the EM-scoped implementation work:
+
+1. Rename the current `classes/ActionTagParser.php` class and file to `ActionTagParser_Old` / `ActionTagParser_Old.php` and preserve it only as a compatibility reference during the transition.
+2. Add the new standalone parser under the canonical `ActionTagParser` name.
+3. Keep any EM metadata catalog, runtime `@IF` resolution, and Field Annotation checking outside the new parser class.
+
+The new parser must not reuse the old class's REDCap dependencies or output contract. Existing EM callers will be deliberately migrated or wrapped after the new fixture suite is in place.
