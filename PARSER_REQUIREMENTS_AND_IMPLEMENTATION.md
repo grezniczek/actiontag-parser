@@ -15,8 +15,9 @@ This document is intentionally written so that the resulting parser can later mo
 - Use byte offsets as the canonical source location. Line and column are diagnostic-mode presentation data.
 - Keep tag semantics out of the parser, except that `@IF` has defined container syntax.
 - Parse `@IF` recursively. It does not evaluate or syntax-check its logic expression.
-- In fast mode, emit action tags from `@IF` branches as flattened tags with an effective `conditional` expression; do not emit `@IF` itself.
-- In diagnostic mode, retain every valid `@IF` as a container node while also making its nested action tags available with their effective conditionals.
+- In fast mode, emit enabled action tags from `@IF` branches as flattened tags with structured conditional references; do not emit `@IF` itself.
+- In diagnostic mode, retain every valid `@IF` as a container node while also making its nested action tags available with their effective conditional references.
+- Treat `@.OFF.TAG` as syntactically deactivated. Fast mode omits it; diagnostic mode exposes it with its normalized name and `enabled: false`.
 - Preserve original spelling and raw parameter/condition text; normalize tag names for lookup.
 
 ## Terminology
@@ -26,7 +27,11 @@ This document is intentionally written so that the resulting parser can later mo
 | Candidate | Text beginning with `@` that might be an action tag but is incomplete or malformed. Candidates are relevant only to diagnostic output. |
 | Tag node | A recognized non-`@IF` action tag, with its parameter syntax and source range. It is not necessarily a known or valid tag semantically. |
 | `@IF` node | A recognized `@IF` container, with opaque condition text and parsed true/false branches. It is retained only in the diagnostic tree. |
-| Effective conditional | The conjunction of every `@IF` branch that encloses a tag. It states when that tag's branch applies, but is never evaluated by the parser. |
+| Condition definition | One direct, opaque condition from an `@IF` occurrence, stored once in the top-level `conditions` map under a source-order numeric ID. |
+| Conditional reference | An ordered `{id, negated}` reference to a condition definition. The ordered list on a tag is an implicit conjunction. |
+| Effective conditional | The ordered conditional-reference list of every `@IF` branch that encloses a tag. It states when that tag's branch applies, but is never evaluated by the parser. |
+| Explicitly disabled | A tag or `@IF` whose own source spelling uses the legacy `@.OFF.` prefix. |
+| Effectively enabled | Whether a construct is neither explicitly disabled nor inside an explicitly disabled `@IF`. |
 | Raw text | Exact substring from the source range, including meaningful whitespace. |
 | Normalized name | The case-normalized action-tag name used for comparison, initially uppercase. |
 
@@ -69,7 +74,16 @@ Supported parameter shapes are:
 
 Whitespace between a tag name and its introducer (`=` or `(`) is accepted where existing REDCap behavior accepts it, notably `@IF (...)`. Parameter syntax is captured structurally; whether it is allowed for a particular tag is a validator concern.
 
+## Legacy Deactivation Syntax
+
 Legacy deactivation notation, including `@.OFF.TAG` and the deactivated-tag marker, is recognized as a deactivated representation rather than as a malformed tag. Its compatibility details belong in the test corpus.
+
+`@.OFF.TAG` has normalized name `@TAG` and retains `@.OFF.TAG` as `raw_name`.
+
+- In **fast mode**, directly disabled tags are omitted. For `@.OFF.IF(...)`, the parser performs only enough structural scanning to locate the matching outer parenthesis safely; it does not parse, emit, or register conditions for the contents. Thus no nested item can enter the fast result. If a disabled `@IF` is unterminated, fast mode treats the remaining text as disabled content and emits no untrusted nested result.
+- In **diagnostic mode**, directly disabled tags and `@IF` containers are returned with `enabled: false` and `explicitly_disabled: true`. The contents of a disabled `@IF` are parsed for author feedback. Descendants retain their own `explicitly_disabled` value but receive `enabled: false` because their enclosing container is disabled.
+
+Diagnostic nodes may include `disabled_by` references when an enclosing disabled `@IF` caused `enabled: false`. This is provenance for feedback, not a semantic validation result.
 
 ## `@IF` Structural Syntax
 
@@ -92,35 +106,56 @@ The direct condition is opaque:
 
 The `then` and `else` ranges are annotation fragments. They are recursively parsed for tags and nested `@IF` containers. A future compatibility decision may explicitly add a two-argument `@IF` form if core behavior warrants it; it must not be accepted accidentally as a malformed three-argument form.
 
-## Conditional Inheritance
+## Condition Definitions and Branch References
 
-Each non-`@IF` tag has a `conditional` entry:
+The parser does not generate a concatenated REDCap logic string for nested branches. Instead, each valid `@IF` occurrence creates one direct condition definition in the top-level `conditions` map. The condition text is preserved exactly and is never normalized, evaluated, or logic-validated.
 
-- `null` when it is not inside an `@IF` branch;
-- otherwise a canonical string formed from its enclosing branch conditions.
+Condition IDs are sequential positive integers in source order within one parse result. They are result-local references, not persistent identifiers to compare across parser modes or separate runs. A condition occurrence receives a distinct ID even when its raw text is identical to another occurrence. This preserves source locations, avoids collision/deduplication rules, and keeps results deterministic. Cross-`@IF` optimization of equivalent logic is intentionally out of scope; a later consumer may cache or intern exact expressions if it has a justified use case.
 
-For a true branch, append the direct condition. For a false branch, append the negation of the direct condition. Each expression is parenthesized before composition, preserving precedence without attempting to understand the expression:
+Each non-`@IF` tag has a `conditional` entry containing an ordered list of references:
 
-```text
-@IF([a] = '1', @HIDDEN, @READONLY)
-
-@HIDDEN   => conditional: "([a] = '1')"
-@READONLY => conditional: "(not ([a] = '1'))"
+```php
+[
+    ['id' => 1, 'negated' => false],
+    ['id' => 2, 'negated' => true],
+]
 ```
 
-For nesting, append the current branch expression with `and`:
+An empty list means the tag is unconditional. List order is the nesting order and is an implicit logical AND. A true `@IF` branch appends `['id' => n, 'negated' => false]`; its false branch appends `['id' => n, 'negated' => true]`. The `negated` flag corresponds to REDCap's `!` notation if a downstream consumer chooses to render or evaluate the condition. The parser itself does neither.
+
+For example:
 
 ```text
 @IF([a] = '1', @IF([b] = '2', @HIDDEN, @READONLY), @REQUIRED)
-
-@HIDDEN   => "([a] = '1') and ([b] = '2')"
-@READONLY => "([a] = '1') and (not ([b] = '2'))"
-@REQUIRED => "(not ([a] = '1'))"
 ```
 
-The parser should retain a diagnostic-only `conditional_stack` alongside the convenience string. Each entry contains the original condition range/text and branch polarity. This preserves provenance and lets a later consumer render or transform the condition without reverse-parsing the concatenated string.
+produces these condition definitions and tag references:
 
-An `@IF` node's own `conditional` describes the inherited context in which the container itself occurs; its `condition` describes its direct opaque test. Thus a nested `@IF` is visible as conditionally present even before its branch conditions are applied.
+```php
+'conditions' => [
+    1 => ['raw' => "[a] = '1'", 'start' => 4,  'end' => 13],
+    2 => ['raw' => "[b] = '2'", 'start' => 19, 'end' => 28],
+],
+
+// @HIDDEN
+'conditional' => [
+    ['id' => 1, 'negated' => false],
+    ['id' => 2, 'negated' => false],
+],
+
+// @READONLY
+'conditional' => [
+    ['id' => 1, 'negated' => false],
+    ['id' => 2, 'negated' => true],
+],
+
+// @REQUIRED
+'conditional' => [
+    ['id' => 1, 'negated' => true],
+],
+```
+
+An `@IF` node's `conditional` is the inherited list that applies to the container itself. Its `condition_id` identifies its direct opaque test. Thus a nested `@IF` is visible as conditionally present before its own true/false branch reference is appended.
 
 ## Result Contract
 
@@ -136,9 +171,12 @@ The exact PHP array keys are part of the public contract once implementation beg
     'start'           => 24,                 // inclusive byte offset
     'end'             => 30,                 // exclusive byte offset
     'raw'             => '@hidden',
-    'deactivated'     => false,
+    'enabled'         => true,
+    'explicitly_disabled' => false,
     'parameter'       => null,               // or the parameter structure below
-    'conditional'     => "([status] = '1')", // null when unconditional
+    'conditional'     => [                  // [] when unconditional
+        ['id' => 1, 'negated' => false],
+    ],
 ]
 ```
 
@@ -148,25 +186,27 @@ The exact PHP array keys are part of the public contract once implementation beg
 
 ```php
 [
-    'mode' => 'fast',
-    'tags' => [ /* flattened non-@IF tag nodes in source order */ ],
+    'mode'       => 'fast',
+    'conditions' => [ /* direct condition definitions keyed by source-order ID */ ],
+    'tags'       => [ /* flattened enabled non-@IF tag nodes in source order */ ],
 ]
 ```
 
-Fast mode omits text nodes, `@IF` containers, candidate nodes, detailed recovery state, line/column data, and detailed diagnostics. A valid tag nested in a valid `@IF` is still included in `tags` with its effective `conditional`. A malformed `@IF` does not yield trusted flattened children in fast mode.
+Fast mode omits text nodes, `@IF` containers, disabled tags, candidate nodes, detailed recovery state, line/column data, and detailed diagnostics. A valid enabled tag nested in a valid enabled `@IF` is included in `tags` with its effective `conditional` references. A malformed or disabled `@IF` does not yield trusted flattened children or condition definitions in fast mode.
 
 ### Diagnostic-mode result
 
 ```php
 [
     'mode'        => 'diagnostic',
+    'conditions'  => [ /* direct condition definitions keyed by source-order ID */ ],
     'nodes'       => [ /* root tag, @IF, and candidate nodes in source order */ ],
     'tags'        => [ /* flattened non-@IF valid tag nodes in source order */ ],
     'diagnostics' => [ /* ordered syntax findings */ ],
 ]
 ```
 
-`nodes` contains every valid `@IF` as a container node and, when useful for user feedback, malformed candidate nodes. With `include_text_segments`, it also contains text nodes that cover the remaining source. `tags` remains a convenient flattened view; it never includes `@IF` wrappers.
+`nodes` contains every valid `@IF`, including disabled `@IF` containers, and, when useful for user feedback, malformed candidate nodes. With `include_text_segments`, it also contains text nodes that cover the remaining source. `tags` remains a convenient flattened view; it never includes `@IF` wrappers. Unlike fast mode, it can include disabled tag nodes, whose `enabled` field is false.
 
 A diagnostic `@IF` node is proposed to have this shape:
 
@@ -178,19 +218,16 @@ A diagnostic `@IF` node is proposed to have this shape:
     'start'             => 0,
     'end'               => 53,
     'raw'               => "@IF([a] = '1', @HIDDEN, @READONLY)",
-    'conditional'       => null,             // inherited context only
-    'conditional_stack' => [],
-    'condition'         => [
-        'raw'   => "[a] = '1'",
-        'start' => 4,
-        'end'   => 13,
-    ],
+    'enabled'           => true,
+    'explicitly_disabled' => false,
+    'conditional'       => [],               // inherited context only
+    'condition_id'      => 1,
     'then'              => [ /* recursive nodes */ ],
     'else'              => [ /* recursive nodes */ ],
 ]
 ```
 
-For a false branch, the child `conditional_stack` records a negative polarity rather than altering the raw condition. The canonical `conditional` string is derived from that stack.
+The entry at `conditions[1]` holds the direct raw condition and its range. For a false branch, the child `conditional` contains `['id' => 1, 'negated' => true]`; neither the stored condition text nor any generated logic string is altered.
 
 ## Diagnostics and Recovery
 
@@ -242,13 +279,13 @@ Use one forward byte scanner with an explicit stack of frames. Relevant frame/st
 - normal annotation scan, tag-name scan, assignment scan, quoted-value scan, JSON/balanced-value scan, and parenthesized-argument scan states;
 - quote character and escape state;
 - delimiter-depth counters/stack;
-- current conditional stack;
-- an `@IF` frame containing the direct condition range, current arm (`condition`, `then`, or `else`), top-level separator count, and diagnostic node being built; and
+- current ordered conditional-reference list;
+- an `@IF` frame containing the direct condition range/ID, current arm (`condition`, `then`, or `else`), top-level separator count, enabled state, and diagnostic node being built; and
 - parent node/sink references appropriate to the selected mode.
 
-When an `@IF` opens, push an `@IF` frame. While scanning its condition, only a comma at that frame's top level completes the condition. Once the condition is complete, derive the true-branch conditional stack and scan branch content normally. The second top-level comma switches to the false branch, whose stack has negative polarity. The matching close parenthesis completes the frame and returns control to the parent annotation context.
+When an enabled `@IF` opens, push an `@IF` frame. While scanning its condition, only a comma at that frame's top level completes the condition. Once the condition is complete, register one source-order condition definition and derive the true-branch conditional-reference list. The second top-level comma switches to the false branch, which appends the same ID with negative polarity. The matching close parenthesis completes the frame and returns control to the parent annotation context.
 
-Nested `@IF` frames use the current branch's stack, so conditions are inherited without a later tree walk or reparsing. In fast mode, frames retain only the minimum metadata necessary to propagate conditions and emit leaf tags. In diagnostic mode, they also retain the container and branch nodes.
+Nested `@IF` frames use the current branch's references, so conditions are inherited without a later tree walk or reparsing. In fast mode, a disabled `@IF` uses a lightweight skip frame that finds its matching close parenthesis but never parses its body. In diagnostic mode, it uses a regular frame marked disabled so its body can be checked and all descendants can inherit `enabled: false`. In fast mode, enabled frames retain only the minimum metadata necessary to propagate references and emit leaf tags. In diagnostic mode, they also retain the container and branch nodes.
 
 ### Delimiter and quote handling
 
@@ -265,10 +302,10 @@ The parser need not understand REDCap logic inside an `@IF` condition. It only b
 
 Use a mode-specific emission sink rather than maintaining two parsers:
 
-- **Fast sink:** append valid non-`@IF` nodes to `tags`; discard containers and detailed recovery records.
+- **Fast sink:** append valid enabled non-`@IF` nodes to `tags`; discard containers, disabled constructs, and detailed recovery records.
 - **Diagnostic sink:** append root/branch nodes, retain `@IF` containers and candidates, append diagnostics, and optionally include text segments.
 
-Shared scanning and node-construction helpers guarantee that a valid leaf tag has the same name, range, parameter, and `conditional` in both modes.
+Shared scanning and node-construction helpers guarantee that a valid enabled leaf tag has the same name, range, parameter, and conditional structure in both modes. Condition IDs are result-local, so callers compare condition text/polarity rather than raw IDs when comparing separate parses.
 
 ## Performance Requirements
 
@@ -289,9 +326,9 @@ The first fixture suite must cover at least:
 1. Native and External Module bare tags, mixed casing, hyphen/underscore names, and names with digits where currently used.
 2. Tags with quoted, unquoted, JSON, and parenthesized parameters, including delimiters inside quotes and escaped quotes.
 3. Multiple tags and literal/candidate `@` text, including email-like strings that must not become tags.
-4. Legacy deactivation forms and action tags adjacent to annotation text under supported boundary rules.
+4. Legacy deactivation forms: disabled individual tags omitted from fast mode but returned with `enabled: false` in diagnostic mode; a disabled `@IF` body skipped in fast mode but parsed as disabled content in diagnostic mode.
 5. A canonical true/false `@IF`, an `@IF` containing multiple tags per branch, and `@IF` inside each branch of another `@IF`.
-6. Exact effective `conditional` and `conditional_stack` values for every nested branch combination.
+6. Exact source-order `conditions` entries and effective ordered `conditional` references for every nested true/false branch combination.
 7. Diagnostic-tree retention of all valid `@IF` nodes, contrasted with their absence from fast-mode `tags`.
 8. Invalid `@IF` wrappers: missing comma, missing arm, extra top-level comma, unclosed outer parenthesis, and quotes/parentheses within the opaque condition.
 9. Recovery after malformed ordinary tags and malformed `@IF` constructs, with a following valid tag still located.
@@ -303,7 +340,7 @@ Before a core move, fixtures must also record any intentional behavioral differe
 
 - Evaluating an `@IF` condition or deciding which branch is active.
 - Validating REDCap logic syntax or field references inside a condition.
-- Validating that a tag exists, is enabled, supports a parameter kind, or is legal for a field/context.
+- Validating that a tag exists, is enabled by a project/module configuration, supports a parameter kind, or is legal for a field/context. The syntactic `@.OFF.` enabled state is the sole exception.
 - Resolving piping, record values, project metadata, or External Module configuration.
 - Replacing `Form::replaceIfActionTag()` or legacy helper behavior in the same change that introduces this parser.
 
