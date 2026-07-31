@@ -209,6 +209,11 @@ final class ActionTagParser
 
         if ($first === '[' || $first === '{') {
             $close = self::scanDelimited($state, $valueStart, $end, $first, $first === '[' ? ']' : '}');
+            if ($close === null) {
+                // Once strict scanning fails, recover a balanced JSON-like
+                // value so it can remain an unquoted string after JSON decode.
+                $close = self::scanPermissiveDelimited($input, $valueStart, $end, $first, $first === '[' ? ']' : '}');
+            }
             if ($close !== null) {
                 $raw = substr($input, $valueStart, $close - $valueStart + 1);
                 $decoded = self::decodeJson($raw);
@@ -319,8 +324,14 @@ final class ActionTagParser
         $armStart = $start;
         $quote = null;
         $escaped = false;
+        $inComment = false;
+        $lineWhitespace = $start === 0 || $input[$start - 1] === "\n" || $input[$start - 1] === "\r";
         for ($i = $start; $i < $end; $i++) {
             $char = $input[$i];
+            if ($inComment) {
+                if ($char === "\n" || $char === "\r") { $inComment = false; $lineWhitespace = true; }
+                continue;
+            }
             if ($quote !== null) {
                 if ($escaped) { $escaped = false; continue; }
                 if ($char === '\\') { $escaped = true; continue; }
@@ -328,6 +339,13 @@ final class ActionTagParser
                 continue;
             }
             if ($char === "'" || $char === '"') { $quote = $char; continue; }
+            if ($lineWhitespace && ($char === '#' || ($char === '/' && $i + 1 < $end && $input[$i + 1] === '/'))) {
+                $inComment = true;
+                continue;
+            }
+            if ($char === "\n" || $char === "\r") { $lineWhitespace = true; continue; }
+            if (self::isWhitespace($char)) continue;
+            $lineWhitespace = false;
             if (($char === '(' || $char === '[' || $char === '{') && isset($matches[$i]) && $matches[$i] < $end) {
                 $i = $matches[$i];
                 continue;
@@ -346,6 +364,21 @@ final class ActionTagParser
         return $close < $end && $input[$close] === $closing ? $close : null;
     }
 
+    private static function scanPermissiveDelimited(string $input, int $open, int $end, string $opening, string $closing): ?int
+    {
+        $stack = [$opening];
+        for ($i = $open + 1; $i < $end; $i++) {
+            $char = $input[$i];
+            if ($char === '(' || $char === '[' || $char === '{') { $stack[] = $char; continue; }
+            if ($char !== ')' && $char !== ']' && $char !== '}') continue;
+            $expected = match (end($stack)) { '(' => ')', '[' => ']', '{' => '}', default => null };
+            if ($char !== $expected) return null;
+            array_pop($stack);
+            if ($stack === []) return $i;
+        }
+        return null;
+    }
+
     /** @return array<int,int> opening byte offset => matching closing byte offset */
     private static function buildDelimiterMap(string $input): array
     {
@@ -353,9 +386,15 @@ final class ActionTagParser
         $stack = [];
         $quote = null;
         $escaped = false;
+        $inComment = false;
+        $lineWhitespace = true;
         $length = strlen($input);
         for ($i = 0; $i < $length; $i++) {
             $char = $input[$i];
+            if ($inComment) {
+                if ($char === "\n" || $char === "\r") { $inComment = false; $lineWhitespace = true; }
+                continue;
+            }
             if ($quote !== null) {
                 if ($escaped) { $escaped = false; continue; }
                 if ($char === '\\') { $escaped = true; continue; }
@@ -363,6 +402,13 @@ final class ActionTagParser
                 continue;
             }
             if ($char === "'" || $char === '"') { $quote = $char; continue; }
+            if ($lineWhitespace && ($char === '#' || ($char === '/' && $i + 1 < $length && $input[$i + 1] === '/'))) {
+                $inComment = true;
+                continue;
+            }
+            if ($char === "\n" || $char === "\r") { $lineWhitespace = true; continue; }
+            if (self::isWhitespace($char)) continue;
+            $lineWhitespace = false;
             if ($char === '(' || $char === '[' || $char === '{') { $stack[] = [$char, $i]; continue; }
             if ($char === ')' || $char === ']' || $char === '}') {
                 $top = end($stack);

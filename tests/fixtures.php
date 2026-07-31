@@ -130,4 +130,13 @@ return [
             [[1, true], [3, false]], [[1, true], [3, true]],
         ],
     ],
+    'if_line_comments_and_invalid_json' => [
+        'annotation' => "Some text\n\n@IF([record-name]=\"1 // ,\" and\n\t// This is a comment with a )\n2=2\n, @READONLY\n  // another comment with a comma ,\n,\n'')\nSome explanatory text.\n\n@JSON-LIST-ACTIONTAG=[{\"a\": \"b\"},{\"a\": c\"}]\n\nSome more text at end.",
+        'mode' => 'diagnostic',
+        'tag_names' => ['@READONLY', '@JSON-LIST-ACTIONTAG'],
+        'parameter_kinds' => [null, 'unquoted'],
+        'conditions' => ["[record-name]=\"1 // ,\" and\n\t// This is a comment with a )\n2=2\n"],
+        'conditional' => [[[1, false]], []],
+        'diagnostic_codes' => ['deprecated_unquoted_parameter'],
+    ],
 ];
