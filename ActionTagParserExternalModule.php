@@ -2,10 +2,12 @@
 
 use ExternalModules\AbstractExternalModule;
 
+require_once "classes/ActionTagParser_Old.php";
 require_once "classes/ActionTagParser.php";
 require_once "classes/ActionTagHelper.php";
 
-use ActionTagParser\ActionTagParser;
+use ActionTagParser\ActionTagParser as PureActionTagParser;
+use ActionTagParser\ActionTagParser_Old;
 
 class ActionTagParserExternalModule extends AbstractExternalModule {
 
@@ -61,7 +63,7 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         ksort($fields);
         foreach ($fields as $_ => $field_metadata) {
             print "<hr><p class=\"ml-2\">Field: <b>{$field_metadata["field_name"]}</b></p><pre class=\"mr-2\">";
-            $result = ActionTagParser::parse($field_metadata["misc"]);
+            $result = PureActionTagParser::parse($field_metadata["misc"], ['mode' => 'diagnostic']);
             print_r($field_metadata["misc"]);
             print "<hr>";
             print_r($result);
@@ -94,23 +96,23 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             $timings["Helper"][] = $end-$start;
         }
 
-        ActionTagParser::setCacheDisabled();
+        ActionTagParser_Old::setCacheDisabled();
         for ($i = 0; $i < $n; $i++) {
             $start = microtime(true);
-            $parser_int_tags = ActionTagParser::getActionTags($context, $filter, true);
+            $parser_int_tags = ActionTagParser_Old::getActionTags($context, $filter, true);
             $end = microtime(true);
             $timings["Parser (internal)"][] = $end-$start;
 
         }
         for ($i = 0; $i < $n; $i++) {
             $start = microtime(true);
-            $parser_tags = ActionTagParser::getActionTags($context, $filter);
+            $parser_tags = ActionTagParser_Old::getActionTags($context, $filter);
             $end = microtime(true);
             $timings["Parser"][] = $end-$start;
         }
-        ActionTagParser::setCacheEnabled();
+        ActionTagParser_Old::setCacheEnabled();
         
-        $by_field = ActionTagParser::getActionTagsByField($context, $filter, true);
+        $by_field = ActionTagParser_Old::getActionTagsByField($context, $filter, true);
 
         // Calculat averange and standard deviation
         $avg = function($arr) {
