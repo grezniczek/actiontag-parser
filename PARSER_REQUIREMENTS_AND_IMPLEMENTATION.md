@@ -30,7 +30,7 @@ This document is intentionally written so that the resulting parser can later mo
 | Condition definition | One direct, opaque condition from an `@IF` occurrence, stored once in the top-level `conditions` map under a source-order numeric ID. |
 | Conditional reference | An ordered `{id, negated}` reference to a condition definition. The ordered list on a tag is an implicit conjunction. |
 | Effective conditional | The ordered conditional-reference list of every `@IF` branch that encloses a tag. It states when that tag's branch applies, but is never evaluated by the parser. |
-| Explicitly disabled | A tag or `@IF` whose own source spelling uses the legacy `@.OFF.` prefix. |
+| Explicitly disabled | A tag or `@IF` whose own source spelling uses the core `@.OFF.` prefix. |
 | Effectively enabled | Whether a construct is neither explicitly disabled nor inside an explicitly disabled `@IF`. |
 | Raw text | Exact substring from the source range, including meaningful whitespace. |
 | Normalized name | The case-normalized action-tag name used for comparison, initially uppercase. |
@@ -74,9 +74,9 @@ Supported parameter shapes are:
 
 Whitespace between a tag name and its introducer (`=` or `(`) is accepted where existing REDCap behavior accepts it, notably `@IF (...)`. Parameter syntax is captured structurally; whether it is allowed for a particular tag is a validator concern.
 
-## Legacy Deactivation Syntax
+## Core Deactivation Syntax
 
-Legacy deactivation notation, including `@.OFF.TAG` and the deactivated-tag marker, is recognized as a deactivated representation rather than as a malformed tag. Its compatibility details belong in the test corpus.
+Core deactivation notation, including `@.OFF.TAG` and the deactivated-tag marker, is recognized as a deactivated representation rather than as a malformed tag. Its compatibility details belong in the test corpus.
 
 `@.OFF.TAG` has normalized name `@TAG` and retains `@.OFF.TAG` as `raw_name`.
 
@@ -326,7 +326,7 @@ The first fixture suite must cover at least:
 1. Native and External Module bare tags, mixed casing, hyphen/underscore names, and names with digits where currently used.
 2. Tags with quoted, unquoted, JSON, and parenthesized parameters, including delimiters inside quotes and escaped quotes.
 3. Multiple tags and literal/candidate `@` text, including email-like strings that must not become tags.
-4. Legacy deactivation forms: disabled individual tags omitted from fast mode but returned with `enabled: false` in diagnostic mode; a disabled `@IF` body skipped in fast mode but parsed as disabled content in diagnostic mode.
+4. Core deactivation forms: disabled individual tags omitted from fast mode but returned with `enabled: false` in diagnostic mode; a disabled `@IF` body skipped in fast mode but parsed as disabled content in diagnostic mode.
 5. A canonical true/false `@IF`, an `@IF` containing multiple tags per branch, and `@IF` inside each branch of another `@IF`.
 6. Exact source-order `conditions` entries and effective ordered `conditional` references for every nested true/false branch combination.
 7. Diagnostic-tree retention of all valid `@IF` nodes, contrasted with their absence from fast-mode `tags`.
