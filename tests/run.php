@@ -50,9 +50,17 @@ foreach ($fixtures as $name => $fixture) {
     }
 }
 
+// This would exceed Xdebug's call-stack guard with recursive @IF descent.
+$deep = '@HIDDEN';
+for ($i = 0; $i < 600; $i++) $deep = "@IF([field_$i], $deep, @READONLY)";
+$deepResult = ActionTagParser::parse($deep, ['mode' => 'diagnostic', 'max_nesting_depth' => 128]);
+if (count($deepResult['conditions']) !== 129 || array_column($deepResult['diagnostics'], 'code') !== ['nesting_limit_exceeded']) {
+    $failures[] = 'iterative_deep_nesting: expected bounded parsing without call-stack exhaustion';
+}
+
 if ($failures !== []) {
     fwrite(STDERR, "FAIL\n" . implode("\n", $failures) . "\n");
     exit(1);
 }
 
-echo 'PASS (' . count($fixtures) . " fixtures)\n";
+echo 'PASS (' . count($fixtures) . " fixtures plus iterative deep-nesting check)\n";
