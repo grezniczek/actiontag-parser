@@ -85,6 +85,12 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         ];
 
         $filter = [];
+        $annotations = [];
+        $Proj = new \Project($context['project_id']);
+        foreach ($Proj->getMetadata() as $field => $metadata) {
+            $annotation = $metadata['misc'] ?? '';
+            if (strpos($annotation, '@') !== false) $annotations[$field] = $annotation;
+        }
 
         print "<h5>Timing ($n iterations)</h5>";
         print "<p>Set the number of iterations as GET parameter '<i>n</i>'.</p>";
@@ -94,6 +100,25 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             $helper_tags = ActionTagHelper::getActionTags($filter["tags"] ?? null, $filter["fields"] ?? null, $filter["instruments"] ?? null, $context, $i);
             $end = microtime(true);
             $timings["Helper"][] = $end-$start;
+        }
+
+        for ($i = 0; $i < $n; $i++) {
+            $start = microtime(true);
+            $pureTagCount = 0;
+            foreach ($annotations as $annotation) {
+                $pureTagCount += count(PureActionTagParser::parse($annotation)['tags']);
+            }
+            $end = microtime(true);
+            $timings["Pure parser (fast)"][] = $end-$start;
+        }
+
+        for ($i = 0; $i < $n; $i++) {
+            $start = microtime(true);
+            foreach ($annotations as $annotation) {
+                PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']);
+            }
+            $end = microtime(true);
+            $timings["Pure parser (diagnostic)"][] = $end-$start;
         }
 
         ActionTagParser_Old::setCacheDisabled();
@@ -113,6 +138,22 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         ActionTagParser_Old::setCacheEnabled();
         
         $by_field = ActionTagParser_Old::getActionTagsByField($context, $filter, true);
+        $pureTagsByField = [];
+        foreach ($annotations as $field => $annotation) {
+            $parsed = PureActionTagParser::parse($annotation);
+            foreach ($parsed['tags'] as $tag) {
+                $conditions = [];
+                foreach ($tag['conditional'] as $reference) {
+                    $condition = $parsed['conditions'][$reference['id']]['raw'];
+                    $conditions[] = $reference['negated'] ? '!(' . $condition . ')' : '(' . $condition . ')';
+                }
+                $pureTagsByField[$field][] = [
+                    'name' => $tag['name'],
+                    'parameter' => $tag['parameter']['raw'] ?? '',
+                    'condition' => implode(' AND ', $conditions),
+                ];
+            }
+        }
 
         // Calculat averange and standard deviation
         $avg = function($arr) {
@@ -158,9 +199,29 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
                 }
             }
         };
+        $printPure = function($tagsByField) {
+            foreach ($tagsByField as $field => $tags) {
+                print "<p><i>".htmlspecialchars($field, ENT_QUOTES, 'UTF-8')."</i></p>";
+                foreach ($tags as $tag) {
+                    $name = htmlspecialchars($tag['name'], ENT_QUOTES, 'UTF-8');
+                    print "<p class=\"ml-2\"><b>$name</b>";
+                    if ($tag['parameter'] !== '') {
+                        print " - <code>".htmlspecialchars(str_replace("\n", ' ', $tag['parameter']), ENT_QUOTES, 'UTF-8')."</code>";
+                    }
+                    if ($tag['condition'] !== '') {
+                        print " <span class=\"text-muted\">if</span> <code>".htmlspecialchars(str_replace("\n", ' ', $tag['condition']), ENT_QUOTES, 'UTF-8')."</code>";
+                    }
+                    print "</p>";
+                }
+            }
+        };
 
         print "<h5>Parser:</h5>";
         $print($parser_tags);
+        print "<hr>";
+        print "<h5>Pure parser (fast):</h5>";
+        print "<p>Parsed <b>$pureTagCount</b> action tags across ".count($annotations)." annotated fields.</p>";
+        $printPure($pureTagsByField);
         print "<hr>";
         print "<h5>Parser (internal):</h5>";
         $print($parser_int_tags);
