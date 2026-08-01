@@ -23,6 +23,8 @@ Expose a documented developer method for action-tag parsing while preserving cur
 | `Classes/ActionTagIndex.php` | Framework-neutral aggregation of caller-supplied annotations into field, tag, instrument, and per-field condition views. Metadata retrieval remains with a core or EM-framework facade. |
 | `Classes/ActionTagConditionResolver.php` | Runtime helper that evaluates a parse result's opaque condition definitions once in a supplied context and applies its ordered references to tags. Its `resolveMany()` variant memoizes identical conditions across caller-supplied results. It remains separate from the pure parser. |
 | `Classes/ActionTagProjectConditionResolver.php` | REDCap-aware companion for bulk runtime resolution. It preloads the union of condition fields for one record/context and delegates structural condition application to `ActionTagConditionResolver`. It is not part of the pure parser. |
+| `Classes/ActionTagFieldsParser.php` | Scope-selecting REDCap metadata facade over the pure parser. It parses an arbitrary field list, one instrument, or an entire project without adding runtime evaluation to the parser. |
+| `Classes/ActionTagFieldsConditionResolver.php` | Scope-selecting REDCap facade over the batch resolver. It resolves an arbitrary field list, one instrument, or an entire project, allowing pages and surveys to batch only the fields they need. |
 | Future `ActionTagValidator` (name provisional) | Semantic validation against tag definitions, parameter schemas, metadata, enabled modules, and field/context rules. It remains separate from the parser. |
 
 `ActionTagParser` is the recommended core class name: it is direct, discoverable beside `ActionTags`, and clearly distinct from a future semantic validator.
@@ -51,6 +53,45 @@ Core owns the parser class and public facade. The EM remains the initial referen
 This gives callers accurate annotation structure without coupling the new parser to records, piping, project logic, or legacy evaluation behavior.
 
 `ActionTagConditionResolver` is a future API/EM-framework companion rather than parser logic: it receives already parsed results and an explicit runtime context (or evaluator callback), evaluates each result-local condition once, and marks which flattened tags are active. For project-wide callers, `ActionTagProjectConditionResolver` batches field retrieval for the union of conditions and reuses values for identical condition text. `ActionTagIndex` similarly accepts annotations supplied by a caller and creates aggregate field/tag/instrument views without knowing how metadata was obtained. These helpers can move to core or the EM Framework independently of the parser class.
+
+## Future Runtime Performance Architecture
+
+This is a future runtime-integration design, not a parser requirement. The pure parser stays stateless and cache-free.
+
+```text
+Project metadata revision
+        │
+        ▼
+ActionTagPlan cache
+(field → parsed tags, conditions, dependency/index views)
+        │
+        ▼
+RuntimeActionTagContext
+(record, event, instrument, instance, already-loaded record data)
+        │
+        ▼
+Request-local resolved-plan cache
+(field → active tags and requested tag views)
+```
+
+`ActionTagPlan` is the proposed immutable, project-metadata-derived representation. It may hold fast parser output plus field/tag/instrument indexes and condition dependencies. It is safe to cache only while the underlying project metadata revision is unchanged; it contains no record-specific result.
+
+`RuntimeActionTagContext` is the proposed explicit holder for record/event/instrument/instance context and record data already fetched by the page renderer. It owns request-local condition-result memoization. Its cache key must include all runtime inputs that can affect logic, such as record, event, repeat context, user-sensitive piping/smart variables, and unsaved data state. Runtime results must not be reused blindly across requests.
+
+Two runtime strategies should remain explicit:
+
+- **Active-only** follows selected `@IF` branches and evaluates only reachable conditions. It is the intended production path for rendering forms and surveys.
+- **All-states** evaluates conditions needed to report every flattened tag as active or inactive. It is intended for diagnostics, Explain-style tooling, and inspection APIs.
+
+### Environment Policy
+
+Development projects do not need persistent action-tag-plan caching. Their runtime integration should use scoped batching: parse and resolve only the current instrument's relevant annotations, fetch the union of needed values once, and share a request-local `RuntimeActionTagContext` across consumers.
+
+`ActionTagFieldsParser` and `ActionTagFieldsConditionResolver` are the initial EM-facing shape for that scoped work. Both accept the same caller-selected field list and provide `Instrument` and `Project` convenience scopes. The resolver consumes the parser helper's output, so a paged survey can parse or resolve only its page fields, a field-level consumer can pass one field, and inspection tooling can deliberately request the whole project.
+
+For production projects, an `ActionTagPlan` cache may be enabled and refreshed as part of REDCap's existing **Apply production changes** routine. That gives a natural metadata-consistency boundary and avoids adding ad-hoc invalidation paths during active development. A production refresh should rebuild the plan/index for the released metadata revision; a subsequent request can then use active-only, instrument-scoped resolution with already-loaded page data.
+
+Before core adoption, benchmark output should distinguish parser-cache hits, annotations/conditions considered, reachable versus total conditions, preloaded fields, record-data query count, and logic-evaluation count. This prevents parser and runtime/database costs from being conflated.
 
 ## Compatibility and Migration Strategy
 
