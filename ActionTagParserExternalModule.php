@@ -54,6 +54,90 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
     }
 
+    /**
+     * AJAX endpoints for the parser showcase. These deliberately keep runtime
+     * record access and REDCap logic evaluation outside the pure parser.
+     */
+    function redcap_module_ajax($action, $payload, $project_id, $record, $instrument, $event_id, $repeat_instance, $survey_hash, $response_id, $survey_queue_hash, $page, $page_full, $user_id, $group_id) {
+        if (empty($project_id)) {
+            throw new \Exception('The resolver is available only in a project context.');
+        }
+        $payload = is_array($payload) ? $payload : [];
+        // A project-link page has no record in its signed JSMO context. In that
+        // case, use the authenticated user's DAG rather than treating it as an
+        // unrestricted record query.
+        global $user_rights;
+        $dagId = $group_id;
+        if (isset($user_rights['group_id']) && $user_rights['group_id'] !== '' && $user_rights['group_id'] !== null) {
+            $dagId = $user_rights['group_id'];
+        }
+
+        if ($action === 'search-records') {
+            $term = trim((string) ($payload['term'] ?? ''));
+            $records = \Records::getRecordList($project_id, $dagId, false, false, null, 50, 0, [], false, $term);
+            $results = [];
+            foreach ($records ?: [] as $recordName) {
+                $results[] = ['id' => (string) $recordName, 'text' => (string) $recordName];
+            }
+            return ['results' => $results];
+        }
+
+        if ($action !== 'resolve-conditions') {
+            throw new \Exception('Unsupported parser showcase action.');
+        }
+
+        $recordName = trim((string) ($payload['record'] ?? ''));
+        $selectedEventId = trim((string) ($payload['event_id'] ?? ''));
+        $selectedInstrument = trim((string) ($payload['instrument'] ?? ''));
+        $selectedRepeatInstrument = trim((string) ($payload['repeat_instrument'] ?? ''));
+        $selectedInstance = filter_var($payload['instance'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($recordName === '' || $selectedEventId === '' || $selectedInstrument === '' || $selectedInstance === false) {
+            throw new \Exception('Record, event, instrument, and a positive instance are required.');
+        }
+
+        $Proj = new \Project($project_id);
+        $records = \Records::getRecordList($project_id, $dagId, false, false, null, null, 0, [$recordName]);
+        $allowedRecords = array_map('strval', array_keys($records ?: []));
+        if (!in_array($recordName, $allowedRecords, true)) {
+            throw new \Exception('The selected record is not available in this project context.');
+        }
+        if (!isset($Proj->eventInfo[$selectedEventId])) {
+            throw new \Exception('The selected event does not belong to this project.');
+        }
+        if (!isset($Proj->forms[$selectedInstrument])) {
+            throw new \Exception('The selected instrument does not belong to this project.');
+        }
+        if ($Proj->longitudinal && !in_array($selectedInstrument, $Proj->eventsForms[$selectedEventId] ?? [], true)) {
+            throw new \Exception('The selected instrument is not assigned to the selected event.');
+        }
+        if ($selectedRepeatInstrument !== '' && !isset($Proj->forms[$selectedRepeatInstrument])) {
+            throw new \Exception('The selected repeat instrument does not belong to this project.');
+        }
+
+        $context = [
+            'project_id' => $project_id,
+            'record' => $recordName,
+            'event_id' => $selectedEventId,
+            'instrument' => $selectedInstrument,
+            'instance' => $selectedInstance,
+            'repeat_instrument' => $selectedRepeatInstrument,
+        ];
+        $fields = [];
+        foreach ($Proj->metadata as $fieldName => $metadata) {
+            $annotation = $metadata['misc'] ?? '';
+            if (strpos($annotation, '@') === false) continue;
+            $resolved = ActionTagConditionResolver::resolve(PureActionTagParser::parse($annotation), $context);
+            foreach ($resolved['tags'] as $position => $tag) {
+                $fields[$fieldName][$position] = [
+                    'active' => (bool) $tag['active'],
+                    'conditions_match' => (bool) $tag['conditions_match'],
+                ];
+            }
+        }
+
+        return ['fields' => $fields];
+    }
+
     function explain() {
         $project_id = $this->getProjectId();
         $fields = [];
@@ -70,18 +154,18 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
         $index = ActionTagIndex::build($annotations);
         $escape = static fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-        $get = static fn (string $key) => trim((string) ($_GET[$key] ?? ''));
-        $record = $get('record');
-        $eventId = $get('event_id');
-        $instrument = $get('instrument');
-        $resolverContext = ($record !== '' && $eventId !== '' && $instrument !== '') ? [
-            'project_id' => $project_id,
-            'record' => $record,
-            'event_id' => $eventId,
-            'instrument' => $instrument,
-            'instance' => max(1, (int) ($get('instance') ?: 1)),
-            'repeat_instrument' => $get('repeat_instrument'),
-        ] : null;
+        $eventOptions = [];
+        foreach ($Proj->eventInfo as $id => $event) {
+            $eventOptions[(string) $id] = $event['name_ext'] ?? $event['descrip'] ?? (string) $id;
+        }
+        $formOptions = [];
+        foreach ($Proj->forms as $name => $form) {
+            $formOptions[$name] = $form['menu'] ?? $name;
+        }
+        $eventForms = [];
+        foreach ($Proj->eventInfo as $id => $_event) {
+            $eventForms[(string) $id] = $Proj->eventsForms[$id] ?? array_keys($Proj->forms);
+        }
         $renderConditions = static function (array $tag, array $conditions) use ($escape): string {
             $parts = [];
             foreach ($tag['conditional'] as $reference) {
@@ -122,33 +206,28 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         foreach ($index['by_tag'] as $tag => $occurrences) print '<tr><td><code>'.$escape($tag).'</code></td><td>'.count($occurrences).'</td></tr>';
         print '</table>';
         print '<details class="mb-3"><summary>Resolve conditions in a runtime context</summary>';
-        print '<form method="get" class="form-inline mt-2">';
-        if (isset($_GET['pid'])) print '<input type="hidden" name="pid" value="'.$escape($_GET['pid']).'">';
-        foreach (['record' => 'Record', 'event_id' => 'Event ID', 'instrument' => 'Instrument', 'instance' => 'Instance', 'repeat_instrument' => 'Repeat instrument'] as $key => $label) {
-            print '<label class="mr-1">'.$escape($label).'</label><input class="form-control form-control-sm mr-2" name="'.$escape($key).'" value="'.$escape($get($key)).'">';
-        }
-        print '<button class="btn btn-sm btn-primary" type="submit">Resolve</button></form>';
-        print '<p class="small text-muted mb-0">Record, event ID, and instrument are required. Resolution is an EM runtime helper; it is not part of the pure parser.</p></details>';
+        print '<div class="form-row mt-2">';
+        print '<div class="form-group col-md-3"><label for="atp-resolve-record">Record</label><select id="atp-resolve-record" class="form-control form-control-sm"><option value=""></option></select></div>';
+        print '<div class="form-group col-md-3"><label for="atp-resolve-event">Event</label><select id="atp-resolve-event" class="form-control form-control-sm">';
+        foreach ($eventOptions as $id => $label) print '<option value="'.$escape($id).'">'.$escape($label).'</option>';
+        print '</select></div>';
+        print '<div class="form-group col-md-3"><label for="atp-resolve-instrument">Instrument</label><select id="atp-resolve-instrument" class="form-control form-control-sm"></select></div>';
+        print '<div class="form-group col-md-3"><label for="atp-resolve-repeat-instrument">Repeat instrument</label><select id="atp-resolve-repeat-instrument" class="form-control form-control-sm"></select></div>';
+        print '<div class="form-group col-md-2"><label for="atp-resolve-instance">Instance</label><input id="atp-resolve-instance" class="form-control form-control-sm" type="number" min="1" value="1"></div>';
+        print '<div class="form-group col-md-10 d-flex align-items-end"><button id="atp-resolve-button" class="btn btn-sm btn-primary" type="button">Resolve</button><span id="atp-resolve-status" class="small ml-2" aria-live="polite"></span></div>';
+        print '</div><p class="small text-muted mb-0">Resolution is an EM runtime helper. The pure parser neither fetches records nor evaluates REDCap logic.</p></details>';
 
         foreach ($fields as $_ => $field_metadata) {
             $annotation = $field_metadata['misc'];
             $fast = PureActionTagParser::parse($annotation);
             $diagnostic = ActionTagDiagnosticLocations::enrich($annotation, PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']));
-            $resolved = null;
-            $resolutionError = null;
-            if ($resolverContext !== null) {
-                try { $resolved = ActionTagConditionResolver::resolve($fast, $resolverContext); }
-                catch (\Throwable $exception) { $resolutionError = $exception->getMessage(); }
-            }
             print '<hr><h5>Field: <code>'.$escape($field_metadata['field_name']).'</code> <small class="text-muted">('.$escape($field_metadata['form_name']).')</small></h5>';
             print '<pre class="border p-2 bg-light">'.$escape($annotation).'</pre>';
             print '<h6>Fast tags</h6><table class="table table-sm"><tr><th>Tag</th><th>Parameter</th><th>Condition</th><th>Resolved</th></tr>';
             foreach ($fast['tags'] as $position => $tag) {
-                $resolvedValue = $resolved === null ? '—' : ($resolved['tags'][$position]['active'] ? 'active' : 'inactive');
-                print '<tr><td><code>'.$escape($tag['name']).'</code></td><td><code>'.$escape($tag['parameter']['raw'] ?? '').'</code></td><td>'.$renderConditions($tag, $fast['conditions']).'</td><td>'.$escape($resolvedValue).'</td></tr>';
+                print '<tr><td><code>'.$escape($tag['name']).'</code></td><td><code>'.$escape($tag['parameter']['raw'] ?? '').'</code></td><td>'.$renderConditions($tag, $fast['conditions']).'</td><td data-resolve-state data-resolve-field="'.$escape($field_metadata['field_name']).'" data-resolve-tag-index="'.$position.'">—</td></tr>';
             }
             print '</table>';
-            if ($resolutionError !== null) print '<p class="text-danger">Condition resolution failed: '.$escape($resolutionError).'</p>';
             print '<details><summary>Diagnostic structure and findings ('.count($diagnostic['diagnostics']).')</summary>';
             $renderNodes($diagnostic['nodes'], $diagnostic['conditions']);
             if ($diagnostic['diagnostics'] !== []) {
@@ -160,6 +239,33 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             }
             print '</details>';
         }
+
+        $this->initializeJavascriptModuleObject();
+        $jsmo = $this->getJavascriptModuleObjectName();
+        $javascriptOptions = json_encode(['forms' => $formOptions, 'eventForms' => $eventForms], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+        print '<script>(function ($) {';
+        print 'var JSMO = '.$jsmo.'; var options = '.$javascriptOptions.';';
+        print 'function populateInstruments() {';
+        print 'var forms = options.eventForms[$("#atp-resolve-event").val()] || Object.keys(options.forms);';
+        print 'var $instrument = $("#atp-resolve-instrument"), $repeat = $("#atp-resolve-repeat-instrument");';
+        print '$instrument.empty(); $repeat.empty().append($("<option>", {value: "", text: "Not repeating"}));';
+        print '$.each(forms, function (_, name) { var label = options.forms[name] || name; $instrument.append($("<option>", {value: name, text: label})); $repeat.append($("<option>", {value: name, text: label})); });';
+        print '$instrument.trigger("change.select2"); $repeat.trigger("change.select2");';
+        print '}';
+        print '$(function () {';
+        print 'populateInstruments();';
+        print '$("#atp-resolve-record").select2({width: "100%", placeholder: "Search records", minimumInputLength: 0, ajax: {delay: 150, transport: function (params, success, failure) { JSMO.ajax("search-records", {term: (params.data && params.data.term) || ""}).then(success).catch(failure); return {abort: function () {}}; }}});';
+        print '$("#atp-resolve-event, #atp-resolve-instrument, #atp-resolve-repeat-instrument").select2({width: "100%"});';
+        print '$("#atp-resolve-event").on("change", populateInstruments);';
+        print '$("#atp-resolve-button").on("click", function () {';
+        print 'var $button = $(this), $status = $("#atp-resolve-status"); $status.removeClass("text-danger text-success").text("Resolving…"); $button.prop("disabled", true);';
+        print 'JSMO.ajax("resolve-conditions", {record: $("#atp-resolve-record").val(), event_id: $("#atp-resolve-event").val(), instrument: $("#atp-resolve-instrument").val(), instance: $("#atp-resolve-instance").val(), repeat_instrument: $("#atp-resolve-repeat-instrument").val()}).then(function (response) {';
+        print '$("[data-resolve-state]").each(function () { var tag = ((response.fields || {})[$(this).data("resolve-field")] || [])[$(this).data("resolve-tag-index")]; $(this).text(tag ? (tag.active ? "active" : "inactive") : "—"); });';
+        print '$status.addClass("text-success").text("Resolved.");';
+        print '}).catch(function (error) { $status.addClass("text-danger").text(error && error.message ? error.message : String(error)); }).finally(function () { $button.prop("disabled", false); });';
+        print '});';
+        print '});';
+        print '})(jQuery);</script>';
     }
 
     function benchmark() {

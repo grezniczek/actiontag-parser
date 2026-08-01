@@ -35,5 +35,9 @@
     "system-settings": [
     ],
     "project-settings": [
+    ],
+    "auth-ajax-actions": [
+        "search-records",
+        "resolve-conditions"
     ]
 }
