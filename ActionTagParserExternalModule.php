@@ -89,6 +89,10 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             return ['fast' => $fast, 'diagnostic' => $diagnostic];
         }
 
+        if ($action === 'run-benchmark') {
+            return $this->runBenchmark($payload, $project_id, $dagId);
+        }
+
         if ($action !== 'resolve-conditions') {
             throw new \Exception('Unsupported parser showcase action.');
         }
@@ -156,6 +160,131 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         }
 
         return ['fields' => $fields, 'sandbox' => $sandbox];
+    }
+
+    /** @return array{iterations:int,annotated_fields:int,methods:array<string,array>} */
+    private function runBenchmark(array $payload, int $projectId, $dagId): array {
+        $iterations = filter_var($payload['iterations'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100]]);
+        if ($iterations === false) throw new \Exception('Iterations must be a whole number from 1 to 100.');
+
+        $recordName = trim((string) ($payload['record'] ?? ''));
+        $selectedEventId = trim((string) ($payload['event_id'] ?? ''));
+        $selectedInstrument = trim((string) ($payload['instrument'] ?? ''));
+        $selectedRepeatInstrument = trim((string) ($payload['repeat_instrument'] ?? ''));
+        $selectedInstance = filter_var($payload['instance'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($recordName === '' || $selectedEventId === '' || $selectedInstrument === '' || $selectedInstance === false) {
+            throw new \Exception('Record, event, instrument, and a positive instance are required for the resolving benchmark.');
+        }
+
+        $Proj = new \Project($projectId);
+        $records = \Records::getRecordList($projectId, $dagId, false, false, null, null, 0, [$recordName]);
+        if (!in_array($recordName, array_map('strval', array_keys($records ?: [])), true)) {
+            throw new \Exception('The selected record is not available in this project context.');
+        }
+        if (!isset($Proj->eventInfo[$selectedEventId])) throw new \Exception('The selected event does not belong to this project.');
+        if (!isset($Proj->forms[$selectedInstrument])) throw new \Exception('The selected instrument does not belong to this project.');
+        if ($Proj->longitudinal && !in_array($selectedInstrument, $Proj->eventsForms[$selectedEventId] ?? [], true)) {
+            throw new \Exception('The selected instrument is not assigned to the selected event.');
+        }
+        if ($selectedRepeatInstrument !== '' && !isset($Proj->forms[$selectedRepeatInstrument])) {
+            throw new \Exception('The selected repeat instrument does not belong to this project.');
+        }
+
+        $annotations = [];
+        foreach ($Proj->metadata as $metadata) {
+            $annotation = $metadata['misc'] ?? '';
+            if (strpos($annotation, '@') !== false) $annotations[] = $annotation;
+        }
+        $context = [
+            'project_id' => $projectId,
+            'record' => $recordName,
+            'event_id' => $selectedEventId,
+            'instrument' => $selectedInstrument,
+            'instance' => $selectedInstance,
+            'repeat_instrument' => $selectedRepeatInstrument,
+        ];
+        $parseOnlyContext = ['project_id' => $projectId];
+
+        $methods = [];
+        $methods['Pure parser (fast)'] = $this->benchmarkPair(
+            static function () use ($annotations): void {
+                foreach ($annotations as $annotation) PureActionTagParser::parse($annotation);
+            },
+            static function () use ($annotations, $context): void {
+                foreach ($annotations as $annotation) {
+                    ActionTagConditionResolver::resolve(PureActionTagParser::parse($annotation), $context);
+                }
+            },
+            $iterations
+        );
+        $methods['Pure parser (diagnostic)'] = $this->benchmarkPair(
+            static function () use ($annotations): void {
+                foreach ($annotations as $annotation) PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']);
+            },
+            static function () use ($annotations, $context): void {
+                foreach ($annotations as $annotation) {
+                    ActionTagConditionResolver::resolve(PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']), $context);
+                }
+            },
+            $iterations
+        );
+        $methods['Legacy parser'] = $this->benchmarkPair(
+            static function () use ($parseOnlyContext): void {
+                ActionTagParser_Old::setCacheDisabled();
+                try { ActionTagParser_Old::getActionTags($parseOnlyContext); }
+                finally { ActionTagParser_Old::setCacheEnabled(); }
+            },
+            static function () use ($context): void {
+                ActionTagParser_Old::setCacheDisabled();
+                try { ActionTagParser_Old::getActionTags($context); }
+                finally { ActionTagParser_Old::setCacheEnabled(); }
+            },
+            $iterations
+        );
+        $methods['ActionTagHelper'] = $this->benchmarkPair(
+            static function (): void {
+                ActionTagHelper::$cache = [];
+                ActionTagHelper::getActionTags();
+            },
+            static function () use ($context): void {
+                ActionTagHelper::$cache = [];
+                ActionTagHelper::getActionTags(null, null, null, $context);
+            },
+            $iterations
+        );
+
+        return ['iterations' => $iterations, 'annotated_fields' => count($annotations), 'methods' => $methods];
+    }
+
+    /** @return array{parse:array,resolve:array}|array{error:string} */
+    private function benchmarkPair(callable $parse, callable $resolve, int $iterations): array {
+        try {
+            return [
+                'parse' => $this->benchmarkSamples($parse, $iterations),
+                'resolve' => $this->benchmarkSamples($resolve, $iterations),
+            ];
+        } catch (\Throwable $exception) {
+            return ['error' => $exception->getMessage()];
+        }
+    }
+
+    /** @return array{mean_us:float,stddev_us:float,min_us:float,max_us:float} */
+    private function benchmarkSamples(callable $operation, int $iterations): array {
+        $samples = [];
+        for ($i = 0; $i < $iterations; $i++) {
+            $start = hrtime(true);
+            $operation();
+            $samples[] = (hrtime(true) - $start) / 1000;
+        }
+        $mean = array_sum($samples) / count($samples);
+        $variance = 0.0;
+        foreach ($samples as $sample) $variance += ($sample - $mean) ** 2;
+        return [
+            'mean_us' => $mean,
+            'stddev_us' => sqrt($variance / count($samples)),
+            'min_us' => min($samples),
+            'max_us' => max($samples),
+        ];
     }
 
     function explain() {
@@ -308,6 +437,51 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
     }
 
     function benchmark() {
+        $projectId = $this->getProjectId();
+        $Proj = new \Project($projectId);
+        $escape = static fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        $events = [];
+        foreach ($Proj->eventInfo as $eventId => $event) {
+            $events[(string) $eventId] = $event['name_ext'] ?? $event['descrip'] ?? (string) $eventId;
+        }
+        $forms = [];
+        foreach ($Proj->forms as $formName => $form) $forms[$formName] = $form['menu'] ?? $formName;
+        $eventForms = [];
+        foreach ($Proj->eventInfo as $eventId => $_event) {
+            $eventForms[(string) $eventId] = $Proj->eventsForms[$eventId] ?? array_keys($Proj->forms);
+        }
+
+        print '<h5>Action-tag benchmark</h5>';
+        print '<p>Each run is one authenticated AJAX request. The timings are measured on the server and compare parsing alone with parsing plus runtime condition resolution.</p>';
+        print '<div class="card mb-3"><div class="card-body p-3"><div class="form-row">';
+        print '<div class="form-group col-md-2"><label for="atp-benchmark-iterations">Iterations</label><input id="atp-benchmark-iterations" class="form-control form-control-sm" type="number" min="1" max="100" value="10"><small class="form-text text-muted">1–100 per phase</small></div>';
+        print '<div class="form-group col-md-3"><label for="atp-benchmark-record">Record</label><select id="atp-benchmark-record" class="form-control form-control-sm"><option value=""></option></select></div>';
+        print '<div class="form-group col-md-3"><label for="atp-benchmark-event">Event</label><select id="atp-benchmark-event" class="form-control form-control-sm">';
+        foreach ($events as $id => $label) print '<option value="'.$escape($id).'">'.$escape($label).'</option>';
+        print '</select></div>';
+        print '<div class="form-group col-md-2"><label for="atp-benchmark-instrument">Instrument</label><select id="atp-benchmark-instrument" class="form-control form-control-sm"></select></div>';
+        print '<div class="form-group col-md-2"><label for="atp-benchmark-repeat-instrument">Repeat instrument</label><select id="atp-benchmark-repeat-instrument" class="form-control form-control-sm"></select></div>';
+        print '<div class="form-group col-md-2"><label for="atp-benchmark-instance">Instance</label><input id="atp-benchmark-instance" class="form-control form-control-sm" type="number" min="1" value="1"></div>';
+        print '<div class="form-group col-md-10 d-flex align-items-end"><button id="atp-run-benchmark" class="btn btn-sm btn-primary" type="button">Run benchmark</button><span id="atp-benchmark-status" class="small ml-2" aria-live="polite"></span></div>';
+        print '</div><p class="small text-muted mb-0">The resolving columns use the selected record context. Comparator caches are cleared before each timed iteration.</p></div></div>';
+        print '<div id="atp-benchmark-results"></div>';
+
+        $this->initializeJavascriptModuleObject();
+        $jsmo = $this->getJavascriptModuleObjectName();
+        $options = json_encode(['forms' => $forms, 'eventForms' => $eventForms], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+        print '<script>(function ($) {';
+        print 'var JSMO = '.$jsmo.', options = '.$options.';';
+        print 'function escapeHtml(value) { return $("<div>").text(value === null || value === undefined ? "" : String(value)).html(); }';
+        print 'function populateInstruments() { var names = options.eventForms[$("#atp-benchmark-event").val()] || Object.keys(options.forms), $instrument = $("#atp-benchmark-instrument"), $repeat = $("#atp-benchmark-repeat-instrument"); $instrument.empty(); $repeat.empty().append($("<option>", {value: "", text: "Not repeating"})); $.each(names, function (_, name) { var label = options.forms[name] || name; $instrument.append($("<option>", {value: name, text: label})); $repeat.append($("<option>", {value: name, text: label})); }); $instrument.trigger("change.select2"); $repeat.trigger("change.select2"); }';
+        print 'function stats(stats) { return escapeHtml(Number(stats.mean_us).toFixed(1) + " ± " + Number(stats.stddev_us).toFixed(1) + " µs"); }';
+        print 'function renderResults(result) { var html = "<h6>Results</h6><p class=\"small text-muted\">" + escapeHtml(result.annotated_fields) + " annotated fields; " + escapeHtml(result.iterations) + " iterations per phase.</p><table class=\"table table-sm table-bordered\"><thead><tr><th>Method</th><th>Parse only — mean ± SD</th><th>Parse + resolve — mean ± SD</th></tr></thead><tbody>"; $.each(result.methods || {}, function (name, values) { if (values.error) html += "<tr><th>" + escapeHtml(name) + "</th><td colspan=\"2\" class=\"text-danger\">" + escapeHtml(values.error) + "</td></tr>"; else html += "<tr><th>" + escapeHtml(name) + "</th><td>" + stats(values.parse) + "</td><td>" + stats(values.resolve) + "</td></tr>"; }); $("#atp-benchmark-results").html(html + "</tbody></table>"); }';
+        print '$(function () { populateInstruments(); $("#atp-benchmark-record").select2({width: "100%", placeholder: "Search records", minimumInputLength: 0, ajax: {delay: 150, transport: function (params, success, failure) { JSMO.ajax("search-records", {term: (params.data && params.data.term) || ""}).then(success).catch(failure); return {abort: function () {}}; }}}); $("#atp-benchmark-event, #atp-benchmark-instrument, #atp-benchmark-repeat-instrument").select2({width: "100%"}); $("#atp-benchmark-event").on("change", populateInstruments);';
+        print '$("#atp-run-benchmark").on("click", function () { var $button = $(this), $status = $("#atp-benchmark-status"); $status.removeClass("text-danger text-success").text("Running…"); $button.prop("disabled", true); JSMO.ajax("run-benchmark", {iterations: $("#atp-benchmark-iterations").val(), record: $("#atp-benchmark-record").val(), event_id: $("#atp-benchmark-event").val(), instrument: $("#atp-benchmark-instrument").val(), instance: $("#atp-benchmark-instance").val(), repeat_instrument: $("#atp-benchmark-repeat-instrument").val()}).then(function (result) { renderResults(result); $status.addClass("text-success").text("Complete."); }).catch(function (error) { $status.addClass("text-danger").text(error && error.message ? error.message : String(error)); }).finally(function () { $button.prop("disabled", false); }); }); });';
+        print '})(jQuery);</script>';
+    }
+
+    /** @deprecated Replaced by the AJAX benchmark above; retained temporarily for reference. */
+    private function benchmarkLegacy() {
 
         $n = max(intval($_GET["n"]), 1);
         $timings = [];
