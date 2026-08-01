@@ -18,7 +18,7 @@ This document is intentionally written so that the resulting parser can later mo
 - In fast mode, emit enabled action tags from `@IF` branches as flattened tags with structured conditional references; do not emit `@IF` itself.
 - In diagnostic mode, retain every valid `@IF` as a container node while also making its nested action tags available with their effective conditional references.
 - Treat `@.OFF.TAG` as syntactically deactivated. Fast mode omits it; diagnostic mode exposes it with its normalized name and `enabled: false`.
-- Preserve original spelling and raw parameter/condition text. Action-tag names must use uppercase ASCII letters; lowercase candidates are diagnostic-only and are never normalized into tags.
+- Preserve original spelling and raw parameter/condition text. Action-tag names must use uppercase ASCII letters; lowercase candidates are diagnostic-only and are never normalized into tags. The sole name normalization converts underscores to dashes.
 
 ## Terminology
 
@@ -33,7 +33,7 @@ This document is intentionally written so that the resulting parser can later mo
 | Explicitly disabled | A tag or `@IF` whose own source spelling uses the core `@.OFF.` prefix. |
 | Effectively enabled | Whether a construct is neither explicitly disabled nor inside an explicitly disabled `@IF`. |
 | Raw text | Exact substring from the source range, including meaningful whitespace. |
-| Name | The uppercase action-tag name used for comparison. Lowercase source spelling is not an action tag. |
+| Normalized name | The uppercase action-tag name used for comparison, with underscores converted to dashes. Lowercase source spelling is not an action tag. |
 
 ## Input and Options
 
@@ -63,7 +63,7 @@ The parser recognizes action-tag syntax independently of a tag catalog. The prov
 name := ASCII-uppercase-letter (ASCII-uppercase-letter | digit | '_' | '-')*
 ```
 
-Names must use uppercase ASCII letters; digits, underscores, and hyphens remain supported within the name. A lowercase candidate is not an action tag: fast mode ignores it and diagnostic mode reports it without normalizing its spelling. An action tag may begin only at the start of the annotation or immediately after ASCII whitespace (space, tab, carriage return, or line feed). A bare tag name must end at annotation end or before ASCII whitespace. `=` and `(` may directly follow a tag name as parameter introducers; they are not tag separators. These explicit boundary rules prevent incidental text such as email addresses from becoming tags.
+Names must use uppercase ASCII letters; digits, underscores, and hyphens remain supported within the name. A lowercase candidate is not an action tag: fast mode ignores it and diagnostic mode reports it without normalizing its spelling. Underscores are accepted for compatibility but normalized to dashes in the emitted name; diagnostic mode emits `deprecated_underscore_action_tag_name`. An action tag may begin only at the start of the annotation or immediately after ASCII whitespace (space, tab, carriage return, or line feed). A bare tag name must end at annotation end or before ASCII whitespace. `=` and `(` may directly follow a tag name as parameter introducers; they are not tag separators. These explicit boundary rules prevent incidental text such as email addresses from becoming tags.
 
 Supported parameter shapes are:
 
@@ -180,7 +180,7 @@ The exact PHP array keys are part of the public contract once implementation beg
 ```php
 [
     'type'            => 'tag',
-    'name'            => '@HIDDEN',          // canonical uppercase spelling
+    'name'            => '@HIDDEN',          // normalized (`_` becomes `-`)
     'raw_name'        => '@HIDDEN',          // source spelling (`@.OFF.HIDDEN` when disabled)
     'start'           => 24,                 // inclusive byte offset
     'end'             => 30,                 // exclusive byte offset

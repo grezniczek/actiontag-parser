@@ -8,7 +8,7 @@ return [
     'bare_names_and_boundaries' => [
         'annotation' => "@HIDDEN \t@MY_TAG-2\nemail@example.test @NOPE! @LAST",
         'mode' => 'fast',
-        'tag_names' => ['@HIDDEN', '@MY_TAG-2', '@LAST'],
+        'tag_names' => ['@HIDDEN', '@MY-TAG-2', '@LAST'],
         'tag_ranges' => [[0, 7], [9, 18], [45, 50]],
     ],
     'lowercase_candidates_are_not_tags' => [
@@ -17,6 +17,12 @@ return [
         'tag_names' => ['@VALID'],
         'node_types' => ['candidate', 'candidate', 'tag'],
         'diagnostic_codes' => ['invalid_tag_name', 'invalid_tag_name'],
+    ],
+    'underscore_names_normalize_with_warning' => [
+        'annotation' => '@HIDDEN_FORM',
+        'mode' => 'diagnostic',
+        'tag_names' => ['@HIDDEN-FORM'],
+        'diagnostic_codes' => ['deprecated_underscore_action_tag_name'],
     ],
     'parameter_forms' => [
         'annotation' => "@DEFAULT='a\\'b' @TAG=value @JSON={\"a\":[1,2]} @ARRAY=[1,2] @QUOTED='[1,2]' @ARGS(one, 'two, three')",

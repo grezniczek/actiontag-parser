@@ -143,7 +143,11 @@ final class ActionTagParser
                 unset($nodes, $frame);
                 continue;
             }
-            $name = '@' . substr($input, $nameStart, $nameEnd - $nameStart);
+            $sourceName = substr($input, $nameStart, $nameEnd - $nameStart);
+            $name = '@' . str_replace('_', '-', $sourceName);
+            if (str_contains($sourceName, '_')) {
+                self::addDiagnostic($state, 'deprecated_underscore_action_tag_name', 'warning', $start, $nameEnd, 'Underscores in action-tag names are normalized to dashes and are deprecated.');
+            }
             $parameterStart = $nameEnd;
             while ($parameterStart < $frame['end'] && self::isWhitespace($input[$parameterStart])) $parameterStart++;
             $introducer = $parameterStart < $frame['end'] ? $input[$parameterStart] : '';
