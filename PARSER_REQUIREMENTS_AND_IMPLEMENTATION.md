@@ -268,6 +268,7 @@ The initial diagnostic-code set should include:
 | `unterminated_quoted_parameter` | A quoted parameter reaches its recovery boundary without a matching quote. |
 | `unterminated_parenthesized_parameter` | A parenthesized argument does not close. |
 | `unbalanced_parameter_delimiter` | An unexpected closing delimiter or impossible nesting state occurs. |
+| `deprecated_underscore_action_tag_name` | An accepted uppercase name contains an underscore, which was normalized to a dash. |
 | `deprecated_unquoted_parameter` | An unquoted assignment parameter was accepted for compatibility. |
 | `deprecated_single_quoted_json_object_parameter` | A single-quoted JSON object wrapper was accepted for compatibility. |
 | `unterminated_if` | `@IF(` does not reach its matching closing parenthesis. |

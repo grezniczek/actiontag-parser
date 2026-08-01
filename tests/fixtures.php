@@ -113,6 +113,12 @@ return [
         'tag_names' => ['@READONLY'],
         'diagnostic_codes' => ['unterminated_parenthesized_parameter'],
     ],
+    'unbalanced_parenthesized_parameter_recovery' => [
+        'annotation' => '@ARGS(one] @READONLY',
+        'mode' => 'diagnostic',
+        'tag_names' => ['@READONLY'],
+        'diagnostic_codes' => ['unbalanced_parameter_delimiter'],
+    ],
     'disabled_unterminated_if_fast' => [
         'annotation' => '@.OFF.IF([a], @HIDDEN, @READONLY',
         'mode' => 'fast',

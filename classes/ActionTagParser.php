@@ -206,7 +206,15 @@ final class ActionTagParser
             if ($introducer === '(') {
                 $close = self::scanDelimited($state, $parameterStart, $frame['end'], '(', ')');
                 if ($close === null) {
-                    self::addDiagnostic($state, 'unterminated_parenthesized_parameter', 'error', $start, $frame['end'], 'Parenthesized action-tag parameter is not closed.');
+                    $unbalanced = self::hasMismatchedDelimiter($input, $parameterStart, $frame['end']);
+                    self::addDiagnostic(
+                        $state,
+                        $unbalanced ? 'unbalanced_parameter_delimiter' : 'unterminated_parenthesized_parameter',
+                        'error',
+                        $start,
+                        $frame['end'],
+                        $unbalanced ? 'Parenthesized action-tag parameter has an unexpected closing delimiter.' : 'Parenthesized action-tag parameter is not closed.'
+                    );
                     $frame['i'] = self::nextTopLevelTagStart($input, $parameterStart + 1, $frame['end']) ?? $frame['end'];
                     unset($nodes, $frame);
                     continue;
@@ -230,112 +238,7 @@ final class ActionTagParser
         return ['type' => 'range', 'start' => $range[0], 'end' => $range[1], 'i' => $range[0], 'text_start' => $range[0], 'conditional' => $conditional, 'enabled' => $enabled, 'disabled_by' => $disabledBy, 'depth' => $depth, 'sink' => $sink];
     }
 
-    /** @param array<string,mixed> $state @param list<array{id:int,negated:bool}> $conditional @param list<array> $nodes */
-    private static function parseRange(array &$state, int $start, int $end, array $conditional, bool $inheritedEnabled, ?int $disabledBy, int $depth, array &$nodes): void
-    {
-        if ($depth > $state['max_nesting_depth']) {
-            self::addDiagnostic($state, 'nesting_limit_exceeded', 'error', $start, $end, 'The configured nesting limit was exceeded.');
-            return;
-        }
-
-        $input = $state['input'];
-        $i = $start;
-        $textStart = $start;
-        while ($i < $end) {
-            if ($input[$i] !== '@' || !self::isTagBoundaryBefore($input, $i)) {
-                $i++;
-                continue;
-            }
-
-            $candidateStart = $i;
-            $explicitlyDisabled = false;
-            $nameStart = $i + 1;
-            if (substr($input, $i, 6) === '@.OFF.') {
-                $explicitlyDisabled = true;
-                $nameStart = $i + 6;
-            }
-
-            if ($nameStart >= $end || !self::isAsciiLetter($input[$nameStart])) {
-                $candidate = self::candidate($state, $candidateStart, min($candidateStart + 1, $end), 'possible_action_tag', 'Action-tag candidate does not start with a valid name.');
-                if ($candidate !== null) {
-                    self::emitText($state, $nodes, $textStart, $candidateStart);
-                    $nodes[] = $candidate;
-                    $textStart = $candidate['end'];
-                }
-                $i++;
-                continue;
-            }
-
-            $nameEnd = $nameStart + 1;
-            while ($nameEnd < $end && self::isNameCharacter($input[$nameEnd])) $nameEnd++;
-            $rawName = substr($input, $candidateStart, $nameEnd - $candidateStart);
-            $name = '@' . strtoupper(substr($input, $nameStart, $nameEnd - $nameStart));
-
-            $parameterStart = $nameEnd;
-            while ($parameterStart < $end && self::isWhitespace($input[$parameterStart])) $parameterStart++;
-            $introducer = $parameterStart < $end ? $input[$parameterStart] : '';
-            $bareTag = $nameEnd === $end || (self::isWhitespace($input[$nameEnd]) && $introducer !== '=' && $introducer !== '(');
-
-            if ($name === '@IF' && $introducer === '(') {
-                self::emitText($state, $nodes, $textStart, $candidateStart);
-                $after = self::parseIf($state, $candidateStart, $rawName, $explicitlyDisabled, $parameterStart, $end, $conditional, $inheritedEnabled, $disabledBy, $depth, $nodes);
-                $i = max($after, $i + 1);
-                $textStart = $i;
-                continue;
-            }
-
-            if ($introducer === '=') {
-                [$parameter, $after] = self::parseAssignment($state, $parameterStart, $end);
-                if ($parameter === null) {
-                    $i = max($after, $i + 1);
-                    continue;
-                }
-                self::emitText($state, $nodes, $textStart, $candidateStart);
-                self::emitTag($state, $nodes, $name, $rawName, $candidateStart, $after, $parameter, $conditional, $inheritedEnabled, $explicitlyDisabled, $disabledBy);
-                $i = $after;
-                $textStart = $i;
-                continue;
-            }
-            if ($introducer === '(') {
-                $close = self::scanDelimited($state, $parameterStart, $end, '(', ')');
-                if ($close === null) {
-                    self::addDiagnostic($state, 'unterminated_parenthesized_parameter', 'error', $candidateStart, $end, 'Parenthesized action-tag parameter is not closed.');
-                    $i = $end;
-                    continue;
-                }
-                self::emitText($state, $nodes, $textStart, $candidateStart);
-                $parameter = [
-                    'kind' => 'arguments',
-                    'start' => $parameterStart,
-                    'end' => $close + 1,
-                    'raw' => substr($input, $parameterStart, $close - $parameterStart + 1),
-                    'value' => substr($input, $parameterStart + 1, $close - $parameterStart - 1),
-                ];
-                self::emitTag($state, $nodes, $name, $rawName, $candidateStart, $close + 1, $parameter, $conditional, $inheritedEnabled, $explicitlyDisabled, $disabledBy);
-                $i = $close + 1;
-                $textStart = $i;
-                continue;
-            }
-            if ($bareTag || $parameterStart === $end) {
-                self::emitText($state, $nodes, $textStart, $candidateStart);
-                self::emitTag($state, $nodes, $name, $rawName, $candidateStart, $nameEnd, null, $conditional, $inheritedEnabled, $explicitlyDisabled, $disabledBy);
-                $i = $nameEnd;
-                $textStart = $i;
-                continue;
-            }
-
-            $candidate = self::candidate($state, $candidateStart, $nameEnd, 'invalid_tag_name', 'Action-tag name is not followed by a valid boundary or parameter introducer.');
-            if ($candidate !== null) {
-                self::emitText($state, $nodes, $textStart, $candidateStart);
-                $nodes[] = $candidate;
-                $textStart = $candidate['end'];
-            }
-            $i = $nameEnd;
-        }
-        self::emitText($state, $nodes, $textStart, $end);
-    }
-
-    /** @return array{0:?array,1:int} */
+    /**  array{0:?array,1:int} */
     private static function parseAssignment(array &$state, int $equals, int $end): array
     {
         $input = $state['input'];
@@ -392,63 +295,7 @@ final class ActionTagParser
         return [['kind' => 'unquoted', 'start' => $valueStart, 'end' => $valueEnd, 'raw' => $raw, 'value' => $raw], $valueEnd];
     }
 
-    /** @param list<array> $nodes @param list<array{id:int,negated:bool}> $conditional */
-    private static function parseIf(array &$state, int $start, string $rawName, bool $explicitlyDisabled, int $open, int $end, array $conditional, bool $inheritedEnabled, ?int $disabledBy, int $depth, array &$nodes): int
-    {
-        $input = $state['input'];
-        $close = self::scanDelimited($state, $open, $end, '(', ')');
-        if ($close === null) {
-            self::addDiagnostic($state, 'unterminated_if', 'error', $start, $end, '@IF does not reach its closing parenthesis.');
-            return $end;
-        }
-        if ($state['mode'] === 'fast' && $explicitlyDisabled) return $close + 1;
-
-        $arms = self::splitIfArms($state, $open + 1, $close);
-        if (count($arms) > 3) {
-            self::addDiagnostic($state, 'if_unexpected_top_level_separator', 'error', $start, $close + 1, '@IF has more than three top-level arguments.');
-            return $close + 1;
-        }
-        if (count($arms) < 2 || trim(substr($input, $arms[0][0], $arms[0][1] - $arms[0][0])) === '') {
-            self::addDiagnostic($state, 'if_missing_condition', 'error', $start, $close + 1, '@IF requires a condition and a true branch.');
-            return $close + 1;
-        }
-        if (trim(substr($input, $arms[1][0], $arms[1][1] - $arms[1][0])) === '') {
-            self::addDiagnostic($state, 'if_missing_then', 'error', $start, $close + 1, '@IF requires a true branch.');
-            return $close + 1;
-        }
-        if (count($arms) === 2 && !self::ACCEPT_IF_THEN_SHORTHAND) {
-            self::addDiagnostic($state, 'if_missing_else', 'error', $start, $close + 1, '@IF requires a false branch.');
-            return $close + 1;
-        }
-        if (count($arms) === 2) $arms[] = [$close, $close];
-
-        $conditionId = $state['next_condition_id']++;
-        [$conditionStart, $conditionEnd] = $arms[0];
-        $state['conditions'][$conditionId] = [
-            'raw' => substr($input, $conditionStart, $conditionEnd - $conditionStart),
-            'start' => $conditionStart,
-            'end' => $conditionEnd,
-        ];
-        $enabled = $inheritedEnabled && !$explicitlyDisabled;
-        $ifNode = [
-            'type' => 'if', 'name' => '@IF', 'raw_name' => $rawName,
-            'start' => $start, 'end' => $close + 1, 'raw' => substr($input, $start, $close - $start + 1),
-            'enabled' => $enabled, 'explicitly_disabled' => $explicitlyDisabled,
-            'conditional' => $conditional, 'condition_id' => $conditionId,
-            'then' => [], 'else' => [],
-        ];
-        if (!$enabled && $disabledBy !== null) $ifNode['disabled_by'] = $disabledBy;
-
-        $thenConditional = [...$conditional, ['id' => $conditionId, 'negated' => false]];
-        $elseConditional = [...$conditional, ['id' => $conditionId, 'negated' => true]];
-        $childDisabledBy = $explicitlyDisabled ? $conditionId : $disabledBy;
-        self::parseRange($state, $arms[1][0], $arms[1][1], $thenConditional, $enabled, $childDisabledBy, $depth + 1, $ifNode['then']);
-        self::parseRange($state, $arms[2][0], $arms[2][1], $elseConditional, $enabled, $childDisabledBy, $depth + 1, $ifNode['else']);
-        if ($state['mode'] === 'diagnostic') $nodes[] = $ifNode;
-        return $close + 1;
-    }
-
-    /** @param list<array> $nodes @param list<array{id:int,negated:bool}> $conditional */
+    /**  list<array> $nodes  list<array{id:int,negated:bool}> $conditional */
     private static function emitTag(array &$state, array &$nodes, string $name, string $rawName, int $start, int $end, ?array $parameter, array $conditional, bool $inheritedEnabled, bool $explicitlyDisabled, ?int $disabledBy): void
     {
         $enabled = $inheritedEnabled && !$explicitlyDisabled;
@@ -537,6 +384,30 @@ final class ActionTagParser
             if ($stack === []) return $i;
         }
         return null;
+    }
+
+    private static function hasMismatchedDelimiter(string $input, int $open, int $end): bool
+    {
+        $stack = [$input[$open]];
+        $quote = null;
+        $escaped = false;
+        for ($i = $open + 1; $i < $end; $i++) {
+            $char = $input[$i];
+            if ($quote !== null) {
+                if ($escaped) { $escaped = false; continue; }
+                if ($char === '\\') { $escaped = true; continue; }
+                if ($char === $quote) $quote = null;
+                continue;
+            }
+            if ($char === "'" || $char === '"') { $quote = $char; continue; }
+            if ($char === '(' || $char === '[' || $char === '{') { $stack[] = $char; continue; }
+            if ($char !== ')' && $char !== ']' && $char !== '}') continue;
+            $expected = match (end($stack)) { '(' => ')', '[' => ']', '{' => '}', default => null };
+            if ($char !== $expected) return true;
+            array_pop($stack);
+            if ($stack === []) return false;
+        }
+        return false;
     }
 
     /** @return array<int,int> opening byte offset => matching closing byte offset */
