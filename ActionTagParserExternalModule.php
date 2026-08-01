@@ -82,6 +82,13 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             return ['results' => $results];
         }
 
+        if ($action === 'parse-annotation') {
+            $annotation = (string) ($payload['annotation'] ?? '');
+            $fast = PureActionTagParser::parse($annotation);
+            $diagnostic = ActionTagDiagnosticLocations::enrich($annotation, PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']));
+            return ['fast' => $fast, 'diagnostic' => $diagnostic];
+        }
+
         if ($action !== 'resolve-conditions') {
             throw new \Exception('Unsupported parser showcase action.');
         }
@@ -135,7 +142,20 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             }
         }
 
-        return ['fields' => $fields];
+        $sandbox = null;
+        if (array_key_exists('annotation', $payload)) {
+            $sandbox = [];
+            $parsed = PureActionTagParser::parse((string) $payload['annotation']);
+            $resolved = ActionTagConditionResolver::resolve($parsed, $context);
+            foreach ($resolved['tags'] as $position => $tag) {
+                $sandbox[$position] = [
+                    'active' => (bool) $tag['active'],
+                    'conditions_match' => (bool) $tag['conditions_match'],
+                ];
+            }
+        }
+
+        return ['fields' => $fields, 'sandbox' => $sandbox];
     }
 
     function explain() {
@@ -201,6 +221,10 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
         print '<h5>Parser showcase</h5>';
         print '<p>Fast parsing provides flattened usable tags; diagnostic parsing retains structure and source findings. The benchmark page compares timing with the established helpers.</p>';
+        print '<div class="card mb-3"><div class="card-body p-3"><h6 class="card-title">Try an annotation</h6>';
+        print '<label class="sr-only" for="atp-annotation-input">Field annotation</label><textarea id="atp-annotation-input" class="form-control form-control-sm" rows="4" spellcheck="false" placeholder="@IF([age] &gt; 18, @READONLY, \"\")"></textarea>';
+        print '<div class="mt-2"><button id="atp-parse-annotation" class="btn btn-sm btn-primary" type="button">Parse annotation</button><span id="atp-parse-status" class="small ml-2" aria-live="polite"></span></div>';
+        print '<div id="atp-annotation-output" class="mt-3"></div></div></div>';
         print '<div class="mb-3"><b>'.count($index['by_field']).'</b> fields, <b>'.count($index['by_tag']).'</b> distinct tags, <b>'.count($index['by_instrument']).'</b> instruments.</div>';
         print '<table class="table table-sm table-bordered" style="max-width:600px"><tr><th>Tag</th><th>Occurrences</th></tr>';
         foreach ($index['by_tag'] as $tag => $occurrences) print '<tr><td><code>'.$escape($tag).'</code></td><td>'.count($occurrences).'</td></tr>';
@@ -215,7 +239,7 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         print '<div class="form-group col-md-3"><label for="atp-resolve-repeat-instrument">Repeat instrument</label><select id="atp-resolve-repeat-instrument" class="form-control form-control-sm"></select></div>';
         print '<div class="form-group col-md-2"><label for="atp-resolve-instance">Instance</label><input id="atp-resolve-instance" class="form-control form-control-sm" type="number" min="1" value="1"></div>';
         print '<div class="form-group col-md-10 d-flex align-items-end"><button id="atp-resolve-button" class="btn btn-sm btn-primary" type="button">Resolve</button><span id="atp-resolve-status" class="small ml-2" aria-live="polite"></span></div>';
-        print '</div><p class="small text-muted mb-0">Resolution is an EM runtime helper. The pure parser neither fetches records nor evaluates REDCap logic.</p></details>';
+        print '</div><p class="small text-muted mb-0">Resolution is an EM runtime helper. It also covers the most recently parsed annotation above; the pure parser neither fetches records nor evaluates REDCap logic.</p></details>';
 
         foreach ($fields as $_ => $field_metadata) {
             $annotation = $field_metadata['misc'];
@@ -244,7 +268,16 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         $jsmo = $this->getJavascriptModuleObjectName();
         $javascriptOptions = json_encode(['forms' => $formOptions, 'eventForms' => $eventForms], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         print '<script>(function ($) {';
-        print 'var JSMO = '.$jsmo.'; var options = '.$javascriptOptions.';';
+        print 'var JSMO = '.$jsmo.'; var options = '.$javascriptOptions.'; var parsedSandboxAnnotation = null;';
+        print 'function escapeHtml(value) { return $("<div>").text(value === null || value === undefined ? "" : String(value)).html(); }';
+        print 'function renderConditions(tag, conditions) { var parts = []; $.each(tag.conditional || [], function (_, reference) { var condition = (conditions || {})[reference.id] || {}; parts.push((reference.negated ? "!(" : "(") + (condition.raw || "(missing condition)") + ")"); }); return parts.length ? "<code>" + escapeHtml(parts.join(" AND ")) + "</code>" : ""; }';
+        print 'function renderSandbox(result) {';
+        print 'var fast = result.fast || {}, diagnostic = result.diagnostic || {}, html = "<h6>Parsed annotation</h6><table class=\"table table-sm\"><thead><tr><th>Tag</th><th>Parameter</th><th>Condition</th><th>Resolved</th></tr></thead><tbody>";';
+        print '$.each(fast.tags || [], function (index, tag) { html += "<tr><td><code>" + escapeHtml(tag.name) + "</code></td><td><code>" + escapeHtml(tag.parameter ? tag.parameter.raw : "") + "</code></td><td>" + renderConditions(tag, fast.conditions) + "</td><td data-resolve-sandbox-tag-index=\"" + index + "\">—</td></tr>"; });';
+        print 'html += (fast.tags || []).length ? "</tbody></table>" : "<tr><td colspan=\"4\" class=\"text-muted\">No action tags found.</td></tr></tbody></table>";';
+        print 'if ((diagnostic.diagnostics || []).length) { html += "<details><summary>Diagnostic findings (" + diagnostic.diagnostics.length + ")</summary><table class=\"table table-sm\"><thead><tr><th>Code</th><th>Location</th><th>Message</th></tr></thead><tbody>"; $.each(diagnostic.diagnostics, function (_, finding) { html += "<tr><td><code>" + escapeHtml(finding.code) + "</code></td><td>" + escapeHtml((finding.start_line || "?") + ":" + (finding.start_column || "?")) + "</td><td>" + escapeHtml(finding.message) + "</td></tr>"; }); html += "</tbody></table></details>"; }';
+        print '$("#atp-annotation-output").html(html);';
+        print '}';
         print 'function populateInstruments() {';
         print 'var forms = options.eventForms[$("#atp-resolve-event").val()] || Object.keys(options.forms);';
         print 'var $instrument = $("#atp-resolve-instrument"), $repeat = $("#atp-resolve-repeat-instrument");';
@@ -257,10 +290,16 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         print '$("#atp-resolve-record").select2({width: "100%", placeholder: "Search records", minimumInputLength: 0, ajax: {delay: 150, transport: function (params, success, failure) { JSMO.ajax("search-records", {term: (params.data && params.data.term) || ""}).then(success).catch(failure); return {abort: function () {}}; }}});';
         print '$("#atp-resolve-event, #atp-resolve-instrument, #atp-resolve-repeat-instrument").select2({width: "100%"});';
         print '$("#atp-resolve-event").on("change", populateInstruments);';
+        print '$("#atp-annotation-input").on("input", function () { if (parsedSandboxAnnotation !== null && parsedSandboxAnnotation !== $(this).val()) { parsedSandboxAnnotation = null; $("#atp-annotation-output [data-resolve-sandbox-tag-index]").text("—"); $("#atp-parse-status").removeClass("text-danger text-success").text("Annotation changed; parse again."); } });';
+        print '$("#atp-parse-annotation").on("click", function () {';
+        print 'var $button = $(this), $status = $("#atp-parse-status"), annotation = $("#atp-annotation-input").val(); $status.removeClass("text-danger text-success").text("Parsing…"); $button.prop("disabled", true);';
+        print 'JSMO.ajax("parse-annotation", {annotation: annotation}).then(function (result) { parsedSandboxAnnotation = annotation; renderSandbox(result); $status.addClass("text-success").text("Parsed."); }).catch(function (error) { $status.addClass("text-danger").text(error && error.message ? error.message : String(error)); }).finally(function () { $button.prop("disabled", false); });';
+        print '});';
         print '$("#atp-resolve-button").on("click", function () {';
         print 'var $button = $(this), $status = $("#atp-resolve-status"); $status.removeClass("text-danger text-success").text("Resolving…"); $button.prop("disabled", true);';
-        print 'JSMO.ajax("resolve-conditions", {record: $("#atp-resolve-record").val(), event_id: $("#atp-resolve-event").val(), instrument: $("#atp-resolve-instrument").val(), instance: $("#atp-resolve-instance").val(), repeat_instrument: $("#atp-resolve-repeat-instrument").val()}).then(function (response) {';
+        print 'var payload = {record: $("#atp-resolve-record").val(), event_id: $("#atp-resolve-event").val(), instrument: $("#atp-resolve-instrument").val(), instance: $("#atp-resolve-instance").val(), repeat_instrument: $("#atp-resolve-repeat-instrument").val()}; if (parsedSandboxAnnotation !== null) payload.annotation = parsedSandboxAnnotation; JSMO.ajax("resolve-conditions", payload).then(function (response) {';
         print '$("[data-resolve-state]").each(function () { var tag = ((response.fields || {})[$(this).data("resolve-field")] || [])[$(this).data("resolve-tag-index")]; $(this).text(tag ? (tag.active ? "active" : "inactive") : "—"); });';
+        print '$("[data-resolve-sandbox-tag-index]").each(function () { var tag = (response.sandbox || [])[$(this).data("resolve-sandbox-tag-index")]; $(this).text(tag ? (tag.active ? "active" : "inactive") : "—"); });';
         print '$status.addClass("text-success").text("Resolved.");';
         print '}).catch(function (error) { $status.addClass("text-danger").text(error && error.message ? error.message : String(error)); }).finally(function () { $button.prop("disabled", false); });';
         print '});';

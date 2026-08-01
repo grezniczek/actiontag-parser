@@ -38,6 +38,7 @@
     ],
     "auth-ajax-actions": [
         "search-records",
+        "parse-annotation",
         "resolve-conditions"
     ]
 }
