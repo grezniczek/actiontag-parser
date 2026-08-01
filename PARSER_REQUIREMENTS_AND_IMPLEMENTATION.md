@@ -18,7 +18,7 @@ This document is intentionally written so that the resulting parser can later mo
 - In fast mode, emit enabled action tags from `@IF` branches as flattened tags with structured conditional references; do not emit `@IF` itself.
 - In diagnostic mode, retain every valid `@IF` as a container node while also making its nested action tags available with their effective conditional references.
 - Treat `@.OFF.TAG` as syntactically deactivated. Fast mode omits it; diagnostic mode exposes it with its normalized name and `enabled: false`.
-- Preserve original spelling and raw parameter/condition text; normalize tag names for lookup.
+- Preserve original spelling and raw parameter/condition text. Action-tag names must use uppercase ASCII letters; lowercase candidates are diagnostic-only and are never normalized into tags.
 
 ## Terminology
 
@@ -33,7 +33,7 @@ This document is intentionally written so that the resulting parser can later mo
 | Explicitly disabled | A tag or `@IF` whose own source spelling uses the core `@.OFF.` prefix. |
 | Effectively enabled | Whether a construct is neither explicitly disabled nor inside an explicitly disabled `@IF`. |
 | Raw text | Exact substring from the source range, including meaningful whitespace. |
-| Normalized name | The case-normalized action-tag name used for comparison, initially uppercase. |
+| Name | The uppercase action-tag name used for comparison. Lowercase source spelling is not an action tag. |
 
 ## Input and Options
 
@@ -60,10 +60,10 @@ The parser recognizes action-tag syntax independently of a tag catalog. The prov
 
 ```text
 @ name
-name := ASCII-letter (ASCII-letter | digit | '_' | '-')*
+name := ASCII-uppercase-letter (ASCII-uppercase-letter | digit | '_' | '-')*
 ```
 
-Names retain their original source spelling and are normalized case-insensitively. An action tag may begin only at the start of the annotation or immediately after ASCII whitespace (space, tab, carriage return, or line feed). A bare tag name must end at annotation end or before ASCII whitespace. `=` and `(` may directly follow a tag name as parameter introducers; they are not tag separators. These explicit boundary rules prevent incidental text such as email addresses from becoming tags.
+Names must use uppercase ASCII letters; digits, underscores, and hyphens remain supported within the name. A lowercase candidate is not an action tag: fast mode ignores it and diagnostic mode reports it without normalizing its spelling. An action tag may begin only at the start of the annotation or immediately after ASCII whitespace (space, tab, carriage return, or line feed). A bare tag name must end at annotation end or before ASCII whitespace. `=` and `(` may directly follow a tag name as parameter introducers; they are not tag separators. These explicit boundary rules prevent incidental text such as email addresses from becoming tags.
 
 Supported parameter shapes are:
 
@@ -91,7 +91,7 @@ Diagnostic nodes may include `disabled_by` references when an enclosing disabled
 
 ## `@IF` Structural Syntax
 
-`@IF` is identified by normalized name, so source casing does not change behavior. It is a syntactic container, not an ordinary parenthesized parameter.
+`@IF` is identified by its required uppercase spelling. It is a syntactic container, not an ordinary parenthesized parameter.
 
 The existing core behavior establishes the canonical form:
 
@@ -180,11 +180,11 @@ The exact PHP array keys are part of the public contract once implementation beg
 ```php
 [
     'type'            => 'tag',
-    'name'            => '@HIDDEN',          // normalized
-    'raw_name'        => '@hidden',          // source spelling
+    'name'            => '@HIDDEN',          // canonical uppercase spelling
+    'raw_name'        => '@HIDDEN',          // source spelling (`@.OFF.HIDDEN` when disabled)
     'start'           => 24,                 // inclusive byte offset
     'end'             => 30,                 // exclusive byte offset
-    'raw'             => '@hidden',
+    'raw'             => '@HIDDEN',
     'enabled'         => true,
     'explicitly_disabled' => false,
     'parameter'       => null,               // or the parameter structure below
@@ -338,7 +338,7 @@ Benchmarks must include ordinary annotation text, many independent tags, JSON pa
 
 The first fixture suite must cover at least:
 
-1. Native and External Module bare tags, mixed casing, hyphen/underscore names, and names with digits where currently used.
+1. Native and External Module bare tags, uppercase name enforcement, hyphen/underscore names, and names with digits where currently used.
 2. Tags with quoted, unquoted, JSON, and parenthesized parameters, including delimiters inside quotes and escaped quotes.
 3. Exact start/end/whitespace tag-boundary behavior, including email-like strings that must not become tags.
 4. Core deactivation forms: disabled individual tags omitted from fast mode but returned with `enabled: false` in diagnostic mode; a disabled `@IF` body skipped in fast mode but parsed as disabled content in diagnostic mode.

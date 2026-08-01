@@ -135,7 +135,15 @@ final class ActionTagParser
             $nameEnd = $nameStart + 1;
             while ($nameEnd < $frame['end'] && self::isNameCharacter($input[$nameEnd])) $nameEnd++;
             $rawName = substr($input, $start, $nameEnd - $start);
-            $name = '@' . strtoupper(substr($input, $nameStart, $nameEnd - $nameStart));
+            if (!self::isUppercaseName($input, $nameStart, $nameEnd)) {
+                $nodes = &$state['sinks'][$frame['sink']];
+                $candidate = self::candidate($state, $start, $nameEnd, 'invalid_tag_name', 'Action-tag names must use uppercase ASCII letters.');
+                if ($candidate !== null) { self::emitText($state, $nodes, $frame['text_start'], $start); $nodes[] = $candidate; $frame['text_start'] = $candidate['end']; }
+                $frame['i'] = $nameEnd;
+                unset($nodes, $frame);
+                continue;
+            }
+            $name = '@' . substr($input, $nameStart, $nameEnd - $nameStart);
             $parameterStart = $nameEnd;
             while ($parameterStart < $frame['end'] && self::isWhitespace($input[$parameterStart])) $parameterStart++;
             $introducer = $parameterStart < $frame['end'] ? $input[$parameterStart] : '';
@@ -602,6 +610,14 @@ final class ActionTagParser
     private static function isWhitespace(string $char): bool { return $char === ' ' || $char === "\t" || $char === "\r" || $char === "\n"; }
     private static function isAsciiLetter(string $char): bool { return ($char >= 'A' && $char <= 'Z') || ($char >= 'a' && $char <= 'z'); }
     private static function isNameCharacter(string $char): bool { return self::isAsciiLetter($char) || ($char >= '0' && $char <= '9') || $char === '_' || $char === '-'; }
+    private static function isUppercaseName(string $input, int $start, int $end): bool
+    {
+        for ($i = $start; $i < $end; $i++) {
+            $char = $input[$i];
+            if (self::isAsciiLetter($char) && !($char >= 'A' && $char <= 'Z')) return false;
+        }
+        return true;
+    }
     private static function limit(mixed $value, int $maximum): int { return max(1, min((int) $value, $maximum)); }
     private static function diagnostic(string $code, string $severity, int $start, int $end, string $message): array { return compact('code', 'severity', 'start', 'end', 'message'); }
     private static function addDiagnostic(array &$state, string $code, string $severity, int $start, int $end, string $message): void { if ($state['mode'] === 'diagnostic') $state['diagnostics'][] = self::diagnostic($code, $severity, $start, $end, $message); }
