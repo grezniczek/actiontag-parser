@@ -222,26 +222,8 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         $parseOnlyContext = ['project_id' => $projectId];
 
         $methods = [];
-        $methods['Pure parser (fast)'] = $this->benchmarkPair(
-            static function () use ($annotations): void {
-                foreach ($annotations as $annotation) PureActionTagParser::parse($annotation);
-            },
-            static function () use ($annotations, $context): void {
-                $parsed = array_map(static fn (string $annotation): array => PureActionTagParser::parse($annotation), $annotations);
-                ActionTagProjectConditionResolver::resolveMany($parsed, $context);
-            },
-            $iterations
-        );
-        $methods['Pure parser (diagnostic)'] = $this->benchmarkPair(
-            static function () use ($annotations): void {
-                foreach ($annotations as $annotation) PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']);
-            },
-            static function () use ($annotations, $context): void {
-                $parsed = array_map(static fn (string $annotation): array => PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']), $annotations);
-                ActionTagProjectConditionResolver::resolveMany($parsed, $context);
-            },
-            $iterations
-        );
+        $methods['Pure parser (fast)'] = $this->benchmarkPureResolver($annotations, $context, [], $iterations);
+        $methods['Pure parser (diagnostic)'] = $this->benchmarkPureResolver($annotations, $context, ['mode' => 'diagnostic'], $iterations);
         $methods['Legacy parser'] = $this->benchmarkPair(
             static function () use ($parseOnlyContext): void {
                 ActionTagParser_Old::setCacheDisabled();
@@ -270,6 +252,58 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         return ['iterations' => $iterations, 'annotated_fields' => count($annotations), 'methods' => $methods];
     }
 
+    /** @return array{parse:array,resolve:array,details:array,workload:array}|array{error:string} */
+    private function benchmarkPureResolver(array $annotations, array $context, array $parseOptions, int $iterations): array {
+        try {
+            $parseOnly = $this->benchmarkSamples(static function () use ($annotations, $parseOptions): void {
+                foreach ($annotations as $annotation) PureActionTagParser::parse($annotation, $parseOptions);
+            }, $iterations);
+            $phaseSamples = [
+                'parser_us' => [],
+                'condition_discovery_us' => [],
+                'record_data_preload_us' => [],
+                'condition_evaluation_us' => [],
+                'tag_mapping_us' => [],
+                'resolver_total_us' => [],
+                'total_us' => [],
+            ];
+            $workload = [];
+            for ($i = 0; $i < $iterations; $i++) {
+                $totalStarted = hrtime(true);
+                $parserStarted = hrtime(true);
+                $parsed = array_map(static fn (string $annotation): array => PureActionTagParser::parse($annotation, $parseOptions), $annotations);
+                $phaseSamples['parser_us'][] = (hrtime(true) - $parserStarted) / 1000;
+                $resolved = ActionTagProjectConditionResolver::resolveManyWithMetrics($parsed, $context);
+                foreach (array_keys($phaseSamples) as $phase) {
+                    if ($phase === 'parser_us' || $phase === 'total_us') continue;
+                    $phaseSamples[$phase][] = (float) ($resolved['metrics'][$phase] ?? 0);
+                }
+                $phaseSamples['total_us'][] = (hrtime(true) - $totalStarted) / 1000;
+                $workload = [
+                    'total_conditions' => $resolved['metrics']['total_conditions'] ?? 0,
+                    'unique_conditions' => $resolved['metrics']['unique_conditions'] ?? 0,
+                    'total_tags' => $resolved['metrics']['total_tags'] ?? 0,
+                    'referenced_fields' => $resolved['metrics']['referenced_fields'] ?? 0,
+                    'preloaded_fields' => $resolved['metrics']['preloaded_fields'] ?? 0,
+                    'record_data_queries' => $resolved['metrics']['record_data_queries'] ?? 0,
+                ];
+            }
+            $details = [];
+            foreach ($phaseSamples as $phase => $samples) {
+                if ($phase === 'total_us') continue;
+                $details[$phase] = $this->benchmarkStatistics($samples);
+            }
+            return [
+                'parse' => $parseOnly,
+                'resolve' => $this->benchmarkStatistics($phaseSamples['total_us']),
+                'details' => $details,
+                'workload' => $workload,
+            ];
+        } catch (\Throwable $exception) {
+            return ['error' => $exception->getMessage()];
+        }
+    }
+
     /** @return array{parse:array,resolve:array}|array{error:string} */
     private function benchmarkPair(callable $parse, callable $resolve, int $iterations): array {
         try {
@@ -290,6 +324,11 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             $operation();
             $samples[] = (hrtime(true) - $start) / 1000;
         }
+        return $this->benchmarkStatistics($samples);
+    }
+
+    /** @param list<float> $samples @return array{mean_us:float,stddev_us:float,min_us:float,max_us:float} */
+    private function benchmarkStatistics(array $samples): array {
         $mean = array_sum($samples) / count($samples);
         $variance = 0.0;
         foreach ($samples as $sample) $variance += ($sample - $mean) ** 2;
@@ -491,7 +530,13 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         print 'function escapeHtml(value) { return $("<div>").text(value === null || value === undefined ? "" : String(value)).html(); }';
         print 'function populateInstruments() { var names = options.eventForms[$("#atp-benchmark-event").val()] || Object.keys(options.forms), $instrument = $("#atp-benchmark-instrument"), $repeat = $("#atp-benchmark-repeat-instrument"); $instrument.empty(); $repeat.empty().append($("<option>", {value: "", text: "Not repeating"})); $.each(names, function (_, name) { var label = options.forms[name] || name; $instrument.append($("<option>", {value: name, text: label})); $repeat.append($("<option>", {value: name, text: label})); }); $instrument.trigger("change.select2"); $repeat.trigger("change.select2"); }';
         print 'function stats(stats) { return escapeHtml(Number(stats.mean_us).toFixed(1) + " ± " + Number(stats.stddev_us).toFixed(1) + " µs"); }';
-        print 'function renderResults(result) { var html = "<h6>Results</h6><p class=\"small text-muted\">" + escapeHtml(result.annotated_fields) + " annotated fields; " + escapeHtml(result.iterations) + " iterations per phase.</p><table class=\"table table-sm table-bordered\"><thead><tr><th>Method</th><th>Parse only — mean ± SD</th><th>Parse + resolve — mean ± SD</th></tr></thead><tbody>"; $.each(result.methods || {}, function (name, values) { if (values.error) html += "<tr><th>" + escapeHtml(name) + "</th><td colspan=\"2\" class=\"text-danger\">" + escapeHtml(values.error) + "</td></tr>"; else html += "<tr><th>" + escapeHtml(name) + "</th><td>" + stats(values.parse) + "</td><td>" + stats(values.resolve) + "</td></tr>"; }); $("#atp-benchmark-results").html(html + "</tbody></table>"); }';
+        print 'function renderResults(result) {';
+        print 'var html = "<h6>Results</h6><p class=\"small text-muted\">" + escapeHtml(result.annotated_fields) + " annotated fields; " + escapeHtml(result.iterations) + " iterations per phase.</p><table class=\"table table-sm table-bordered\"><thead><tr><th>Method</th><th>Parse only — mean ± SD</th><th>Parse + resolve — mean ± SD</th></tr></thead><tbody>", detailed = [];';
+        print '$.each(result.methods || {}, function (name, values) { if (values.error) html += "<tr><th>" + escapeHtml(name) + "</th><td colspan=\"2\" class=\"text-danger\">" + escapeHtml(values.error) + "</td></tr>"; else { html += "<tr><th>" + escapeHtml(name) + "</th><td>" + stats(values.parse) + "</td><td>" + stats(values.resolve) + "</td></tr>"; if (values.details) detailed.push({name: name, details: values.details, workload: values.workload || {}}); } }); html += "</tbody></table>";';
+        print 'if (detailed.length) { var phases = [["parser_us", "Parser"], ["condition_discovery_us", "Condition discovery"], ["record_data_preload_us", "Record-data preload"], ["condition_evaluation_us", "Logic evaluation"], ["tag_mapping_us", "Tag mapping"], ["resolver_total_us", "Resolver total"]]; html += "<h6 class=\"mt-4\">Pure resolver timing breakdown</h6><table class=\"table table-sm table-bordered\"><thead><tr><th>Method</th>"; $.each(phases, function (_, phase) { html += "<th>" + phase[1] + "</th>"; }); html += "</tr></thead><tbody>"; $.each(detailed, function (_, row) { html += "<tr><th>" + escapeHtml(row.name) + "</th>"; $.each(phases, function (_, phase) { html += "<td>" + stats(row.details[phase[0]]) + "</td>"; }); html += "</tr>"; }); html += "</tbody></table>";';
+        print 'var workload = [["total_conditions", "Condition occurrences"], ["unique_conditions", "Unique conditions evaluated"], ["total_tags", "Flattened tags"], ["referenced_fields", "Referenced fields"], ["preloaded_fields", "Preloaded fields"], ["record_data_queries", "Record-data queries"]]; html += "<h6 class=\"mt-4\">Pure resolver workload</h6><table class=\"table table-sm table-bordered\"><thead><tr><th>Metric</th>"; $.each(detailed, function (_, row) { html += "<th>" + escapeHtml(row.name) + "</th>"; }); html += "</tr></thead><tbody>"; $.each(workload, function (_, metric) { html += "<tr><th>" + metric[1] + "</th>"; $.each(detailed, function (_, row) { html += "<td>" + escapeHtml(row.workload[metric[0]] || 0) + "</td>"; }); html += "</tr>"; }); html += "</tbody></table>"; }';
+        print '$("#atp-benchmark-results").html(html);';
+        print '}';
         print '$(function () { populateInstruments(); $("#atp-benchmark-record").select2({width: "100%", placeholder: "Search records", minimumInputLength: 0, ajax: {delay: 150, transport: function (params, success, failure) { JSMO.ajax("search-records", {term: (params.data && params.data.term) || ""}).then(success).catch(failure); return {abort: function () {}}; }}}); $("#atp-benchmark-event, #atp-benchmark-instrument, #atp-benchmark-repeat-instrument").select2({width: "100%"}); $("#atp-benchmark-event").on("change", populateInstruments);';
         print '$("#atp-run-benchmark").on("click", function () { var $button = $(this), $status = $("#atp-benchmark-status"); $status.removeClass("text-danger text-success").text("Running…"); $button.prop("disabled", true); JSMO.ajax("run-benchmark", {iterations: $("#atp-benchmark-iterations").val(), record: $("#atp-benchmark-record").val(), event_id: $("#atp-benchmark-event").val(), instrument: $("#atp-benchmark-instrument").val(), instance: $("#atp-benchmark-instance").val(), repeat_instrument: $("#atp-benchmark-repeat-instrument").val()}).then(function (result) { renderResults(result); $status.addClass("text-success").text("Complete."); }).catch(function (error) { $status.addClass("text-danger").text(error && error.message ? error.message : String(error)); }).finally(function () { $button.prop("disabled", false); }); }); });';
         print '})(jQuery);</script>';

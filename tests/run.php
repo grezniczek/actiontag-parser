@@ -121,6 +121,17 @@ if ($manyEvaluated !== ['[a]'] || array_column($manyResolved['field_a']['tags'],
     $failures[] = 'condition_resolver_many: shared condition evaluation or tag resolution differs';
 }
 
+$measuredResolved = ActionTagConditionResolver::resolveManyWithMetrics([
+    'field_a' => ActionTagParser::parse('@IF([a], @HIDDEN, @READONLY)'),
+    'field_b' => ActionTagParser::parse('@IF([a], @REQUIRED, @HIDDEN-FORM)'),
+], [], static fn (): bool => true);
+if (($measuredResolved['metrics']['total_conditions'] ?? null) !== 2
+    || ($measuredResolved['metrics']['unique_conditions'] ?? null) !== 1
+    || ($measuredResolved['metrics']['total_tags'] ?? null) !== 4
+    || !isset($measuredResolved['metrics']['condition_discovery_us'], $measuredResolved['metrics']['condition_evaluation_us'], $measuredResolved['metrics']['tag_mapping_us'])) {
+    $failures[] = 'condition_resolver_metrics: workload or timing metrics differ';
+}
+
 $located = ActionTagDiagnosticLocations::enrich("é\r\n@notatag", ActionTagParser::parse("é\r\n@notatag", ['mode' => 'diagnostic']));
 if (($located['diagnostics'][0]['start_line'] ?? null) !== 2 || ($located['diagnostics'][0]['start_column'] ?? null) !== 1 || ($located['diagnostics'][0]['start_byte_column'] ?? null) !== 1) {
     $failures[] = 'diagnostic_locations: Unicode/CRLF source location differs';

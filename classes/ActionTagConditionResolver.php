@@ -89,6 +89,78 @@ final class ActionTagConditionResolver
         return $resolved;
     }
 
+    /**
+     * Resolve several parsed annotations and report its internal work phases.
+     * Timing values are in microseconds and are intended for tooling/benchmarks.
+     *
+     * @param array<string,array> $parseResults Field/key => parser result.
+     * @param null|callable(string,array,int):mixed $evaluator
+     * @return array{results:array<string,array{conditions:array<int,array>,tags:list<array>}>,metrics:array<string,int|float>}
+     */
+    public static function resolveManyWithMetrics(array $parseResults, array $context = [], ?callable $evaluator = null): array
+    {
+        $evaluate = $evaluator ?? static fn (string $condition, array $runtimeContext, int $id): mixed => self::evaluateWithRedcap($condition, $runtimeContext);
+        $started = hrtime(true);
+        $discoveryStarted = hrtime(true);
+        $occurrences = [];
+        $uniqueConditions = [];
+        $totalConditions = 0;
+        foreach ($parseResults as $key => $parseResult) {
+            foreach ($parseResult['conditions'] ?? [] as $id => $definition) {
+                $condition = $definition['raw'];
+                $occurrences[$key][(int) $id] = $condition;
+                $uniqueConditions[$condition] ??= (int) $id;
+                $totalConditions++;
+            }
+        }
+        $discoveryUs = (hrtime(true) - $discoveryStarted) / 1000;
+
+        $evaluationStarted = hrtime(true);
+        $values = [];
+        foreach ($uniqueConditions as $condition => $id) {
+            $values[$condition] = self::isTrue($evaluate($condition, $context, $id));
+        }
+        $evaluationUs = (hrtime(true) - $evaluationStarted) / 1000;
+
+        $mappingStarted = hrtime(true);
+        $resolved = [];
+        $totalTags = 0;
+        foreach ($parseResults as $key => $parseResult) {
+            $conditions = [];
+            foreach ($parseResult['conditions'] ?? [] as $id => $definition) {
+                $conditions[(int) $id] = $definition + ['value' => $values[$occurrences[$key][(int) $id]]];
+            }
+            $tags = [];
+            foreach ($parseResult['tags'] ?? [] as $tag) {
+                $matches = (bool) ($tag['enabled'] ?? true);
+                foreach ($tag['conditional'] ?? [] as $reference) {
+                    $condition = $occurrences[$key][$reference['id']] ?? null;
+                    $value = $condition === null ? false : $values[$condition];
+                    if ($value === $reference['negated']) {
+                        $matches = false;
+                        break;
+                    }
+                }
+                $tags[] = $tag + ['conditions_match' => $matches, 'active' => $matches];
+                $totalTags++;
+            }
+            $resolved[$key] = ['conditions' => $conditions, 'tags' => $tags];
+        }
+        $mappingUs = (hrtime(true) - $mappingStarted) / 1000;
+        return [
+            'results' => $resolved,
+            'metrics' => [
+                'total_conditions' => $totalConditions,
+                'unique_conditions' => count($uniqueConditions),
+                'total_tags' => $totalTags,
+                'condition_discovery_us' => $discoveryUs,
+                'condition_evaluation_us' => $evaluationUs,
+                'tag_mapping_us' => $mappingUs,
+                'resolver_total_us' => (hrtime(true) - $started) / 1000,
+            ],
+        ];
+    }
+
     private static function evaluateWithRedcap(string $condition, array $context): mixed
     {
         foreach (['project_id', 'record', 'event_id', 'instrument'] as $key) {
