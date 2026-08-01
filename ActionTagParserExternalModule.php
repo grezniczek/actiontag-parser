@@ -111,6 +111,8 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         }
 
         $Proj = new \Project($project_id);
+        $metadata = $Proj->getMetadata();
+        $forms = $Proj->getForms();
         $records = \Records::getRecordList($project_id, $dagId, false, false, null, null, 0, [$recordName]);
         $allowedRecords = array_map('strval', array_keys($records ?: []));
         if (!in_array($recordName, $allowedRecords, true)) {
@@ -119,13 +121,13 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         if (!isset($Proj->eventInfo[$selectedEventId])) {
             throw new \Exception('The selected event does not belong to this project.');
         }
-        if (!isset($Proj->forms[$selectedInstrument])) {
+        if (!isset($forms[$selectedInstrument])) {
             throw new \Exception('The selected instrument does not belong to this project.');
         }
         if ($Proj->longitudinal && !in_array($selectedInstrument, $Proj->eventsForms[$selectedEventId] ?? [], true)) {
             throw new \Exception('The selected instrument is not assigned to the selected event.');
         }
-        if ($selectedRepeatInstrument !== '' && !isset($Proj->forms[$selectedRepeatInstrument])) {
+        if ($selectedRepeatInstrument !== '' && !isset($forms[$selectedRepeatInstrument])) {
             throw new \Exception('The selected repeat instrument does not belong to this project.');
         }
 
@@ -138,8 +140,8 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             'repeat_instrument' => $selectedRepeatInstrument,
         ];
         $parsedFields = [];
-        foreach ($Proj->metadata as $fieldName => $metadata) {
-            $annotation = $metadata['misc'] ?? '';
+        foreach ($metadata as $fieldName => $fieldMetadata) {
+            $annotation = $fieldMetadata['misc'] ?? '';
             if (strpos($annotation, '@') === false) continue;
             $parsedFields[$fieldName] = PureActionTagParser::parse($annotation);
         }
@@ -189,22 +191,24 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         }
 
         $Proj = new \Project($projectId);
+        $metadata = $Proj->getMetadata();
+        $forms = $Proj->getForms();
         $records = \Records::getRecordList($projectId, $dagId, false, false, null, null, 0, [$recordName]);
         if (!in_array($recordName, array_map('strval', array_keys($records ?: [])), true)) {
             throw new \Exception('The selected record is not available in this project context.');
         }
         if (!isset($Proj->eventInfo[$selectedEventId])) throw new \Exception('The selected event does not belong to this project.');
-        if (!isset($Proj->forms[$selectedInstrument])) throw new \Exception('The selected instrument does not belong to this project.');
+        if (!isset($forms[$selectedInstrument])) throw new \Exception('The selected instrument does not belong to this project.');
         if ($Proj->longitudinal && !in_array($selectedInstrument, $Proj->eventsForms[$selectedEventId] ?? [], true)) {
             throw new \Exception('The selected instrument is not assigned to the selected event.');
         }
-        if ($selectedRepeatInstrument !== '' && !isset($Proj->forms[$selectedRepeatInstrument])) {
+        if ($selectedRepeatInstrument !== '' && !isset($forms[$selectedRepeatInstrument])) {
             throw new \Exception('The selected repeat instrument does not belong to this project.');
         }
 
         $annotations = [];
-        foreach ($Proj->metadata as $metadata) {
-            $annotation = $metadata['misc'] ?? '';
+        foreach ($metadata as $fieldMetadata) {
+            $annotation = $fieldMetadata['misc'] ?? '';
             if (strpos($annotation, '@') !== false) $annotations[] = $annotation;
         }
         $context = [
@@ -302,7 +306,9 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         $fields = [];
         $annotations = [];
         $Proj = new \Project($project_id);
-        foreach ($Proj->metadata as $field_name => $field_metadata) {
+        $metadata = $Proj->getMetadata();
+        $forms = $Proj->getForms();
+        foreach ($metadata as $field_name => $field_metadata) {
             $misc = $field_metadata["misc"] ?? "";
             if (strpos($misc, "@") !== false) {
                 $fields[$field_metadata["form_name"]."-".$field_metadata["field_order"]] = $field_metadata;
@@ -318,12 +324,12 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             $eventOptions[(string) $id] = $event['name_ext'] ?? $event['descrip'] ?? (string) $id;
         }
         $formOptions = [];
-        foreach ($Proj->forms as $name => $form) {
+        foreach ($forms as $name => $form) {
             $formOptions[$name] = $form['menu'] ?? $name;
         }
         $eventForms = [];
         foreach ($Proj->eventInfo as $id => $_event) {
-            $eventForms[(string) $id] = $Proj->eventsForms[$id] ?? array_keys($Proj->forms);
+            $eventForms[(string) $id] = $Proj->eventsForms[$id] ?? array_keys($forms);
         }
         $renderConditions = static function (array $tag, array $conditions) use ($escape): string {
             $parts = [];
@@ -449,16 +455,17 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
     function benchmark() {
         $projectId = $this->getProjectId();
         $Proj = new \Project($projectId);
+        $forms = $Proj->getForms();
         $escape = static fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
         $events = [];
         foreach ($Proj->eventInfo as $eventId => $event) {
             $events[(string) $eventId] = $event['name_ext'] ?? $event['descrip'] ?? (string) $eventId;
         }
-        $forms = [];
-        foreach ($Proj->forms as $formName => $form) $forms[$formName] = $form['menu'] ?? $formName;
+        $formOptions = [];
+        foreach ($forms as $formName => $form) $formOptions[$formName] = $form['menu'] ?? $formName;
         $eventForms = [];
         foreach ($Proj->eventInfo as $eventId => $_event) {
-            $eventForms[(string) $eventId] = $Proj->eventsForms[$eventId] ?? array_keys($Proj->forms);
+            $eventForms[(string) $eventId] = $Proj->eventsForms[$eventId] ?? array_keys($forms);
         }
 
         print '<h5>Action-tag benchmark</h5>';
@@ -478,7 +485,7 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
         $this->initializeJavascriptModuleObject();
         $jsmo = $this->getJavascriptModuleObjectName();
-        $options = json_encode(['forms' => $forms, 'eventForms' => $eventForms], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+        $options = json_encode(['forms' => $formOptions, 'eventForms' => $eventForms], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         print '<script>(function ($) {';
         print 'var JSMO = '.$jsmo.', options = '.$options.';';
         print 'function escapeHtml(value) { return $("<div>").text(value === null || value === undefined ? "" : String(value)).html(); }';

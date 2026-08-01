@@ -16,12 +16,13 @@ final class ActionTagFieldsConditionResolver
      * @param null|callable(string,array,int):mixed $evaluator
      * @return array<string,array{conditions:array<int,array>,tags:list<array>}>
      */
-    public static function resolve(array $fieldNames, array $context, ?callable $evaluator = null): array
+    public static function resolve(array $fieldNames, array $context, ?callable $evaluator = null, bool $tryDraftMode = false): array
     {
         return ActionTagProjectConditionResolver::resolveMany(
-            ActionTagFieldsParser::parse($fieldNames, $context),
+            ActionTagFieldsParser::parse($fieldNames, $context, [], $tryDraftMode),
             $context,
-            $evaluator
+            $evaluator,
+            $tryDraftMode
         );
     }
 
@@ -29,13 +30,14 @@ final class ActionTagFieldsConditionResolver
      * @param null|callable(string,array,int):mixed $evaluator
      * @return array<string,array{conditions:array<int,array>,tags:list<array>}>
      */
-    public static function resolveInstrument(string $instrument, array $context, ?callable $evaluator = null): array
+    public static function resolveInstrument(string $instrument, array $context, ?callable $evaluator = null, bool $tryDraftMode = false): array
     {
         $context['instrument'] ??= $instrument;
         return ActionTagProjectConditionResolver::resolveMany(
-            ActionTagFieldsParser::parseInstrument($instrument, $context),
+            ActionTagFieldsParser::parseInstrument($instrument, $context, [], $tryDraftMode),
             $context,
-            $evaluator
+            $evaluator,
+            $tryDraftMode
         );
     }
 
@@ -43,12 +45,13 @@ final class ActionTagFieldsConditionResolver
      * @param null|callable(string,array,int):mixed $evaluator
      * @return array<string,array{conditions:array<int,array>,tags:list<array>}>
      */
-    public static function resolveProject(array $context, ?callable $evaluator = null): array
+    public static function resolveProject(array $context, ?callable $evaluator = null, bool $tryDraftMode = false): array
     {
         return ActionTagProjectConditionResolver::resolveMany(
-            ActionTagFieldsParser::parseProject($context),
+            ActionTagFieldsParser::parseProject($context, [], $tryDraftMode),
             $context,
-            $evaluator
+            $evaluator,
+            $tryDraftMode
         );
     }
 }
