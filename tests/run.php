@@ -2,9 +2,13 @@
 
 require_once __DIR__ . '/../classes/ActionTagParser.php';
 require_once __DIR__ . '/../classes/ActionTagParserAdapter.php';
+require_once __DIR__ . '/../classes/ActionTagConditionResolver.php';
+require_once __DIR__ . '/../classes/ActionTagIndex.php';
 
 use ActionTagParser\ActionTagParser;
 use DE\RUB\ActionTagParserExternalModule\ActionTagParserAdapter;
+use ActionTagParser\ActionTagConditionResolver;
+use ActionTagParser\ActionTagIndex;
 
 $fixtures = require __DIR__ . '/fixtures.php';
 $failures = [];
@@ -88,6 +92,25 @@ if ($adapterTags !== [
     ['actiontag' => '@HIDDEN', 'params' => '', 'match' => '@HIDDEN', 'start' => 37, 'end' => 44, 'conditional' => [['id' => 1, 'negated' => true]]],
 ]) {
     $failures[] = 'adapter: compatibility-shaped tag output differs';
+}
+
+$conditionalParse = ActionTagParser::parse('@IF([a], @HIDDEN, @IF([b], @READONLY, @REQUIRED))');
+$evaluated = [];
+$resolved = ActionTagConditionResolver::resolve($conditionalParse, [], static function (string $condition) use (&$evaluated): bool {
+    $evaluated[] = $condition;
+    return $condition === '[a]';
+});
+if ($evaluated !== ['[a]', '[b]'] || array_column($resolved['tags'], 'active') !== [true, false, false]) {
+    $failures[] = 'condition_resolver: conditions were not evaluated once or tags resolved incorrectly';
+}
+
+$index = ActionTagIndex::build([
+    'field_a' => ['instrument' => 'form_a', 'annotation' => '@HIDDEN @IF([a], @READONLY, @REQUIRED)'],
+    'field_b' => ['instrument' => 'form_b', 'annotation' => '@HIDDEN-FORM'],
+    'field_c' => 'Plain text',
+]);
+if (array_keys($index['by_field']) !== ['field_a', 'field_b'] || count($index['by_tag']['@HIDDEN'] ?? []) !== 1 || array_keys($index['by_instrument']['form_a'] ?? []) !== ['field_a'] || ($index['conditions']['field_a'][1]['raw'] ?? null) !== '[a]') {
+    $failures[] = 'action_tag_index: aggregate views differ';
 }
 
 if ($failures !== []) {
