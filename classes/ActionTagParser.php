@@ -159,6 +159,7 @@ final class ActionTagParser
                 self::emitText($state, $nodes, $frame['text_start'], $start);
                 if ($close === null) {
                     self::addDiagnostic($state, 'unterminated_if', 'error', $start, $frame['end'], '@IF does not reach its closing parenthesis.');
+                    self::emitStructuralCandidate($state, $nodes, $start, $frame['end']);
                     $frame['i'] = $frame['end']; $frame['text_start'] = $frame['end'];
                     unset($nodes, $frame);
                     continue;
@@ -166,10 +167,10 @@ final class ActionTagParser
                 $frame['i'] = $close + 1; $frame['text_start'] = $close + 1;
                 if ($state['mode'] === 'fast' && $explicitlyDisabled) { unset($nodes, $frame); continue; }
                 $arms = self::splitIfArms($state, $parameterStart + 1, $close);
-                if (count($arms) > 3) { self::addDiagnostic($state, 'if_unexpected_top_level_separator', 'error', $start, $close + 1, '@IF has more than three top-level arguments.'); unset($nodes, $frame); continue; }
-                if (count($arms) < 2 || trim(substr($input, $arms[0][0], $arms[0][1] - $arms[0][0])) === '') { self::addDiagnostic($state, 'if_missing_condition', 'error', $start, $close + 1, '@IF requires a condition and a true branch.'); unset($nodes, $frame); continue; }
-                if (trim(substr($input, $arms[1][0], $arms[1][1] - $arms[1][0])) === '') { self::addDiagnostic($state, 'if_missing_then', 'error', $start, $close + 1, '@IF requires a true branch.'); unset($nodes, $frame); continue; }
-                if (count($arms) === 2 && !self::ACCEPT_IF_THEN_SHORTHAND) { self::addDiagnostic($state, 'if_missing_else', 'error', $start, $close + 1, '@IF requires a false branch.'); unset($nodes, $frame); continue; }
+                if (count($arms) > 3) { self::addDiagnostic($state, 'if_unexpected_top_level_separator', 'error', $start, $close + 1, '@IF has more than three top-level arguments.'); self::emitStructuralCandidate($state, $nodes, $start, $close + 1); unset($nodes, $frame); continue; }
+                if (count($arms) < 2 || trim(substr($input, $arms[0][0], $arms[0][1] - $arms[0][0])) === '') { self::addDiagnostic($state, 'if_missing_condition', 'error', $start, $close + 1, '@IF requires a condition and a true branch.'); self::emitStructuralCandidate($state, $nodes, $start, $close + 1); unset($nodes, $frame); continue; }
+                if (trim(substr($input, $arms[1][0], $arms[1][1] - $arms[1][0])) === '') { self::addDiagnostic($state, 'if_missing_then', 'error', $start, $close + 1, '@IF requires a true branch.'); self::emitStructuralCandidate($state, $nodes, $start, $close + 1); unset($nodes, $frame); continue; }
+                if (count($arms) === 2 && !self::ACCEPT_IF_THEN_SHORTHAND) { self::addDiagnostic($state, 'if_missing_else', 'error', $start, $close + 1, '@IF requires a false branch.'); self::emitStructuralCandidate($state, $nodes, $start, $close + 1); unset($nodes, $frame); continue; }
                 if (count($arms) === 2) $arms[] = [$close, $close];
                 $conditionId = $state['next_condition_id']++;
                 $state['conditions'][$conditionId] = ['raw' => substr($input, $arms[0][0], $arms[0][1] - $arms[0][0]), 'start' => $arms[0][0], 'end' => $arms[0][1]];
@@ -201,6 +202,7 @@ final class ActionTagParser
             if ($introducer === '=') {
                 [$parameter, $after] = self::parseAssignment($state, $parameterStart, $frame['end']);
                 if ($parameter !== null) { self::emitText($state, $nodes, $frame['text_start'], $start); self::emitTag($state, $nodes, $name, $rawName, $start, $after, $parameter, $frame['conditional'], $frame['enabled'], $explicitlyDisabled, $frame['disabled_by']); $frame['text_start'] = $after; }
+                else { self::emitText($state, $nodes, $frame['text_start'], $start); self::emitStructuralCandidate($state, $nodes, $start, $after); $frame['text_start'] = $after; }
                 $frame['i'] = max($after, $i + 1); unset($nodes, $frame); continue;
             }
             if ($introducer === '(') {
@@ -216,6 +218,9 @@ final class ActionTagParser
                         $unbalanced ? 'Parenthesized action-tag parameter has an unexpected closing delimiter.' : 'Parenthesized action-tag parameter is not closed.'
                     );
                     $frame['i'] = self::nextTopLevelTagStart($input, $parameterStart + 1, $frame['end']) ?? $frame['end'];
+                    self::emitText($state, $nodes, $frame['text_start'], $start);
+                    self::emitStructuralCandidate($state, $nodes, $start, $frame['i']);
+                    $frame['text_start'] = $frame['i'];
                     unset($nodes, $frame);
                     continue;
                 }
@@ -319,6 +324,14 @@ final class ActionTagParser
     {
         if ($state['mode'] === 'diagnostic' && $state['include_text_segments'] && $end > $start) {
             $nodes[] = ['type' => 'text', 'start' => $start, 'end' => $end, 'raw' => substr($state['input'], $start, $end - $start)];
+        }
+    }
+
+    /** @param list<array> $nodes */
+    private static function emitStructuralCandidate(array $state, array &$nodes, int $start, int $end): void
+    {
+        if ($state['mode'] === 'diagnostic') {
+            $nodes[] = ['type' => 'candidate', 'start' => $start, 'end' => $end, 'raw' => substr($state['input'], $start, $end - $start)];
         }
     }
 

@@ -257,7 +257,7 @@ Diagnostic mode reports syntax observations with at least:
 ]
 ```
 
-Line and column can be added lazily by a presentation helper or included in diagnostic mode after the primary scan. Byte offsets remain authoritative.
+Byte offsets remain authoritative. A separate, opt-in diagnostic presentation helper may amend a completed result with Unicode-aware line, character-column, and byte-column data; this must not add work to fast mode.
 
 The initial diagnostic-code set should include:
 

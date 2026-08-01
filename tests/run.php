@@ -4,11 +4,13 @@ require_once __DIR__ . '/../classes/ActionTagParser.php';
 require_once __DIR__ . '/../classes/ActionTagParserAdapter.php';
 require_once __DIR__ . '/../classes/ActionTagConditionResolver.php';
 require_once __DIR__ . '/../classes/ActionTagIndex.php';
+require_once __DIR__ . '/../classes/ActionTagDiagnosticLocations.php';
 
 use ActionTagParser\ActionTagParser;
 use DE\RUB\ActionTagParserExternalModule\ActionTagParserAdapter;
 use ActionTagParser\ActionTagConditionResolver;
 use ActionTagParser\ActionTagIndex;
+use ActionTagParser\ActionTagDiagnosticLocations;
 
 $fixtures = require __DIR__ . '/fixtures.php';
 $failures = [];
@@ -49,6 +51,9 @@ foreach ($fixtures as $name => $fixture) {
     if (isset($fixture['node_types'])) {
         $actual = array_column($result['nodes'], 'type');
         if ($actual !== $fixture['node_types']) $failures[] = "$name: node types " . json_encode($actual);
+    }
+    if (($fixture['node_source_covers'] ?? false) && implode('', array_column($result['nodes'], 'raw')) !== $fixture['annotation']) {
+        $failures[] = "$name: diagnostic nodes do not cover the complete source";
     }
     if (array_key_exists('diagnostic_codes', $fixture)) {
         $actual = array_column($result['diagnostics'] ?? [], 'code');
@@ -102,6 +107,11 @@ $resolved = ActionTagConditionResolver::resolve($conditionalParse, [], static fu
 });
 if ($evaluated !== ['[a]', '[b]'] || array_column($resolved['tags'], 'active') !== [true, false, false]) {
     $failures[] = 'condition_resolver: conditions were not evaluated once or tags resolved incorrectly';
+}
+
+$located = ActionTagDiagnosticLocations::enrich("é\r\n@notatag", ActionTagParser::parse("é\r\n@notatag", ['mode' => 'diagnostic']));
+if (($located['diagnostics'][0]['start_line'] ?? null) !== 2 || ($located['diagnostics'][0]['start_column'] ?? null) !== 1 || ($located['diagnostics'][0]['start_byte_column'] ?? null) !== 1) {
+    $failures[] = 'diagnostic_locations: Unicode/CRLF source location differs';
 }
 
 $index = ActionTagIndex::build([

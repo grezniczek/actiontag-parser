@@ -7,6 +7,7 @@ require_once "classes/ActionTagParser.php";
 require_once "classes/ActionTagParserAdapter.php";
 require_once "classes/ActionTagConditionResolver.php";
 require_once "classes/ActionTagIndex.php";
+require_once "classes/ActionTagDiagnosticLocations.php";
 require_once "classes/ActionTagHelper.php";
 
 use ActionTagParser\ActionTagParser as PureActionTagParser;
