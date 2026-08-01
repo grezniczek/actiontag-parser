@@ -42,6 +42,53 @@ final class ActionTagConditionResolver
         return ['conditions' => $conditions, 'tags' => $tags];
     }
 
+    /**
+     * Resolve several parsed annotations in one shared runtime context.
+     *
+     * Identical opaque condition text is evaluated once and its value is
+     * reused across all supplied parse results. A project-aware caller may
+     * provide preloaded record data in $context['record_data'].
+     *
+     * @param array<string,array> $parseResults Field/key => parser result.
+     * @param null|callable(string,array,int):mixed $evaluator
+     * @return array<string,array{conditions:array<int,array>,tags:list<array>}>
+     */
+    public static function resolveMany(array $parseResults, array $context = [], ?callable $evaluator = null): array
+    {
+        $evaluate = $evaluator ?? static fn (string $condition, array $runtimeContext, int $id): mixed => self::evaluateWithRedcap($condition, $runtimeContext);
+        $values = [];
+        $resolved = [];
+        foreach ($parseResults as $key => $parseResult) {
+            $conditionValues = [];
+            foreach ($parseResult['conditions'] ?? [] as $id => $definition) {
+                $condition = $definition['raw'];
+                if (!array_key_exists($condition, $values)) {
+                    $values[$condition] = self::isTrue($evaluate($condition, $context, (int) $id));
+                }
+                $conditionValues[(int) $id] = $values[$condition];
+            }
+
+            $conditions = [];
+            foreach ($parseResult['conditions'] ?? [] as $id => $definition) {
+                $conditions[(int) $id] = $definition + ['value' => $conditionValues[(int) $id]];
+            }
+            $tags = [];
+            foreach ($parseResult['tags'] ?? [] as $tag) {
+                $matches = (bool) ($tag['enabled'] ?? true);
+                foreach ($tag['conditional'] ?? [] as $reference) {
+                    $value = $conditionValues[$reference['id']] ?? false;
+                    if ($value === $reference['negated']) {
+                        $matches = false;
+                        break;
+                    }
+                }
+                $tags[] = $tag + ['conditions_match' => $matches, 'active' => $matches];
+            }
+            $resolved[$key] = ['conditions' => $conditions, 'tags' => $tags];
+        }
+        return $resolved;
+    }
+
     private static function evaluateWithRedcap(string $condition, array $context): mixed
     {
         foreach (['project_id', 'record', 'event_id', 'instrument'] as $key) {

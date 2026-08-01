@@ -109,6 +109,18 @@ if ($evaluated !== ['[a]', '[b]'] || array_column($resolved['tags'], 'active') !
     $failures[] = 'condition_resolver: conditions were not evaluated once or tags resolved incorrectly';
 }
 
+$manyEvaluated = [];
+$manyResolved = ActionTagConditionResolver::resolveMany([
+    'field_a' => ActionTagParser::parse('@IF([a], @HIDDEN, @READONLY)'),
+    'field_b' => ActionTagParser::parse('@IF([a], @REQUIRED, @HIDDEN-FORM)'),
+], [], static function (string $condition) use (&$manyEvaluated): bool {
+    $manyEvaluated[] = $condition;
+    return true;
+});
+if ($manyEvaluated !== ['[a]'] || array_column($manyResolved['field_a']['tags'], 'active') !== [true, false] || array_column($manyResolved['field_b']['tags'], 'active') !== [true, false]) {
+    $failures[] = 'condition_resolver_many: shared condition evaluation or tag resolution differs';
+}
+
 $located = ActionTagDiagnosticLocations::enrich("é\r\n@notatag", ActionTagParser::parse("é\r\n@notatag", ['mode' => 'diagnostic']));
 if (($located['diagnostics'][0]['start_line'] ?? null) !== 2 || ($located['diagnostics'][0]['start_column'] ?? null) !== 1 || ($located['diagnostics'][0]['start_byte_column'] ?? null) !== 1) {
     $failures[] = 'diagnostic_locations: Unicode/CRLF source location differs';

@@ -21,7 +21,8 @@ Expose a documented developer method for action-tag parsing while preserving cur
 | `Classes/ActionTags.php` | Existing compatibility utility. It remains in place initially and may later delegate selected simple operations after compatibility tests. |
 | `Classes/Form.php` | Existing legacy extraction and `@IF` runtime-evaluation helpers. These are migration candidates, not parser dependencies or initial replacement targets. |
 | `Classes/ActionTagIndex.php` | Framework-neutral aggregation of caller-supplied annotations into field, tag, instrument, and per-field condition views. Metadata retrieval remains with a core or EM-framework facade. |
-| `Classes/ActionTagConditionResolver.php` | Runtime helper that evaluates a parse result's opaque condition definitions once in a supplied context and applies its ordered references to tags. It remains separate from the pure parser. |
+| `Classes/ActionTagConditionResolver.php` | Runtime helper that evaluates a parse result's opaque condition definitions once in a supplied context and applies its ordered references to tags. Its `resolveMany()` variant memoizes identical conditions across caller-supplied results. It remains separate from the pure parser. |
+| `Classes/ActionTagProjectConditionResolver.php` | REDCap-aware companion for bulk runtime resolution. It preloads the union of condition fields for one record/context and delegates structural condition application to `ActionTagConditionResolver`. It is not part of the pure parser. |
 | Future `ActionTagValidator` (name provisional) | Semantic validation against tag definitions, parameter schemas, metadata, enabled modules, and field/context rules. It remains separate from the parser. |
 
 `ActionTagParser` is the recommended core class name: it is direct, discoverable beside `ActionTags`, and clearly distinct from a future semantic validator.
@@ -49,7 +50,7 @@ Core owns the parser class and public facade. The EM remains the initial referen
 
 This gives callers accurate annotation structure without coupling the new parser to records, piping, project logic, or legacy evaluation behavior.
 
-`ActionTagConditionResolver` is a future API/EM-framework companion rather than parser logic: it receives an already parsed result and an explicit runtime context (or evaluator callback), evaluates each result-local condition once, and marks which flattened tags are active. `ActionTagIndex` similarly accepts annotations supplied by a caller and creates aggregate field/tag/instrument views without knowing how metadata was obtained. Both helpers can move to core or the EM Framework independently of the parser class.
+`ActionTagConditionResolver` is a future API/EM-framework companion rather than parser logic: it receives already parsed results and an explicit runtime context (or evaluator callback), evaluates each result-local condition once, and marks which flattened tags are active. For project-wide callers, `ActionTagProjectConditionResolver` batches field retrieval for the union of conditions and reuses values for identical condition text. `ActionTagIndex` similarly accepts annotations supplied by a caller and creates aggregate field/tag/instrument views without knowing how metadata was obtained. These helpers can move to core or the EM Framework independently of the parser class.
 
 ## Compatibility and Migration Strategy
 

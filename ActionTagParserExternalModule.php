@@ -6,6 +6,7 @@ require_once "classes/ActionTagParser_Old.php";
 require_once "classes/ActionTagParser.php";
 require_once "classes/ActionTagParserAdapter.php";
 require_once "classes/ActionTagConditionResolver.php";
+require_once "classes/ActionTagProjectConditionResolver.php";
 require_once "classes/ActionTagIndex.php";
 require_once "classes/ActionTagDiagnosticLocations.php";
 require_once "classes/ActionTagHelper.php";
@@ -13,6 +14,7 @@ require_once "classes/ActionTagHelper.php";
 use ActionTagParser\ActionTagParser as PureActionTagParser;
 use ActionTagParser\ActionTagParser_Old;
 use ActionTagParser\ActionTagConditionResolver;
+use ActionTagParser\ActionTagProjectConditionResolver;
 use ActionTagParser\ActionTagDiagnosticLocations;
 use ActionTagParser\ActionTagIndex;
 
@@ -133,11 +135,21 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
             'instance' => $selectedInstance,
             'repeat_instrument' => $selectedRepeatInstrument,
         ];
-        $fields = [];
+        $parsedFields = [];
         foreach ($Proj->metadata as $fieldName => $metadata) {
             $annotation = $metadata['misc'] ?? '';
             if (strpos($annotation, '@') === false) continue;
-            $resolved = ActionTagConditionResolver::resolve(PureActionTagParser::parse($annotation), $context);
+            $parsedFields[$fieldName] = PureActionTagParser::parse($annotation);
+        }
+        $sandboxKey = '__action_tag_parser_sandbox__';
+        if (array_key_exists('annotation', $payload)) {
+            $parsedFields[$sandboxKey] = PureActionTagParser::parse((string) $payload['annotation']);
+        }
+        $resolvedFields = ActionTagProjectConditionResolver::resolveMany($parsedFields, $context);
+
+        $fields = [];
+        foreach ($resolvedFields as $fieldName => $resolved) {
+            if ($fieldName === $sandboxKey) continue;
             foreach ($resolved['tags'] as $position => $tag) {
                 $fields[$fieldName][$position] = [
                     'active' => (bool) $tag['active'],
@@ -147,11 +159,9 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
         }
 
         $sandbox = null;
-        if (array_key_exists('annotation', $payload)) {
+        if (isset($resolvedFields[$sandboxKey])) {
             $sandbox = [];
-            $parsed = PureActionTagParser::parse((string) $payload['annotation']);
-            $resolved = ActionTagConditionResolver::resolve($parsed, $context);
-            foreach ($resolved['tags'] as $position => $tag) {
+            foreach ($resolvedFields[$sandboxKey]['tags'] as $position => $tag) {
                 $sandbox[$position] = [
                     'active' => (bool) $tag['active'],
                     'conditions_match' => (bool) $tag['conditions_match'],
@@ -211,9 +221,8 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
                 foreach ($annotations as $annotation) PureActionTagParser::parse($annotation);
             },
             static function () use ($annotations, $context): void {
-                foreach ($annotations as $annotation) {
-                    ActionTagConditionResolver::resolve(PureActionTagParser::parse($annotation), $context);
-                }
+                $parsed = array_map(static fn (string $annotation): array => PureActionTagParser::parse($annotation), $annotations);
+                ActionTagProjectConditionResolver::resolveMany($parsed, $context);
             },
             $iterations
         );
@@ -222,9 +231,8 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
                 foreach ($annotations as $annotation) PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']);
             },
             static function () use ($annotations, $context): void {
-                foreach ($annotations as $annotation) {
-                    ActionTagConditionResolver::resolve(PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']), $context);
-                }
+                $parsed = array_map(static fn (string $annotation): array => PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']), $annotations);
+                ActionTagProjectConditionResolver::resolveMany($parsed, $context);
             },
             $iterations
         );
