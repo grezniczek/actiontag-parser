@@ -94,6 +94,31 @@ return [
         'tag_names' => ['@READONLY'],
         'diagnostic_codes' => ['unterminated_quoted_parameter'],
     ],
+    'unterminated_parenthesized_parameter_recovery' => [
+        'annotation' => '@ARGS(one, two @READONLY',
+        'mode' => 'diagnostic',
+        'tag_names' => ['@READONLY'],
+        'diagnostic_codes' => ['unterminated_parenthesized_parameter'],
+    ],
+    'disabled_unterminated_if_fast' => [
+        'annotation' => '@.OFF.IF([a], @HIDDEN, @READONLY',
+        'mode' => 'fast',
+        'tag_names' => [],
+        'conditions' => [],
+    ],
+    'tag_contract_ranges' => [
+        'annotation' => '@TAG = {"a":1}',
+        'mode' => 'diagnostic',
+        'tag_names' => ['@TAG'],
+        'tag_contract' => [
+            'type' => 'tag', 'name' => '@TAG', 'raw_name' => '@TAG',
+            'start' => 0, 'end' => 14, 'raw' => '@TAG = {"a":1}',
+            'enabled' => true, 'explicitly_disabled' => false,
+            'parameter' => ['kind' => 'json', 'start' => 7, 'end' => 14, 'raw' => '{"a":1}', 'value' => ['a' => 1]],
+            'conditional' => [],
+        ],
+        'diagnostic_codes' => [],
+    ],
     'input_limit' => [
         'annotation' => '@HIDDEN',
         'mode' => 'diagnostic',

@@ -4,6 +4,7 @@ use ExternalModules\AbstractExternalModule;
 
 require_once "classes/ActionTagParser_Old.php";
 require_once "classes/ActionTagParser.php";
+require_once "classes/ActionTagParserAdapter.php";
 require_once "classes/ActionTagHelper.php";
 
 use ActionTagParser\ActionTagParser as PureActionTagParser;

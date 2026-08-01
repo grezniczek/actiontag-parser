@@ -1,8 +1,10 @@
 <?php
 
 require_once __DIR__ . '/../classes/ActionTagParser.php';
+require_once __DIR__ . '/../classes/ActionTagParserAdapter.php';
 
 use ActionTagParser\ActionTagParser;
+use DE\RUB\ActionTagParserExternalModule\ActionTagParserAdapter;
 
 $fixtures = require __DIR__ . '/fixtures.php';
 $failures = [];
@@ -18,6 +20,9 @@ foreach ($fixtures as $name => $fixture) {
     if (isset($fixture['tag_ranges'])) {
         $actualRanges = array_map(static fn (array $tag) => [$tag['start'], $tag['end']], $tags);
         if ($actualRanges !== $fixture['tag_ranges']) $failures[] = "$name: tag ranges " . json_encode($actualRanges);
+    }
+    if (isset($fixture['tag_contract']) && ($tags[0] ?? null) !== $fixture['tag_contract']) {
+        $failures[] = "$name: full tag contract " . json_encode($tags[0] ?? null);
     }
     if (isset($fixture['parameter_kinds'])) {
         $actualKinds = array_map(static fn (array $tag) => $tag['parameter']['kind'] ?? null, $tags);
@@ -50,12 +55,39 @@ foreach ($fixtures as $name => $fixture) {
     }
 }
 
+foreach ($fixtures as $name => $fixture) {
+    $options = $fixture['options'] ?? [];
+    $fast = ActionTagParser::parse($fixture['annotation'], ['mode' => 'fast'] + $options);
+    $diagnostic = ActionTagParser::parse($fixture['annotation'], ['mode' => 'diagnostic'] + $options);
+    $normalize = static function (array $result): array {
+        return array_map(static function (array $tag) use ($result): array {
+            $conditions = array_map(static fn (array $ref): array => [
+                $result['conditions'][$ref['id']]['raw'],
+                $ref['negated'],
+            ], $tag['conditional']);
+            return [$tag['name'], $tag['start'], $tag['end'], $tag['raw'], $tag['parameter'], $conditions];
+        }, array_values(array_filter($result['tags'], static fn (array $tag): bool => $tag['enabled'])));
+    };
+    if ($normalize($fast) !== $normalize($diagnostic)) {
+        $failures[] = "$name: fast and diagnostic enabled-tag outputs differ";
+    }
+}
+
 // This would exceed Xdebug's call-stack guard with recursive @IF descent.
 $deep = '@HIDDEN';
 for ($i = 0; $i < 600; $i++) $deep = "@IF([field_$i], $deep, @READONLY)";
 $deepResult = ActionTagParser::parse($deep, ['mode' => 'diagnostic', 'max_nesting_depth' => 128]);
 if (count($deepResult['conditions']) !== 129 || array_column($deepResult['diagnostics'], 'code') !== ['nesting_limit_exceeded']) {
     $failures[] = 'iterative_deep_nesting: expected bounded parsing without call-stack exhaustion';
+}
+
+$adapterTags = ActionTagParserAdapter::parseActionTags("@DEFAULT='value' @IF([a], @READONLY, @HIDDEN)");
+if ($adapterTags !== [
+    ['actiontag' => '@DEFAULT', 'params' => "'value'", 'match' => "@DEFAULT='value'", 'start' => 0, 'end' => 16, 'conditional' => []],
+    ['actiontag' => '@READONLY', 'params' => '', 'match' => '@READONLY', 'start' => 26, 'end' => 35, 'conditional' => [['id' => 1, 'negated' => false]]],
+    ['actiontag' => '@HIDDEN', 'params' => '', 'match' => '@HIDDEN', 'start' => 37, 'end' => 44, 'conditional' => [['id' => 1, 'negated' => true]]],
+]) {
+    $failures[] = 'adapter: compatibility-shaped tag output differs';
 }
 
 if ($failures !== []) {

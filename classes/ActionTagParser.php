@@ -193,7 +193,12 @@ final class ActionTagParser
             }
             if ($introducer === '(') {
                 $close = self::scanDelimited($state, $parameterStart, $frame['end'], '(', ')');
-                if ($close === null) { self::addDiagnostic($state, 'unterminated_parenthesized_parameter', 'error', $start, $frame['end'], 'Parenthesized action-tag parameter is not closed.'); $frame['i'] = $frame['end']; unset($nodes, $frame); continue; }
+                if ($close === null) {
+                    self::addDiagnostic($state, 'unterminated_parenthesized_parameter', 'error', $start, $frame['end'], 'Parenthesized action-tag parameter is not closed.');
+                    $frame['i'] = self::nextTopLevelTagStart($input, $parameterStart + 1, $frame['end']) ?? $frame['end'];
+                    unset($nodes, $frame);
+                    continue;
+                }
                 $parameter = ['kind' => 'arguments', 'start' => $parameterStart, 'end' => $close + 1, 'raw' => substr($input, $parameterStart, $close - $parameterStart + 1), 'value' => substr($input, $parameterStart + 1, $close - $parameterStart - 1)];
                 self::emitText($state, $nodes, $frame['text_start'], $start); self::emitTag($state, $nodes, $name, $rawName, $start, $close + 1, $parameter, $frame['conditional'], $frame['enabled'], $explicitlyDisabled, $frame['disabled_by']); $frame['i'] = $close + 1; $frame['text_start'] = $close + 1; unset($nodes, $frame); continue;
             }
