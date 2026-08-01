@@ -12,6 +12,9 @@ require_once "classes/ActionTagHelper.php";
 
 use ActionTagParser\ActionTagParser as PureActionTagParser;
 use ActionTagParser\ActionTagParser_Old;
+use ActionTagParser\ActionTagConditionResolver;
+use ActionTagParser\ActionTagDiagnosticLocations;
+use ActionTagParser\ActionTagIndex;
 
 class ActionTagParserExternalModule extends AbstractExternalModule {
 
@@ -53,25 +56,109 @@ class ActionTagParserExternalModule extends AbstractExternalModule {
 
     function explain() {
         $project_id = $this->getProjectId();
-
-        // Get all fields that have an action tag
-
         $fields = [];
+        $annotations = [];
         $Proj = new \Project($project_id);
         foreach ($Proj->metadata as $field_name => $field_metadata) {
             $misc = $field_metadata["misc"] ?? "";
             if (strpos($misc, "@") !== false) {
                 $fields[$field_metadata["form_name"]."-".$field_metadata["field_order"]] = $field_metadata;
+                $annotations[$field_name] = ['annotation' => $misc, 'instrument' => $field_metadata['form_name']];
             }
         }
         ksort($fields);
+
+        $index = ActionTagIndex::build($annotations);
+        $escape = static fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        $get = static fn (string $key) => trim((string) ($_GET[$key] ?? ''));
+        $record = $get('record');
+        $eventId = $get('event_id');
+        $instrument = $get('instrument');
+        $resolverContext = ($record !== '' && $eventId !== '' && $instrument !== '') ? [
+            'project_id' => $project_id,
+            'record' => $record,
+            'event_id' => $eventId,
+            'instrument' => $instrument,
+            'instance' => max(1, (int) ($get('instance') ?: 1)),
+            'repeat_instrument' => $get('repeat_instrument'),
+        ] : null;
+        $renderConditions = static function (array $tag, array $conditions) use ($escape): string {
+            $parts = [];
+            foreach ($tag['conditional'] as $reference) {
+                $raw = $conditions[$reference['id']]['raw'] ?? '(missing condition)';
+                $parts[] = $reference['negated'] ? '!(' . $raw . ')' : '(' . $raw . ')';
+            }
+            return $parts === [] ? '' : '<code>' . $escape(implode(' AND ', $parts)) . '</code>';
+        };
+        $renderNodes = null;
+        $renderNodes = static function (array $nodes, array $conditions) use (&$renderNodes, $escape, $renderConditions): void {
+            print '<ul class="mb-1">';
+            foreach ($nodes as $node) {
+                if ($node['type'] === 'text') continue;
+                if ($node['type'] === 'tag') {
+                    print '<li><b>'.$escape($node['name']).'</b>';
+                    if ($node['parameter'] !== null) print ' <code>'.$escape($node['parameter']['raw']).'</code>';
+                    $conditional = $renderConditions($node, $conditions);
+                    if ($conditional !== '') print ' <span class="text-muted">if</span> '.$conditional;
+                    print '</li>';
+                } elseif ($node['type'] === 'if') {
+                    print '<li><b>@IF</b> <code>'.$escape($conditions[$node['condition_id']]['raw'] ?? '').'</code>';
+                    print '<div class="ml-2 text-muted">then</div>';
+                    $renderNodes($node['then'], $conditions);
+                    print '<div class="ml-2 text-muted">else</div>';
+                    $renderNodes($node['else'], $conditions);
+                    print '</li>';
+                } else {
+                    print '<li><span class="text-warning">Candidate</span> <code>'.$escape($node['raw']).'</code></li>';
+                }
+            }
+            print '</ul>';
+        };
+
+        print '<h5>Parser showcase</h5>';
+        print '<p>Fast parsing provides flattened usable tags; diagnostic parsing retains structure and source findings. The benchmark page compares timing with the established helpers.</p>';
+        print '<div class="mb-3"><b>'.count($index['by_field']).'</b> fields, <b>'.count($index['by_tag']).'</b> distinct tags, <b>'.count($index['by_instrument']).'</b> instruments.</div>';
+        print '<table class="table table-sm table-bordered" style="max-width:600px"><tr><th>Tag</th><th>Occurrences</th></tr>';
+        foreach ($index['by_tag'] as $tag => $occurrences) print '<tr><td><code>'.$escape($tag).'</code></td><td>'.count($occurrences).'</td></tr>';
+        print '</table>';
+        print '<details class="mb-3"><summary>Resolve conditions in a runtime context</summary>';
+        print '<form method="get" class="form-inline mt-2">';
+        if (isset($_GET['pid'])) print '<input type="hidden" name="pid" value="'.$escape($_GET['pid']).'">';
+        foreach (['record' => 'Record', 'event_id' => 'Event ID', 'instrument' => 'Instrument', 'instance' => 'Instance', 'repeat_instrument' => 'Repeat instrument'] as $key => $label) {
+            print '<label class="mr-1">'.$escape($label).'</label><input class="form-control form-control-sm mr-2" name="'.$escape($key).'" value="'.$escape($get($key)).'">';
+        }
+        print '<button class="btn btn-sm btn-primary" type="submit">Resolve</button></form>';
+        print '<p class="small text-muted mb-0">Record, event ID, and instrument are required. Resolution is an EM runtime helper; it is not part of the pure parser.</p></details>';
+
         foreach ($fields as $_ => $field_metadata) {
-            print "<hr><p class=\"ml-2\">Field: <b>{$field_metadata["field_name"]}</b></p><pre class=\"mr-2\">";
-            $result = PureActionTagParser::parse($field_metadata["misc"], ['mode' => 'diagnostic']);
-            print_r($field_metadata["misc"]);
-            print "<hr>";
-            print_r($result);
-            print "</pre>";
+            $annotation = $field_metadata['misc'];
+            $fast = PureActionTagParser::parse($annotation);
+            $diagnostic = ActionTagDiagnosticLocations::enrich($annotation, PureActionTagParser::parse($annotation, ['mode' => 'diagnostic']));
+            $resolved = null;
+            $resolutionError = null;
+            if ($resolverContext !== null) {
+                try { $resolved = ActionTagConditionResolver::resolve($fast, $resolverContext); }
+                catch (\Throwable $exception) { $resolutionError = $exception->getMessage(); }
+            }
+            print '<hr><h5>Field: <code>'.$escape($field_metadata['field_name']).'</code> <small class="text-muted">('.$escape($field_metadata['form_name']).')</small></h5>';
+            print '<pre class="border p-2 bg-light">'.$escape($annotation).'</pre>';
+            print '<h6>Fast tags</h6><table class="table table-sm"><tr><th>Tag</th><th>Parameter</th><th>Condition</th><th>Resolved</th></tr>';
+            foreach ($fast['tags'] as $position => $tag) {
+                $resolvedValue = $resolved === null ? '—' : ($resolved['tags'][$position]['active'] ? 'active' : 'inactive');
+                print '<tr><td><code>'.$escape($tag['name']).'</code></td><td><code>'.$escape($tag['parameter']['raw'] ?? '').'</code></td><td>'.$renderConditions($tag, $fast['conditions']).'</td><td>'.$escape($resolvedValue).'</td></tr>';
+            }
+            print '</table>';
+            if ($resolutionError !== null) print '<p class="text-danger">Condition resolution failed: '.$escape($resolutionError).'</p>';
+            print '<details><summary>Diagnostic structure and findings ('.count($diagnostic['diagnostics']).')</summary>';
+            $renderNodes($diagnostic['nodes'], $diagnostic['conditions']);
+            if ($diagnostic['diagnostics'] !== []) {
+                print '<table class="table table-sm"><tr><th>Code</th><th>Location</th><th>Message</th></tr>';
+                foreach ($diagnostic['diagnostics'] as $finding) {
+                    print '<tr><td><code>'.$escape($finding['code']).'</code></td><td>'.$finding['start_line'].':'.$finding['start_column'].'</td><td>'.$escape($finding['message']).'</td></tr>';
+                }
+                print '</table>';
+            }
+            print '</details>';
         }
     }
 
