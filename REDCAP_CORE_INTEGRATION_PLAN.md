@@ -36,10 +36,11 @@ when that is warranted.
 - The logic and action-tag browser parsers are mirrors for responsive editor
   feedback. They must remain behaviorally aligned with their PHP counterparts,
   even though UI offsets use UTF-16 and server offsets use UTF-8 bytes.
-- SQL fields are not REDCap logic. Their next integration step is SQL syntax
-  highlighting only, based on ACE's SQL support with the small extension needed
-  for SQL-field-supported smart variables. They must not receive logic parsing,
-  logic completion, or logic structural analysis.
+- SQL fields are not REDCap logic. Their workspace uses ACE's bundled MySQL
+  mode (appropriate for REDCap's MySQL/MariaDB support), extended to highlight
+  bracketed SQL-field smart variables and data-table placeholders. It exposes
+  Edit and Help only: SQL does not receive parsing, validation, completion,
+  summary, or structural analysis.
 - The piping parser is currently structural server-side groundwork. It is not
   yet a browser authoring surface or a runtime replacement.
 
@@ -182,9 +183,9 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    move its contract and shared fixtures into core.
 2. **Completed:** Add diagnostic authoring integration for Field Annotation,
    calculations, and branching logic without changing runtime evaluation.
-3. **Next:** Make the browser logic parser iterative/bounded, align PHP and JS
-   action-tag whitespace semantics, and give SQL fields an SQL-highlighting-only
-   path.
+3. **Completed:** Make the browser logic parser iterative/bounded, align PHP
+   and JS action-tag whitespace semantics, and give SQL fields an
+   SQL-highlighting-only path.
 4. Build a compatibility corpus from deliberately selected real-world
    expressions and annotations once the intended structural behavior has
    settled. Classify differences from legacy consumers as compatible behavior
