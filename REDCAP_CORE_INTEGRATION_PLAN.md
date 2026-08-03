@@ -42,8 +42,8 @@ when that is warranted.
   Edit and Help only: manual Ctrl+Space completion supplies smart variables
   and project field names in quoted SQL values. SQL does not receive parsing,
   validation, SQL-language completion, summary, or structural analysis.
-- The piping parser is currently structural server-side groundwork. It is not
-  yet a browser authoring surface or a runtime replacement.
+- Piping now has PHP and browser parser mirrors validated by shared fixtures.
+  It is not yet exposed as an authoring surface or a runtime replacement.
 
 ### Deferred authoring UI/UX refinements
 
@@ -198,17 +198,19 @@ The eventual validator therefore needs an extensible definition/schema mechanism
 3. **Completed:** Make the browser logic parser iterative/bounded, align PHP
    and JS action-tag whitespace semantics, and give SQL fields an
    SQL-highlighting-only path.
-4. Build a compatibility corpus from deliberately selected real-world
+4. **Completed:** Establish a shared PHP/JS piping-syntax contract and a
+   standalone browser mirror, without adding a piping authoring surface.
+5. Build a compatibility corpus from deliberately selected real-world
    expressions and annotations once the intended structural behavior has
    settled. Classify differences from legacy consumers as compatible behavior
    or documented corrections.
-5. Use the EM benchmark across representative projects to establish parser,
+6. Use the EM benchmark across representative projects to establish parser,
    resolver, preload, and evaluation costs before considering runtime use.
-6. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
+7. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
    compatibility policy are ready to be stable for developers.
-7. Evaluate selective compatibility delegation in `ActionTags`, then migrate
+8. Evaluate selective compatibility delegation in `ActionTags`, then migrate
    `Form`/runtime consumers one family at a time with regression coverage.
-8. Introduce semantic tag definitions and a validator as a distinct
+9. Introduce semantic tag definitions and a validator as a distinct
    standardization project.
 
 ## Benchmarking and Runtime Readiness
