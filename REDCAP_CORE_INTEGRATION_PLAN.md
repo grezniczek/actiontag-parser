@@ -45,6 +45,17 @@ when that is warranted.
 - The piping parser is currently structural server-side groundwork. It is not
   yet a browser authoring surface or a runtime replacement.
 
+### Deferred authoring UI/UX refinements
+
+- Revise the workspace expand/collapse control in `rcDialog` so its icon and
+  behavior do not depend on jQuery UI.
+- Add SQL-specific help based on `Design/sql_field_explanation.php`, either as
+  a dedicated workspace tab or through an adjacent help button. Decide the
+  presentation before duplicating the explanatory content.
+- When the Dynamic Query Tool is enabled, expose its link beside the existing
+  authoring-workspace reference/explanation buttons, consistent with the Edit
+  Field dialog.
+
 ## Core Objective
 
 Expose a documented developer method for action-tag parsing while preserving current core behavior until each consumer can safely migrate. The same parser must be usable for native REDCap tags and External Module tags, but the parser itself must not depend on a particular tag catalog or project context.
