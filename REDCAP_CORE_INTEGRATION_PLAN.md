@@ -19,6 +19,14 @@ The executable action-tag contract in core is
 fixtures. This plan records architecture, ownership, and the remaining
 integration decisions; the companion [parser requirements and implementation document](PARSER_REQUIREMENTS_AND_IMPLEMENTATION.md) preserves the original design rationale and the outstanding acceptance work.
 
+### Documentation maintenance
+
+This plan and its companion requirements document are living records. Update
+them as implementation progresses and whenever a design or compatibility
+decision is refined or revised. Update the executable contract, shared
+fixtures, and any developer or user documentation affected by the same change
+when that is warranted.
+
 ### Current authoring integration
 
 - Field Annotation, calculations, and branching logic use the reusable Online
