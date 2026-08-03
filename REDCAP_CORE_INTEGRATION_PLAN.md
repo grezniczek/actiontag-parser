@@ -55,6 +55,23 @@ when that is warranted.
 - When the Dynamic Query Tool is enabled, expose its link beside the existing
   authoring-workspace reference/explanation buttons, consistent with the Edit
   Field dialog.
+- Add a piping workspace for the Edit Field dialog's `#field_note`, using the
+  existing read-only source/open-on-focus-or-click pattern. Distinguish
+  one-line from multi-line workspace surfaces: the former may be edited with
+  line breaks, but must warn on update and normalize each surrounding
+  whitespace/line-break run to one space.
+- Add an explicit **Edit with authoring editor** action for field labels and
+  every other piping-capable rich-text surface, including survey instructions
+  and survey exit text. It opens the source in ACE for piping and
+  field-embedding diagnostics, highlighting, and completion; rich-text
+  surfaces receive HTML highlighting as well. TinyMCE remains the default
+  visual editor, while ACE is the deliberate source-editor path. Before
+  opening it, synchronize TinyMCE to the underlying field; after update,
+  preserve the raw HTML and restore the normal rich-text lifecycle.
+- Treat piping and field embedding as distinct syntax products inside every
+  rich-text authoring editor. They must each be wholly inside one HTML text
+  node; a construct split by markup must remain unhighlighted so the editor
+  exposes this common runtime mistake.
 
 ## Core Objective
 
