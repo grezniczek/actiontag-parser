@@ -39,8 +39,9 @@ when that is warranted.
 - SQL fields are not REDCap logic. Their workspace uses ACE's bundled MySQL
   mode (appropriate for REDCap's MySQL/MariaDB support), extended to highlight
   bracketed SQL-field smart variables and data-table placeholders. It exposes
-  Edit and Help only: SQL does not receive parsing, validation, completion,
-  summary, or structural analysis.
+  Edit and Help only: manual Ctrl+Space completion supplies smart variables
+  and project field names in quoted SQL values. SQL does not receive parsing,
+  validation, SQL-language completion, summary, or structural analysis.
 - The piping parser is currently structural server-side groundwork. It is not
   yet a browser authoring surface or a runtime replacement.
 
