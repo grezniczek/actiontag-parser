@@ -131,8 +131,9 @@ The direct condition is opaque:
 An arm containing only whitespace is structurally absent: an all-whitespace
 condition produces `if_missing_condition`, rather than becoming an opaque logic
 expression. This is a wrapper-level check, not logic validation. The PHP and
-browser mirrors must share one explicit whitespace-only definition (including
-Unicode whitespace) so that they cannot disagree about whether an arm exists.
+browser mirrors must share the explicit ECMAScript whitespace and
+line-terminator character set so that they cannot disagree about whether an
+arm exists.
 
 The `then` and `else` ranges are annotation fragments. They are recursively parsed for tags and nested `@IF` containers.
 
