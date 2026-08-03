@@ -2,11 +2,38 @@
 
 ## Status
 
-Planning document. No REDCap core code is changed by this plan.
+This document began as the action-tag-parser core-move plan. The work has
+since become the **Authoring Syntax Diagnostics** initiative: the
+`authoring-syntax-diagnostics` REDCap branch contains the pure action-tag
+parser, shared syntax primitives, logic and piping parsers, a public logic
+catalog, browser parser mirrors, and the first Online Designer workspace.
 
-The parser will first be implemented and tested in this External Module. That implementation is deliberately portable: once it satisfies the documented contract, it can move to REDCap core without a parser rewrite. Core integration and replacement of legacy consumers are separate, incremental work.
+The External Module remains the reference and experimentation environment. It
+contains the portable parser, condition-resolution helpers, scoped metadata
+facades, and an interactive benchmark. Core integration is additive: it does
+not yet replace legacy runtime consumers or make the parser a documented
+developer API.
 
-Parser behavior, output structure, `@IF` handling, diagnostics, performance requirements, and test cases are defined in the companion [parser requirements and implementation document](PARSER_REQUIREMENTS_AND_IMPLEMENTATION.md). That document is the source of truth for parser-specific decisions.
+The executable action-tag contract in core is
+`UnitTests/ActionTags/ActionTagParserContract.md` and its shared PHP/JS
+fixtures. This plan records architecture, ownership, and the remaining
+integration decisions; the companion [parser requirements and implementation document](PARSER_REQUIREMENTS_AND_IMPLEMENTATION.md) preserves the original design rationale and the outstanding acceptance work.
+
+### Current authoring integration
+
+- Field Annotation, calculations, and branching logic use the reusable Online
+  Designer authoring workspace. Its syntax feedback is diagnostic only; the
+  established server-side validators remain authoritative when metadata is
+  saved.
+- The logic and action-tag browser parsers are mirrors for responsive editor
+  feedback. They must remain behaviorally aligned with their PHP counterparts,
+  even though UI offsets use UTF-16 and server offsets use UTF-8 bytes.
+- SQL fields are not REDCap logic. Their next integration step is SQL syntax
+  highlighting only, based on ACE's SQL support with the small extension needed
+  for SQL-field-supported smart variables. They must not receive logic parsing,
+  logic completion, or logic structural analysis.
+- The piping parser is currently structural server-side groundwork. It is not
+  yet a browser authoring surface or a runtime replacement.
 
 ## Core Objective
 
@@ -31,7 +58,12 @@ Expose a documented developer method for action-tag parsing while preserving cur
 
 ## Developer API and Ownership
 
-The initial core change should add, rather than replace, this developer method:
+`ActionTagParser::parse()` is currently an internal core implementation
+surface. Internal callers can use it, but its signature and result contract are
+not yet guaranteed to third-party developers.
+
+When the contract is ready for public support, core should add, rather than
+replace, this documented facade:
 
 ```php
 REDCap::parseActionTags(string $annotation, array $options = []): array
@@ -39,7 +71,12 @@ REDCap::parseActionTags(string $annotation, array $options = []): array
 
 The method should expose the parser's documented fast and diagnostic modes without adding project-specific semantics. Its PHPDoc must link to the stable result contract and state that syntax recognition does not establish whether a tag is known or valid for a project.
 
-Core owns the parser class and public facade. The EM remains the initial reference implementation and the place to develop the first semantic Field Annotation checker. A subsequent core semantic-validation initiative may provide shared schemas/registration, but must not be required before the parser API is released.
+The `REDCap` facade is a stability and documentation boundary, not a technical
+prerequisite for using the internal class. Core owns both the parser and the
+eventual stable facade. The EM remains the reference implementation and the
+place to develop the first semantic Field Annotation checker. A subsequent
+semantic-validation initiative may provide shared schemas/registration, but
+must not be required before the parser API is released.
 
 ## `@IF` Integration Decision
 
@@ -116,26 +153,55 @@ Native tag descriptions are currently available through facilities such as `Form
 
 The eventual validator therefore needs an extensible definition/schema mechanism. Until that exists, the EM may provide rich module-specific feedback on top of the shared parser. The parser API should not wait for this standardization.
 
-## Planned Core Touchpoints
+## Current and Future Core Touchpoints
 
-- `/home/gr/redcap/codebase/Classes/ActionTagParser.php` — new pure parser class.
-- `/home/gr/redcap/codebase/Classes/REDCap.php` — documented developer-facing facade.
-- `/home/gr/redcap/codebase/Classes/ActionTags.php` — later, selective compatibility delegation.
-- `/home/gr/redcap/codebase/Classes/Form.php` — later, gradual assessment and migration of legacy helpers; no initial replacement.
-- `/home/gr/redcap/codebase/Design/online_designer_render_fields.php` — likely early diagnostic-mode integration candidate.
+- `/home/gr/redcap/codebase/Classes/ActionTagParser.php` — implemented pure parser class.
+- `/home/gr/redcap/codebase/Classes/AuthoringSyntax/` — implemented shared
+  primitives, logic/piping syntax products, and the public logic catalog.
+- `/home/gr/redcap/codebase/Controllers/DesignController.php` and
+  `/home/gr/redcap/codebase/Resources/js/AuthoringSyntax/` — implemented
+  authoring catalog, browser diagnostics, and reusable workspace.
+- `/home/gr/redcap/codebase/Classes/REDCap.php` — future documented
+  developer-facing facade once the action-tag contract is approved as stable.
+- `/home/gr/redcap/codebase/Classes/ActionTags.php` and
+  `/home/gr/redcap/codebase/Classes/Form.php` — later, selective compatibility
+  delegation and runtime migration. `Form::replaceIfActionTag()` remains the
+  runtime authority until that work is separately approved.
 
 ## Core Rollout Sequence
 
-1. Finalize and test the portable parser in this EM, including its documented `@IF`, fast-mode, and diagnostic-mode contract.
-2. Add the unchanged parser to core and expose `REDCap::parseActionTags()` with developer documentation.
-3. Port the shared fixture suite and verify that the additive core change has no effect on existing runtime consumers.
-4. Integrate diagnostic output into a low-risk inspection-oriented core path.
-5. Evaluate selective compatibility delegation in `ActionTags`.
-6. Migrate legacy `Form`/runtime consumers gradually, retaining `Form::replaceIfActionTag()` as the runtime authority until a separately approved change replaces it.
-7. Introduce semantic tag definitions and a validator as a distinct standardization project.
+1. **Completed:** Implement and exercise the portable parser in the EM, then
+   move its contract and shared fixtures into core.
+2. **Completed:** Add diagnostic authoring integration for Field Annotation,
+   calculations, and branching logic without changing runtime evaluation.
+3. **Next:** Make the browser logic parser iterative/bounded, align PHP and JS
+   action-tag whitespace semantics, and give SQL fields an SQL-highlighting-only
+   path.
+4. Build a compatibility corpus from deliberately selected real-world
+   expressions and annotations once the intended structural behavior has
+   settled. Classify differences from legacy consumers as compatible behavior
+   or documented corrections.
+5. Use the EM benchmark across representative projects to establish parser,
+   resolver, preload, and evaluation costs before considering runtime use.
+6. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
+   compatibility policy are ready to be stable for developers.
+7. Evaluate selective compatibility delegation in `ActionTags`, then migrate
+   `Form`/runtime consumers one family at a time with regression coverage.
+8. Introduce semantic tag definitions and a validator as a distinct
+   standardization project.
 
-## Readiness for the Core Move
+## Benchmarking and Runtime Readiness
 
-The EM parser is ready to move when it is demonstrably pure, has a stable fixture-tested public contract, has bounded failure behavior, and has predictable benchmark results. The detailed acceptance criteria are maintained in the parser requirements document.
+The EM's `benchmark.php` page is an implemented interactive harness. It runs
+the fast and diagnostic pure parser against the current project's annotated
+fields; compares it with the legacy parser and `ActionTagHelper`; and, for a
+chosen record context, reports parser, condition-discovery, record-preload,
+condition-evaluation, mapping, and total resolver costs. It also records the
+conditions, tags, fields, and data-query workload behind each result.
 
-At that point, the core change is a class relocation plus documented API integration. Compatibility migration and semantic standardization remain intentionally independent follow-on work.
+The harness is ready for representative-project benchmarking, but a broad
+real-world corpus is intentionally not yet the acceptance gate: first settle
+the structural and parity decisions above, then collect and classify examples
+that exercise them. Runtime adoption requires stable compatibility evidence and
+predictable benchmark results; it remains independent of the current
+diagnostic/editor rollout.

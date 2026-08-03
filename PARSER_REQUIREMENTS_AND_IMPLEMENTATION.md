@@ -1,12 +1,30 @@
-# Action Tag Parser: Requirements and Initial Implementation Design
+# Action Tag Parser: Requirements, Contract, and Implementation History
 
 ## Status and Scope
 
-This is the first implementation-design draft for the parser to be built in this External Module. It turns the core-integration plan into an implementable contract, but it deliberately does not prescribe semantic rules for individual action tags.
+This document began as the implementation design for the External Module. The
+portable parser was subsequently implemented in the EM and moved to REDCap's
+`authoring-syntax-diagnostics` branch as `Classes/ActionTagParser.php`. It
+still records the design constraints and acceptance goals, but the core
+executable contract and shared PHP/JS fixtures now define the implemented
+action-tag result shape.
 
-The parser will be portable PHP 8.1+: it may not read REDCap metadata, access a database, use globals, evaluate logic or piping, or depend on the External Module framework. Its only input is annotation text plus parser options. Its only output is structured parse data and, in diagnostic mode, syntax findings.
+The parser is portable PHP 8.1+: it may not read REDCap metadata, access a database, use globals, evaluate logic or piping, or depend on the External Module framework. Its only input is annotation text plus parser options. Its only output is structured parse data and, in diagnostic mode, syntax findings.
 
-This document is intentionally written so that the resulting parser can later move unchanged to REDCap core as `Classes/ActionTagParser.php`.
+The parser is now present in core. The EM remains the experimentation and
+benchmark environment for parser products, condition resolution, scoped
+metadata helpers, and eventual compatibility work. Runtime replacement and a
+documented `REDCap` facade remain separate future decisions.
+
+### Contract ownership
+
+- `UnitTests/ActionTags/ActionTagParserContract.md` in core and its PHP/JS
+  fixtures are the current syntax-contract reference.
+- This document owns the rationale, constraints, benchmark expectations, and
+  migration goals that are broader than the pure parser result.
+- `ActionTagParser::parse()` is currently an internal core surface. A future
+  documented `REDCap::parseActionTags()` wrapper is the public stability
+  commitment; it is not required for internal experimentation.
 
 ## Decisions Made So Far
 
@@ -37,13 +55,13 @@ This document is intentionally written so that the resulting parser can later mo
 
 ## Input and Options
 
-The eventual public facade is expected to be equivalent to:
+The internal core parser contract is:
 
 ```php
 ActionTagParser::parse(string $annotation, array $options = []): array
 ```
 
-The class method name and visibility can be finalized during implementation, but the input/output behavior below is the intended contract.
+The class method name and visibility remain internal implementation details. A future, documented `REDCap::parseActionTags()` facade should delegate to this contract and preserve its input/output behavior.
 
 | Option | Default | Meaning |
 | --- | --- | --- |
@@ -109,6 +127,12 @@ The direct condition is opaque:
 - do not call `REDCap::evaluateLogic`, `Form::replaceIfActionTag`, piping, or a logic parser;
 - do not diagnose invalid field references, operators, quoting, or logical precedence; and
 - only diagnose the `@IF` wrapper's own structural failures, such as missing delimiter or closing parenthesis.
+
+An arm containing only whitespace is structurally absent: an all-whitespace
+condition produces `if_missing_condition`, rather than becoming an opaque logic
+expression. This is a wrapper-level check, not logic validation. The PHP and
+browser mirrors must share one explicit whitespace-only definition (including
+Unicode whitespace) so that they cannot disagree about whether an arm exists.
 
 The `then` and `else` ranges are annotation fragments. They are recursively parsed for tags and nested `@IF` containers.
 
@@ -323,7 +347,7 @@ Use a mode-specific emission sink rather than maintaining two parsers:
 
 Shared scanning and node-construction helpers guarantee that a valid enabled leaf tag has the same name, range, parameter, and conditional structure in both modes. Condition IDs are result-local, so callers compare condition text/polarity rather than raw IDs when comparing separate parses.
 
-## Performance Requirements
+## Performance Requirements and Existing Harness
 
 - One forward scan in the normal case; no repeated parsing of nested `@IF` source ranges.
 - O(n) time and O(n) output memory, with stack space bounded by `max_nesting_depth`.
@@ -333,11 +357,24 @@ Shared scanning and node-construction helpers guarantee that a valid enabled lea
 - Compute line/column locations only for diagnostics that will be returned.
 - Keep caching outside the parser; callers may cache results using annotation text and parser-version/options as keys.
 
-Benchmarks must include ordinary annotation text, many independent tags, JSON parameters, quoted values containing delimiters, nested `@IF` containers, and deliberately deep malformed inputs. The acceptance criterion is predictable linear growth rather than only a single absolute runtime number.
+The EM's `benchmark.php` page implements the first interactive harness. It
+compares fast and diagnostic pure parsing with the legacy parser and
+`ActionTagHelper`, then exposes resolver phase timings and workload metrics for
+a selected project/record context. This is already useful for controlled
+project-level comparisons and for separating parser cost from data/evaluation
+cost.
+
+The next evidence stage is deliberately deferred until the structural behavior
+has settled: collect a curated, de-identified real-world corpus and run it
+through the harness. That corpus should include ordinary annotation text, many
+independent tags, JSON parameters, quoted delimiters, nested `@IF` containers,
+deep malformed inputs, and intentional differences from legacy consumers. The
+acceptance criterion is predictable linear growth and documented compatibility,
+not one absolute runtime number.
 
 ## Test Corpus and Acceptance Cases
 
-The first fixture suite must cover at least:
+The shared fixture suite must cover at least:
 
 1. Native and External Module bare tags, uppercase name enforcement, hyphen/underscore names, and names with digits where currently used.
 2. Tags with quoted, unquoted, JSON, and parenthesized parameters, including delimiters inside quotes and escaped quotes.
@@ -352,7 +389,7 @@ The first fixture suite must cover at least:
 11. The default rejected two-arm `@IF`, an explicit empty quoted false branch, and the accepted shorthand behavior when the internal switch is enabled in a dedicated test configuration.
 12. Limit and performance tests for deeply nested, oversized, and adversarial inputs.
 
-Before a core move, fixtures must also record any intentional behavioral differences from legacy `Form`/`ActionTags` helpers. The parser's role is a stable structural standard, not an undocumented emulation of every historical regex quirk.
+Before runtime migration, fixtures must also record any intentional behavioral differences from legacy `Form`/`ActionTags` helpers. The parser's role is a stable structural standard, not an undocumented emulation of every historical regex quirk.
 
 ## Explicit Non-Goals
 
@@ -364,12 +401,20 @@ Before a core move, fixtures must also record any intentional behavioral differe
 
 Those responsibilities remain with core runtime code and the future semantic action-tag validator. The parser supplies the source-faithful structure those layers need.
 
-## EM Implementation Transition
+## Implementation Transition
 
-Implementation begins with a clean replacement rather than incrementally extending the current parser. As the first code change in the EM-scoped implementation work:
+The EM transition is complete:
 
-1. Rename the current `classes/ActionTagParser.php` class and file to `ActionTagParser_Old` / `ActionTagParser_Old.php` and preserve it only as a compatibility reference during the transition.
-2. Add the new standalone parser under the canonical `ActionTagParser` name.
-3. Keep any EM metadata catalog, runtime `@IF` resolution, and Field Annotation checking outside the new parser class.
+1. The former EM implementation is retained as `ActionTagParser_Old` only for
+   comparison and compatibility investigation.
+2. The standalone parser uses the canonical `ActionTagParser` name in the EM
+   and in core.
+3. The pure parser remains separate from EM metadata access, runtime `@IF`
+   resolution, and Field Annotation semantic checking.
+4. The current core branch additionally contains shared syntax primitives,
+   logic and piping parser products, a public logic catalog, browser mirrors,
+   and the first Online Designer authoring workspace.
 
-The new parser must not reuse the old class's REDCap dependencies or output contract. Existing EM callers will be deliberately migrated or wrapped after the new fixture suite is in place.
+Future work should preserve that separation, align browser/server behavior,
+provide SQL syntax highlighting without treating SQL as REDCap logic, and move
+runtime consumers only through explicit compatibility decisions.
