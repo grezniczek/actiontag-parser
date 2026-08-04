@@ -414,12 +414,19 @@ The EM transition is complete:
    resolution, and Field Annotation semantic checking.
 4. The current core branch additionally contains shared syntax primitives,
    logic, piping, and field-embedding parser products, a public logic catalog,
-   browser mirrors, and Online Designer workspaces for logic, annotations, SQL
-   highlighting, and piping-capable text.
+   browser mirrors, and Online Designer and Survey Settings workspaces for
+   logic, annotations, SQL highlighting, and piping-capable text.
 
 Future work should preserve that separation, align browser/server behavior,
-extend piping authoring deliberately to field labels and rich-text surfaces,
-and move runtime consumers only through explicit compatibility decisions.
+extend piping authoring deliberately beyond the currently integrated Field
+Label and Survey Settings surfaces, and move runtime consumers only through
+explicit compatibility decisions.
+
+Authoring workspace invocation options may include a stable logical `ref`
+identifier for the concrete source surface. It is intentionally UI context,
+not parser input: the pure parsers stay context-free. Editor integration may
+use it later to apply container-specific completion or diagnostic policies
+without deriving meaning from a DOM selector or changing parser contracts.
 
 Field embedding follows the same parser boundary. Its pure PHP and browser
 parsers recognize only REDCap's current curly-brace grammar (`{field_name}`

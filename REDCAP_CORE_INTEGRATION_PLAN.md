@@ -58,6 +58,13 @@ when that is warranted.
   field parameters from field type and validation metadata; it deliberately
   does not guess smart-variable parameter values such as instrument names,
   free text, or report identifiers. Piping is not a runtime replacement.
+- Authoring-workspace invocations support a stable logical `ref` identifier
+  (for example, `field.note`, `field.sql`, `survey.instructions`, or
+  `survey.confirmation_email_subject`). Built-in Edit Field and Survey Settings
+  invocations pass a `ref`; it is available to editor diagnostics and completion
+  options but has no parser or runtime effect today. Future context-specific
+  policies, such as permitting a new smart variable in only selected survey
+  settings, must key off this logical identifier rather than a DOM selector.
 - Field embedding has matching pure PHP and browser parser mirrors, validated
   by shared fixtures. It recognizes the existing runtime grammar
   `{field_name}` and `{field_name:icons}` only; the browser parser is combined
@@ -84,12 +91,11 @@ when that is warranted.
   Field dialog.
 - The Field Label row now has an explicit **Edit with authoring editor**
   action. It opens the source in ACE for piping and field-embedding
-  diagnostics, highlighting, and completion. When the Rich Text Editor is
-  enabled, TinyMCE is synchronized to a detached source buffer before opening;
-  a saved source is passed back
-  through TinyMCE, which keeps its backing textarea hidden and synchronized.
-  Piping workspaces accept an explicit `allowHtml` invocation option; the
-  Field Label and Field Note pass it, which enables ACE HTML highlighting.
+  diagnostics, highlighting, and completion. A reusable TinyMCE handoff
+  keeps a live TinyMCE editor synchronized through a detached source buffer,
+  so its backing textarea stays hidden and cannot diverge. Piping workspaces
+  accept an explicit `allowHtml` invocation option; the Field Label and Field
+  Note pass it, which enables ACE HTML highlighting.
 - In an `allowHtml` piping workspace, diagnostics, highlights, hover help,
   and completion operate only in ordinary HTML text nodes. Tags, attributes,
   comments, and script/style content are excluded, and a reference split by
@@ -97,9 +103,15 @@ when that is warranted.
 - ACE's HTML worker can provide basic markup diagnostics, but it remains
   disabled until the workspace merges its annotations with the piping parser's
   annotations instead of allowing either producer to overwrite the other.
-- Extend that explicit action to every other piping-capable rich-text surface,
-  including survey instructions and survey exit text. TinyMCE remains the
-  default visual editor, while ACE is the deliberate source-editor path.
+- Survey Settings now provides the same explicit action beside its existing
+  Piping help links for Offline Instructions, Survey Instructions, the
+  acknowledgement, stop-action acknowledgement, and confirmation-email body.
+  Those sources remain TinyMCE-based visual editors; ACE is the deliberate
+  HTML-aware source-editor path. The confirmation-email subject and end-survey
+  redirect URL are one-line readonly source controls that open the piping
+  workspace on focus or click. The auto-continue condition uses the logic
+  workspace in the same way. These Survey Settings sources are piping-only:
+  field embedding remains disabled there.
 - Extend field-embedding-aware source editing only to the remaining
   runtime-supported host surfaces (Section Header and Choice Label) as their
   explicit authoring actions are introduced. Do not enable it for generic
