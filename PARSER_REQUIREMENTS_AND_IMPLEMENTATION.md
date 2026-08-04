@@ -413,10 +413,20 @@ The EM transition is complete:
 3. The pure parser remains separate from EM metadata access, runtime `@IF`
    resolution, and Field Annotation semantic checking.
 4. The current core branch additionally contains shared syntax primitives,
-   logic and piping parser products, a public logic catalog, browser mirrors,
-   and Online Designer workspaces for logic, annotations, SQL highlighting,
-   and the one-line field-note piping surface.
+   logic, piping, and field-embedding parser products, a public logic catalog,
+   browser mirrors, and Online Designer workspaces for logic, annotations, SQL
+   highlighting, and piping-capable text.
 
 Future work should preserve that separation, align browser/server behavior,
 extend piping authoring deliberately to field labels and rich-text surfaces,
 and move runtime consumers only through explicit compatibility decisions.
+
+Field embedding follows the same parser boundary. Its pure PHP and browser
+parsers recognize only REDCap's current curly-brace grammar (`{field_name}`
+and `{field_name:icons}`), without consulting project metadata or changing
+runtime replacement. In HTML-capable source editing, it is recognized only in
+ordinary text nodes, never in markup, attributes, comments, or raw script/style
+content. Manual authoring completion receives the host form separately and
+lists only fields on that instrument. Contextual rules such as record-ID,
+self/nested, and same-survey-page restrictions remain a future metadata-aware
+semantic layer.

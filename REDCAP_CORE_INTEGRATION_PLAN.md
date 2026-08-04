@@ -58,6 +58,19 @@ when that is warranted.
   field parameters from field type and validation metadata; it deliberately
   does not guess smart-variable parameter values such as instrument names,
   free text, or report identifiers. Piping is not a runtime replacement.
+- Field embedding has matching pure PHP and browser parser mirrors, validated
+  by shared fixtures. It recognizes the existing runtime grammar
+  `{field_name}` and `{field_name:icons}` only; the browser parser is combined
+  with piping in the Field Label and Field Note source editors through the
+  explicit `allowFieldEmbedding` option. It highlights valid and malformed
+  candidates, provides field hover information and manual Ctrl+Space field
+  completion after `{` limited to fields on the host instrument, and exposes
+  the standard Field Embedding help dialog.
+  As with piping, recognition is limited to ordinary HTML text nodes, so a
+  candidate in markup or split across markup is deliberately unrecognized.
+  This is syntax feedback only: it does not determine whether the named field
+  exists, is the record ID, is on the host instrument/page, is self/nested, or
+  otherwise satisfies runtime field-embedding rules.
 
 ### Deferred authoring UI/UX refinements
 
@@ -70,9 +83,10 @@ when that is warranted.
   authoring-workspace reference/explanation buttons, consistent with the Edit
   Field dialog.
 - The Field Label row now has an explicit **Edit with authoring editor**
-  action. It opens the source in ACE for piping diagnostics, highlighting, and
-  completion. When the Rich Text Editor is enabled, TinyMCE is synchronized to
-  a detached source buffer before opening; a saved source is passed back
+  action. It opens the source in ACE for piping and field-embedding
+  diagnostics, highlighting, and completion. When the Rich Text Editor is
+  enabled, TinyMCE is synchronized to a detached source buffer before opening;
+  a saved source is passed back
   through TinyMCE, which keeps its backing textarea hidden and synchronized.
   Piping workspaces accept an explicit `allowHtml` invocation option; the
   Field Label and Field Note pass it, which enables ACE HTML highlighting.
@@ -86,10 +100,13 @@ when that is warranted.
 - Extend that explicit action to every other piping-capable rich-text surface,
   including survey instructions and survey exit text. TinyMCE remains the
   default visual editor, while ACE is the deliberate source-editor path.
-- Add field embedding as a distinct syntax product in HTML-capable source
-  editors. Like piping, it must be wholly inside one HTML text node; an
-  embedding split by markup must remain unrecognized so the editor exposes
-  this common runtime mistake.
+- Extend field-embedding-aware source editing only to the remaining
+  runtime-supported host surfaces (Section Header and Choice Label) as their
+  explicit authoring actions are introduced. Do not enable it for generic
+  piping-only surfaces such as survey instructions or exit text.
+- Add a later metadata-aware field-embedding diagnostic layer for record-ID,
+  self/nested, form, and survey-page rules. It must remain separate from the
+  pure parser and must use current draft-aware project metadata.
 
 ## Core Objective
 
