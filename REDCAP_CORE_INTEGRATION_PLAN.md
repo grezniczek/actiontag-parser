@@ -71,7 +71,8 @@ when that is warranted.
   with piping in the Field Label and Field Note source editors through the
   explicit `allowFieldEmbedding` option. It highlights valid and malformed
   candidates, provides field hover information and manual Ctrl+Space field
-  completion after `{` limited to fields on the host instrument, and exposes
+  completion after `{` limited to fields on the host instrument, and suggests
+  the supported `:icons` option after a completed same-form field. It exposes
   the standard Field Embedding help dialog.
   As with piping, recognition is limited to ordinary HTML text nodes, so a
   candidate in markup or split across markup is deliberately unrecognized.
@@ -100,9 +101,11 @@ when that is warranted.
   and completion operate only in ordinary HTML text nodes. Tags, attributes,
   comments, and script/style content are excluded, and a reference split by
   markup is not recognized as valid piping.
-- ACE's HTML worker can provide basic markup diagnostics, but it remains
-  disabled until the workspace merges its annotations with the piping parser's
-  annotations instead of allowing either producer to overwrite the other.
+- HTML-capable piping workspaces run ACE's bundled HTML worker alongside the
+  piping and field-embedding parsers. Their annotations are merged, so basic
+  markup diagnostics do not overwrite authoring-syntax findings (and vice
+  versa). The matching ACE v1.44.0 `worker-html.js` is bundled with the local
+  ACE modes and is required for this worker path.
 - Survey Settings now provides the same explicit action beside its existing
   Piping help links for Offline Instructions, Survey Instructions, the
   acknowledgement, stop-action acknowledgement, and confirmation-email body.
