@@ -54,7 +54,10 @@ when that is warranted.
   recognizes field and smart-variable colon parameters (for example
   `[field:value]`) as opaque runtime syntax, alongside checkbox, event, and
   repeating-instance forms; its Piping help button opens the standard REDCap
-  piping explanation. Piping is not a runtime replacement.
+  piping explanation. Manual Ctrl+Space completion also suggests applicable
+  field parameters from field type and validation metadata; it deliberately
+  does not guess smart-variable parameter values such as instrument names,
+  free text, or report identifiers. Piping is not a runtime replacement.
 
 ### Deferred authoring UI/UX refinements
 
