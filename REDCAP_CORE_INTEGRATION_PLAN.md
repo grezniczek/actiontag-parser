@@ -76,18 +76,20 @@ when that is warranted.
   through TinyMCE, which keeps its backing textarea hidden and synchronized.
   Piping workspaces accept an explicit `allowHtml` invocation option; the
   Field Label and Field Note pass it, which enables ACE HTML highlighting.
+- In an `allowHtml` piping workspace, diagnostics, highlights, hover help,
+  and completion operate only in ordinary HTML text nodes. Tags, attributes,
+  comments, and script/style content are excluded, and a reference split by
+  markup is not recognized as valid piping.
 - ACE's HTML worker can provide basic markup diagnostics, but it remains
   disabled until the workspace merges its annotations with the piping parser's
   annotations instead of allowing either producer to overwrite the other.
 - Extend that explicit action to every other piping-capable rich-text surface,
-  including survey instructions and survey exit text. Add HTML highlighting
-  and field-embedding diagnostics/completion to the Field Label and other
-  rich-text source editors. TinyMCE remains the default visual editor, while
-  ACE is the deliberate source-editor path.
-- Treat piping and field embedding as distinct syntax products inside every
-  rich-text authoring editor. They must each be wholly inside one HTML text
-  node; a construct split by markup must remain unhighlighted so the editor
-  exposes this common runtime mistake.
+  including survey instructions and survey exit text. TinyMCE remains the
+  default visual editor, while ACE is the deliberate source-editor path.
+- Add field embedding as a distinct syntax product in HTML-capable source
+  editors. Like piping, it must be wholly inside one HTML text node; an
+  embedding split by markup must remain unrecognized so the editor exposes
+  this common runtime mistake.
 
 ## Core Objective
 
