@@ -42,8 +42,16 @@ when that is warranted.
   Edit and Help only: manual Ctrl+Space completion supplies smart variables
   and project field names in quoted SQL values. SQL does not receive parsing,
   validation, SQL-language completion, summary, or structural analysis.
-- Piping now has PHP and browser parser mirrors validated by shared fixtures.
-  It is not yet exposed as an authoring surface or a runtime replacement.
+- Piping has PHP and browser parser mirrors validated by shared fixtures. The
+  Edit Field dialog's one-line `#field_note` uses the authoring workspace with
+  piping diagnostics, Summary and Structural analysis tabs, reference hover
+  documentation, and manual Ctrl+Space completion for fields and smart
+  variables. The field itself retains its normal direct-edit behavior; the
+  adjacent pencil button, F2, and double-click open the workspace. It warns
+  before an update if the workspace contains line breaks; saving collapses
+  each line-break run and immediately adjoining whitespace to one space,
+  matching the input surface without changing runtime piping. Piping is not a
+  runtime replacement.
 
 ### Deferred authoring UI/UX refinements
 
@@ -55,11 +63,6 @@ when that is warranted.
 - When the Dynamic Query Tool is enabled, expose its link beside the existing
   authoring-workspace reference/explanation buttons, consistent with the Edit
   Field dialog.
-- Add a piping workspace for the Edit Field dialog's `#field_note`, using the
-  existing read-only source/open-on-focus-or-click pattern. Distinguish
-  one-line from multi-line workspace surfaces: the former may be edited with
-  line breaks, but must warn on update and normalize each surrounding
-  whitespace/line-break run to one space.
 - Add an explicit **Edit with authoring editor** action for field labels and
   every other piping-capable rich-text surface, including survey instructions
   and survey exit text. It opens the source in ACE for piping and

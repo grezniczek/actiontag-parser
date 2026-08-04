@@ -414,8 +414,9 @@ The EM transition is complete:
    resolution, and Field Annotation semantic checking.
 4. The current core branch additionally contains shared syntax primitives,
    logic and piping parser products, a public logic catalog, browser mirrors,
-   and the first Online Designer authoring workspace.
+   and Online Designer workspaces for logic, annotations, SQL highlighting,
+   and the one-line field-note piping surface.
 
 Future work should preserve that separation, align browser/server behavior,
-provide SQL syntax highlighting without treating SQL as REDCap logic, and move
-runtime consumers only through explicit compatibility decisions.
+extend piping authoring deliberately to field labels and rich-text surfaces,
+and move runtime consumers only through explicit compatibility decisions.
