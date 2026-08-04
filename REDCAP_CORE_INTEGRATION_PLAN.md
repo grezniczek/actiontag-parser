@@ -69,14 +69,21 @@ when that is warranted.
 - When the Dynamic Query Tool is enabled, expose its link beside the existing
   authoring-workspace reference/explanation buttons, consistent with the Edit
   Field dialog.
-- Add an explicit **Edit with authoring editor** action for field labels and
-  every other piping-capable rich-text surface, including survey instructions
-  and survey exit text. It opens the source in ACE for piping and
-  field-embedding diagnostics, highlighting, and completion; rich-text
-  surfaces receive HTML highlighting as well. TinyMCE remains the default
-  visual editor, while ACE is the deliberate source-editor path. Before
-  opening it, synchronize TinyMCE to the underlying field; after update,
-  preserve the raw HTML and restore the normal rich-text lifecycle.
+- The Field Label row now has an explicit **Edit with authoring editor**
+  action. It opens the source in ACE for piping diagnostics, highlighting, and
+  completion. When the Rich Text Editor is enabled, TinyMCE is synchronized to
+  a detached source buffer before opening; a saved source is passed back
+  through TinyMCE, which keeps its backing textarea hidden and synchronized.
+  Piping workspaces accept an explicit `allowHtml` invocation option; the
+  Field Label and Field Note pass it, which enables ACE HTML highlighting.
+- ACE's HTML worker can provide basic markup diagnostics, but it remains
+  disabled until the workspace merges its annotations with the piping parser's
+  annotations instead of allowing either producer to overwrite the other.
+- Extend that explicit action to every other piping-capable rich-text surface,
+  including survey instructions and survey exit text. Add HTML highlighting
+  and field-embedding diagnostics/completion to the Field Label and other
+  rich-text source editors. TinyMCE remains the default visual editor, while
+  ACE is the deliberate source-editor path.
 - Treat piping and field embedding as distinct syntax products inside every
   rich-text authoring editor. They must each be wholly inside one HTML text
   node; a construct split by markup must remain unhighlighted so the editor
