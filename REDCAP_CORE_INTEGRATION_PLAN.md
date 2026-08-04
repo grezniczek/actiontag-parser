@@ -50,8 +50,11 @@ when that is warranted.
   adjacent pencil button, F2, and double-click open the workspace. It warns
   before an update if the workspace contains line breaks; saving collapses
   each line-break run and immediately adjoining whitespace to one space,
-  matching the input surface without changing runtime piping. Piping is not a
-  runtime replacement.
+  matching the input surface without changing runtime piping. The workspace
+  recognizes field and smart-variable colon parameters (for example
+  `[field:value]`) as opaque runtime syntax, alongside checkbox, event, and
+  repeating-instance forms; its Piping help button opens the standard REDCap
+  piping explanation. Piping is not a runtime replacement.
 
 ### Deferred authoring UI/UX refinements
 
