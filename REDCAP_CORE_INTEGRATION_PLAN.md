@@ -356,17 +356,23 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    SQL-highlighting-only path.
 4. **Completed:** Establish a shared PHP/JS piping-syntax contract and a
    standalone browser mirror, without adding a piping authoring surface.
-5. Build a compatibility corpus from deliberately selected real-world
-   expressions and annotations once the intended structural behavior has
-   settled. Classify differences from legacy consumers as compatible behavior
-   or documented corrections.
-6. Use the EM benchmark across representative projects to establish parser,
+5. **Completed (initial corpus):** Use deliberately selected real-world
+   development-project expressions and annotations to establish compatibility
+   decisions. This confirmed digit-leading unique event names for piping and
+   the policy that historic JavaScript calculations remain illegal for new
+   authoring.
+6. **Completed (first semantic scope):** Add matching PHP/browser Logic
+   semantic analysis, backed by draft-aware project metadata, for unknown
+   references/events/functions, event-form availability, checkbox choices,
+   function arity, and directly inferable function argument types. It remains
+   editor-only and does not evaluate or alter runtime validation.
+7. Use the EM benchmark across representative projects to establish parser,
    resolver, preload, and evaluation costs before considering runtime use.
-7. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
+8. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
    compatibility policy are ready to be stable for developers.
-8. Evaluate selective compatibility delegation in `ActionTags`, then migrate
+9. Evaluate selective compatibility delegation in `ActionTags`, then migrate
    `Form`/runtime consumers one family at a time with regression coverage.
-9. Introduce semantic tag definitions and a validator as a distinct
+10. Introduce semantic tag definitions and a validator as a distinct
    standardization project.
 
 ## Benchmarking and Runtime Readiness

@@ -442,6 +442,19 @@ excluded from compatibility requirements, as are deliberately malformed
 stress inputs. REDCap calculation modulus must use `mod()`; `%` remains
 rejected by the shared logic parser fixtures.
 
+The first metadata-aware layer is now implemented for Logic. The pure PHP and
+browser `LogicSemanticAnalyzer` products consume a completed structural parse
+and the project authoring catalog, then add diagnostics for unknown
+field/smart-variable references, unknown events, fields unavailable at an
+event, checkbox misuse or unknown choice codes, unknown functions, invalid
+function arity, and directly inferable function-argument type mismatches. The
+catalog carries field type/validation/value kinds, checkbox codes, event-form
+designation, the public function catalog, and the complete base smart-variable
+set. Semantic analysis deliberately does not run after a structural error, so
+recovering malformed text does not create misleading metadata cascades. It is
+diagnostic/editor-only: it does not evaluate expressions or change runtime
+validation.
+
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the
 pure parsers stay context-free. An exact-ref source-policy registry owns
