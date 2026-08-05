@@ -415,10 +415,12 @@ The EM transition is complete:
 4. The current core branch additionally contains shared syntax primitives,
    logic, piping, and field-embedding parser products, a public logic catalog,
    browser mirrors, and Online Designer, Project Setup/Define My Events, and
-   Survey Settings, Automated Survey Invitation, Survey Queue, Form Display
-   Logic, Record Status Dashboard, Data Export report builder, PDF Snapshot,
-   Randomization, MyCap participant conditions, Alerts & Notifications, and
-   Data Quality rule workspaces for logic,
+   Survey Settings, Automated Survey Invitation and manual invitation
+   composition, Survey Queue custom text and conditions, Form Display Logic,
+   Record Status Dashboard, Data Export report builder, PDF Snapshot,
+   Randomization, MyCap participant conditions and label, Project Setup's
+   Data Entry Trigger URL, Project Dashboard body text, e-Consent custom
+   labels, Alerts & Notifications, and Data Quality rule workspaces for logic,
    annotations, SQL highlighting, and piping-capable text.
 
 Future work should preserve that separation, align browser/server behavior,
@@ -439,6 +441,14 @@ Custom Record Label, Custom Event Label, and Custom Repeating Instrument Label
 also performs a one-line-safe `<br>` round trip: supported existing `<br>`
 spellings display as newlines and can be saved as canonical `<br>` tags or
 spaces, while Cancel preserves the original stored text.
+
+Some exact piping policies also deliberately suppress record-field completion.
+The real-time Twilio SMS composer and Project Dashboard body do not have a
+per-record replacement context, so they expose smart variables while leaving
+dashboard-only charts, tables, and functions to their existing runtime and
+wizard. This is an authoring-surface policy, not a change to the context-free
+piping parser. Generic External Modules and Vue hooks remain outside the
+registry until a caller supplies a concrete source and runtime grammar.
 
 Field embedding follows the same parser boundary. Its pure PHP and browser
 parsers recognize only REDCap's current curly-brace grammar (`{field_name}`

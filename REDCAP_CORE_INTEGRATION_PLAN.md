@@ -131,7 +131,13 @@ when that is warranted.
   embedding remains disabled for all ASI sources.
 - Survey Queue's condition logic uses the same readonly logic workspace. On
   save it retains the existing trimming, automatic condition activation, and
-  validation behavior. Field embedding remains disabled.
+  validation behavior. Its rich-text custom text has an explicit TinyMCE
+  source-editor action using the `survey_queue.custom_text` piping policy.
+  Field embedding remains disabled.
+- Bulk survey invitations and the follow-up-survey popup now cover their
+  one-line subjects and rich-text message bodies with exact invitation-source
+  policies. The body actions retain TinyMCE as the visual editor and run the
+  established survey-link check after an authoring-workspace save.
 - Form Display Logic conditions use the readonly logic workspace both for the
   initial condition and controls added by the dialog's repeater. Saving keeps
   the existing client-side validation and returns focus to that condition's
@@ -154,7 +160,9 @@ when that is warranted.
 - MyCap's participant-allow condition uses a readonly logic workspace in its
   configuration dialog. Saving retains its existing client-side logic
   validation before the dialog's established AJAX save and reload flow; focus
-  returns to the dialog's close control. Field embedding remains disabled.
+  returns to the dialog's close control. Its custom participant label is also
+  a readonly, one-line piping source in that dialog. Field embedding remains
+  disabled.
 - Alerts & Notifications uses the same source-policy integration for its
   trigger logic, email subject, rich-text alert message, and the values of new
   SendGrid dynamic-template data items. The condition, subject, and template
@@ -182,6 +190,20 @@ when that is warranted.
   byte-for-byte unchanged. This completes the
   immediate data-entry-form design label surfaces while retaining each
   screen's established save flow.
+- Project Setup's Data Entry Trigger URL is a one-line piping workspace that
+  preserves the original URL/localhost checks after save. e-Consent's custom
+  label is likewise a record-aware one-line piping workspace in its existing
+  AJAX dialog and retains its normal save path.
+- Project Dashboard body text has an explicit TinyMCE source-editor action.
+  It is HTML-aware for text-node syntax feedback and deliberately offers smart
+  variables, not record fields: dashboard smart charts, tables, and functions
+  remain dashboard-specific runtime syntax. The real-time Twilio SMS message
+  uses the same smart-variable-only completion scope because it has no record
+  context. Both retain their existing send/save actions.
+- Generic External Modules JSON settings and the Vue `useLogicTextArea`
+  helper remain on their legacy editor path. They are framework hooks rather
+  than concrete source contracts, so assigning them a single workspace policy
+  would incorrectly assert a common runtime grammar.
 - Extend field-embedding-aware source editing only to the remaining
   runtime-supported host surfaces (Section Header and Choice Label) as their
   explicit authoring actions are introduced. Do not enable it for generic
