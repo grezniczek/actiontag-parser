@@ -138,6 +138,10 @@ when that is warranted.
   Field embedding remains disabled for all Alert sources. Email-address and
   phone-number controls remain outside this integration because their
   recipient/format validation has different authoring semantics.
+- Data Quality rule logic uses a readonly logic workspace for both the
+  new-rule input and inline editing of existing user-defined rules. The
+  existing rule-specific validation and Save behavior are retained after an
+  authoring-editor save, and field embedding remains disabled.
 - Project Setup's Custom Record Label, Define My Events' Custom Event Label,
   and the Custom Label inputs in the Repeating Instruments and Events dialog
   now use readonly, one-line piping workspaces on focus or click. They carry
