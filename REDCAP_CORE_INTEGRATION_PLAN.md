@@ -136,6 +136,9 @@ when that is warranted.
   initial condition and controls added by the dialog's repeater. Saving keeps
   the existing client-side validation and returns focus to that condition's
   target-form selector. Field embedding remains disabled.
+- Record Status Dashboard filter logic uses a readonly logic workspace. Its
+  existing trimming and validation behavior is retained on save, and focus
+  returns to the dashboard Save button. Field embedding remains disabled.
 - Alerts & Notifications uses the same source-policy integration for its
   trigger logic, email subject, rich-text alert message, and the values of new
   SendGrid dynamic-template data items. The condition, subject, and template
