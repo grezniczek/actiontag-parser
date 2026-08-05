@@ -129,6 +129,15 @@ when that is warranted.
   and the condition is a readonly logic workspace that retains the existing
   trimming, activation, and server-side validation behavior after save. Field
   embedding remains disabled for all ASI sources.
+- Alerts & Notifications uses the same source-policy integration for its
+  trigger logic, email subject, rich-text alert message, and the values of new
+  SendGrid dynamic-template data items. The condition, subject, and template
+  values are readonly source controls that open the workspace on focus or
+  click. The rich-text message retains TinyMCE as its visual editor and gains
+  an explicit HTML-aware source-editor action beside the existing Piping help.
+  Field embedding remains disabled for all Alert sources. Email-address and
+  phone-number controls remain outside this integration because their
+  recipient/format validation has different authoring semantics.
 - Project Setup's Custom Record Label, Define My Events' Custom Event Label,
   and the Custom Label inputs in the Repeating Instruments and Events dialog
   now use readonly, one-line piping workspaces on focus or click. They carry
