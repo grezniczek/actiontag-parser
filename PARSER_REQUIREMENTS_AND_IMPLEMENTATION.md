@@ -434,6 +434,14 @@ and browser piping parsers accept that structural form; whether a named event
 exists remains a metadata-aware semantic concern. This is covered by the
 shared piping fixture suite.
 
+The same scan established the calculation compatibility policy. Historic
+client-side JavaScript/jQuery stored in calculation fields is now illegal for
+new expressions and must remain a syntax error; it is not a REDCap Logic
+dialect to support. The intentional multi-expression `LogicAnalyzer` demo is
+excluded from compatibility requirements, as are deliberately malformed
+stress inputs. REDCap calculation modulus must use `mod()`; `%` remains
+rejected by the shared logic parser fixtures.
+
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the
 pure parsers stay context-free. An exact-ref source-policy registry owns
