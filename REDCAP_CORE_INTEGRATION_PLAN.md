@@ -29,10 +29,12 @@ when that is warranted.
 
 ### Current authoring integration
 
-- Field Annotation, calculations, and branching logic use the reusable Online
-  Designer authoring workspace. Its syntax feedback is diagnostic only; the
-  established server-side validators remain authoritative when metadata is
-  saved.
+- Field Annotation, Quick-modify fields' custom Action Tags source,
+  calculations, and branching logic use the reusable Online Designer authoring
+  workspace. The Quick-modify source is a readonly control that opens the
+  Action Tags workspace on focus or click and identifies itself with
+  `quick_edit.action_tags`. Syntax feedback is diagnostic only; the established
+  server-side validators remain authoritative when metadata is saved.
 - The logic and action-tag browser parsers are mirrors for responsive editor
   feedback. They must remain behaviorally aligned with their PHP counterparts,
   even though UI offsets use UTF-16 and server offsets use UTF-8 bytes.
