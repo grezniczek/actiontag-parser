@@ -142,6 +142,19 @@ when that is warranted.
 - Data Export report-builder advanced logic uses a readonly logic workspace.
   Saving invokes the existing report-specific validation and returns focus to
   the option to switch back to simple logic. Field embedding remains disabled.
+- PDF Snapshot trigger logic uses a readonly logic workspace in its Add/Edit
+  Trigger dialog. Saving retains the existing trim, trigger activation, and
+  client-side validation behavior, and focus returns to the survey-completion
+  trigger selector. Field embedding remains disabled.
+- Randomization real-time trigger logic uses a readonly logic workspace. Its
+  established AJAX save path, including server-side trimming, is unchanged;
+  opening the workspace retains the existing behavior of enabling the Save
+  button, and focus returns to the trigger-mode selector. Field embedding
+  remains disabled.
+- MyCap's participant-allow condition uses a readonly logic workspace in its
+  configuration dialog. Saving retains its existing client-side logic
+  validation before the dialog's established AJAX save and reload flow; focus
+  returns to the dialog's close control. Field embedding remains disabled.
 - Alerts & Notifications uses the same source-policy integration for its
   trigger logic, email subject, rich-text alert message, and the values of new
   SendGrid dynamic-template data items. The condition, subject, and template
