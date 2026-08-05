@@ -139,6 +139,9 @@ when that is warranted.
 - Record Status Dashboard filter logic uses a readonly logic workspace. Its
   existing trimming and validation behavior is retained on save, and focus
   returns to the dashboard Save button. Field embedding remains disabled.
+- Data Export report-builder advanced logic uses a readonly logic workspace.
+  Saving invokes the existing report-specific validation and returns focus to
+  the option to switch back to simple logic. Field embedding remains disabled.
 - Alerts & Notifications uses the same source-policy integration for its
   trigger logic, email subject, rich-text alert message, and the values of new
   SendGrid dynamic-template data items. The condition, subject, and template

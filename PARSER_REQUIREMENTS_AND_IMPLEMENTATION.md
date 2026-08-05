@@ -416,8 +416,8 @@ The EM transition is complete:
    logic, piping, and field-embedding parser products, a public logic catalog,
    browser mirrors, and Online Designer, Project Setup/Define My Events, and
    Survey Settings, Automated Survey Invitation, Survey Queue, Form Display
-   Logic, Record Status Dashboard, Alerts & Notifications, and Data Quality
-   rule workspaces for logic,
+   Logic, Record Status Dashboard, Data Export report builder, Alerts &
+   Notifications, and Data Quality rule workspaces for logic,
    annotations, SQL highlighting, and piping-capable text.
 
 Future work should preserve that separation, align browser/server behavior,
