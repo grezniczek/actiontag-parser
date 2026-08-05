@@ -414,13 +414,14 @@ The EM transition is complete:
    resolution, and Field Annotation semantic checking.
 4. The current core branch additionally contains shared syntax primitives,
    logic, piping, and field-embedding parser products, a public logic catalog,
-   browser mirrors, and Online Designer and Survey Settings workspaces for
-   logic, annotations, SQL highlighting, and piping-capable text.
+   browser mirrors, and Online Designer, Project Setup/Define My Events, and
+   Survey Settings workspaces for logic, annotations, SQL highlighting, and
+   piping-capable text.
 
 Future work should preserve that separation, align browser/server behavior,
-extend piping authoring deliberately beyond the currently integrated Field
-Label and Survey Settings surfaces, and move runtime consumers only through
-explicit compatibility decisions.
+extend piping authoring deliberately beyond the currently integrated direct
+data-entry-form design and Survey Settings surfaces, and move runtime consumers
+only through explicit compatibility decisions.
 
 Authoring workspace invocation options may include a stable logical `ref`
 identifier for the concrete source surface. It is intentionally UI context,

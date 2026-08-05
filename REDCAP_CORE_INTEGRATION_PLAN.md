@@ -62,7 +62,7 @@ when that is warranted.
   free text, or report identifiers. Piping is not a runtime replacement.
 - Authoring-workspace invocations support a stable logical `ref` identifier
   (for example, `field.note`, `field.sql`, `survey.instructions`, or
-  `survey.confirmation_email_subject`). Built-in Edit Field and Survey Settings
+  `survey.confirmation_email_subject`). All current built-in workspace
   invocations pass a `ref`; it is available to editor diagnostics and completion
   options but has no parser or runtime effect today. Future context-specific
   policies, such as permitting a new smart variable in only selected survey
@@ -117,6 +117,14 @@ when that is warranted.
   workspace on focus or click. The auto-continue condition uses the logic
   workspace in the same way. These Survey Settings sources are piping-only:
   field embedding remains disabled there.
+- Project Setup's Custom Record Label, Define My Events' Custom Event Label,
+  and the Custom Label inputs in the Repeating Instruments and Events dialog
+  now use readonly, one-line piping workspaces on focus or click. They carry
+  the logical references `project.custom_record_label`,
+  `event.custom_event_label`, and `repeat_instrument.custom_label`;
+  none enables HTML or field embedding. This completes the immediate
+  data-entry-form design label surfaces while retaining each screen's
+  established save flow.
 - Extend field-embedding-aware source editing only to the remaining
   runtime-supported host surfaces (Section Header and Choice Label) as their
   explicit authoring actions are introduced. Do not enable it for generic
