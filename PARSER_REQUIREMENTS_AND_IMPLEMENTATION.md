@@ -423,11 +423,19 @@ extend piping authoring deliberately beyond the currently integrated direct
 data-entry-form design and Survey Settings surfaces, and move runtime consumers
 only through explicit compatibility decisions.
 
-Authoring workspace invocation options may include a stable logical `ref`
-identifier for the concrete source surface. It is intentionally UI context,
-not parser input: the pure parsers stay context-free. Editor integration may
-use it later to apply container-specific completion or diagnostic policies
-without deriving meaning from a DOM selector or changing parser contracts.
+Each authoring workspace invocation identifies its concrete source with a
+stable logical `ref`. It is intentionally UI context, not parser input: the
+pure parsers stay context-free. An exact-ref source-policy registry owns
+static editor behavior—syntax, presentation, single- versus multi-line
+handling, HTML mode, and field-embedding permission—while a call site supplies
+only dynamic details such as save callbacks, focus targets, and the current
+host form. This provides a deliberate home for future container-specific
+completion or diagnostic policies without deriving meaning from a DOM selector
+or changing parser contracts. The restricted `filter_tags` HTML mode used by
+Custom Record Label, Custom Event Label, and Custom Repeating Instrument Label
+also performs a one-line-safe `<br>` round trip: supported existing `<br>`
+spellings display as newlines and can be saved as canonical `<br>` tags or
+spaces, while Cancel preserves the original stored text.
 
 Field embedding follows the same parser boundary. Its pure PHP and browser
 parsers recognize only REDCap's current curly-brace grammar (`{field_name}`

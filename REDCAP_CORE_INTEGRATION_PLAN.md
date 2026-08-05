@@ -63,15 +63,19 @@ when that is warranted.
 - Authoring-workspace invocations support a stable logical `ref` identifier
   (for example, `field.note`, `field.sql`, `survey.instructions`, or
   `survey.confirmation_email_subject`). All current built-in workspace
-  invocations pass a `ref`; it is available to editor diagnostics and completion
-  options but has no parser or runtime effect today. Future context-specific
-  policies, such as permitting a new smart variable in only selected survey
-  settings, must key off this logical identifier rather than a DOM selector.
+  invocations pass a `ref`. An exact-ref source-policy registry owns each
+  source's static syntax, presentation, one-line behavior, HTML mode, and
+  field-embedding permission; callers provide only dynamic integration details
+  such as a save callback, focus target, or host form. The `ref` remains UI
+  context rather than parser input or a runtime behavior change. Future
+  context-specific policies, such as permitting a new smart variable in only
+  selected survey settings, must extend this registry rather than derive
+  meaning from a DOM selector or duplicate flags at individual call sites.
 - Field embedding has matching pure PHP and browser parser mirrors, validated
   by shared fixtures. It recognizes the existing runtime grammar
   `{field_name}` and `{field_name:icons}` only; the browser parser is combined
-  with piping in the Field Label and Field Note source editors through the
-  explicit `allowFieldEmbedding` option. It highlights valid and malformed
+  with piping in the Field Label and Field Note source editors through their
+  source-policy field-embedding permission. It highlights valid and malformed
   candidates, provides field hover information and manual Ctrl+Space field
   completion after `{` limited to fields on the host instrument, and suggests
   the supported `:icons` option after a completed same-form field. It exposes
@@ -96,10 +100,11 @@ when that is warranted.
   action. It opens the source in ACE for piping and field-embedding
   diagnostics, highlighting, and completion. A reusable TinyMCE handoff
   keeps a live TinyMCE editor synchronized through a detached source buffer,
-  so its backing textarea stays hidden and cannot diverge. Piping workspaces
-  accept an explicit `allowHtml` invocation option; the Field Label and Field
-  Note pass it, which enables ACE HTML highlighting.
-- In an `allowHtml` piping workspace, diagnostics, highlights, hover help,
+  so its backing textarea stays hidden and cannot diverge. The Field Label and
+  Field Note source policies enable `rich_text` HTML mode, which enables ACE
+  HTML highlighting and field embedding where it is supported.
+- In an HTML-capable piping workspace (`rich_text` or the restricted
+  `filter_tags` mode), diagnostics, highlights, hover help,
   and completion operate only in ordinary HTML text nodes. Tags, attributes,
   comments, and script/style content are excluded, and a reference split by
   markup is not recognized as valid piping.
@@ -121,10 +126,16 @@ when that is warranted.
   and the Custom Label inputs in the Repeating Instruments and Events dialog
   now use readonly, one-line piping workspaces on focus or click. They carry
   the logical references `project.custom_record_label`,
-  `event.custom_event_label`, and `repeat_instrument.custom_label`;
-  none enables HTML or field embedding. This completes the immediate
-  data-entry-form design label surfaces while retaining each screen's
-  established save flow.
+  `event.custom_event_label`, and `repeat_instrument.custom_label`. Their
+  `filter_tags` HTML mode enables syntax-aware HTML highlighting but not field
+  embedding. On opening, every ordinary stored `<br>`, `<br >`, `<br/>`, or
+  `<br />` spelling is shown as an editor line break; a one-line warning lets
+  the author save edited line breaks as spaces or canonical `<br>` tags and
+  preselects the latter when the stored source already contains a break tag.
+  Saving removes trailing horizontal whitespace; Cancel leaves the source
+  byte-for-byte unchanged. This completes the
+  immediate data-entry-form design label surfaces while retaining each
+  screen's established save flow.
 - Extend field-embedding-aware source editing only to the remaining
   runtime-supported host surfaces (Section Header and Choice Label) as their
   explicit authoring actions are introduced. Do not enable it for generic
