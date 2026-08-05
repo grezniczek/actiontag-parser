@@ -132,6 +132,10 @@ when that is warranted.
 - Survey Queue's condition logic uses the same readonly logic workspace. On
   save it retains the existing trimming, automatic condition activation, and
   validation behavior. Field embedding remains disabled.
+- Form Display Logic conditions use the readonly logic workspace both for the
+  initial condition and controls added by the dialog's repeater. Saving keeps
+  the existing client-side validation and returns focus to that condition's
+  target-form selector. Field embedding remains disabled.
 - Alerts & Notifications uses the same source-policy integration for its
   trigger logic, email subject, rich-text alert message, and the values of new
   SendGrid dynamic-template data items. The condition, subject, and template
