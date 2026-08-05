@@ -129,6 +129,9 @@ when that is warranted.
   and the condition is a readonly logic workspace that retains the existing
   trimming, activation, and server-side validation behavior after save. Field
   embedding remains disabled for all ASI sources.
+- Survey Queue's condition logic uses the same readonly logic workspace. On
+  save it retains the existing trimming, automatic condition activation, and
+  validation behavior. Field embedding remains disabled.
 - Alerts & Notifications uses the same source-policy integration for its
   trigger logic, email subject, rich-text alert message, and the values of new
   SendGrid dynamic-template data items. The condition, subject, and template
