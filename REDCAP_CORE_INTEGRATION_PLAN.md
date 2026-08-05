@@ -122,6 +122,13 @@ when that is warranted.
   workspace on focus or click. The auto-continue condition uses the logic
   workspace in the same way. These Survey Settings sources are piping-only:
   field embedding remains disabled there.
+- Automated Survey Invitations use the same source-policy integration for
+  their email subject, rich-text email content, and send-condition logic. The
+  subject is a readonly one-line piping source; the existing Piping help area
+  provides an explicit ACE source-editor action for the TinyMCE email body;
+  and the condition is a readonly logic workspace that retains the existing
+  trimming, activation, and server-side validation behavior after save. Field
+  embedding remains disabled for all ASI sources.
 - Project Setup's Custom Record Label, Define My Events' Custom Event Label,
   and the Custom Label inputs in the Repeating Instruments and Events dialog
   now use readonly, one-line piping workspaces on focus or click. They carry
