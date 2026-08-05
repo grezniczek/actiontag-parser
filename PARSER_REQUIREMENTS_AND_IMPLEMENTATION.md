@@ -428,6 +428,12 @@ extend piping authoring deliberately beyond the currently integrated direct
 data-entry-form design and Survey Settings surfaces, and move runtime consumers
 only through explicit compatibility decisions.
 
+The initial real-world compatibility scan found that legitimate unique event
+names can begin with a digit (for example, `72_hours_arm_1`). The shared PHP
+and browser piping parsers accept that structural form; whether a named event
+exists remains a metadata-aware semantic concern. This is covered by the
+shared piping fixture suite.
+
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the
 pure parsers stay context-free. An exact-ref source-policy registry owns
