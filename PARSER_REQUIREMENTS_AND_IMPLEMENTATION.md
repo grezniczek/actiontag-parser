@@ -458,6 +458,19 @@ create misleading metadata cascades. It is
 diagnostic/editor-only: it does not evaluate expressions or change runtime
 validation.
 
+Logic smart-variable entries now also carry a result type and allowed Logic
+source kinds. The current safe baseline explicitly uses `*`, preserving
+existing availability until source-specific runtime behavior is reviewed. The
+analyzer nevertheless enforces a restricted entry when one is declared,
+leaving a data-driven path for a future source-specific rule without inventing
+one today.
+
+The next calculation-specific rule is direct self-reference. When an editor
+supplies its target calculation, calctext, or calcdate field, warn only for an
+unqualified reference to that same field in the same context. An explicit
+other-event reference or a distinct repeat-instance reference must not produce
+this warning; circular dependency analysis is a later, separate graph check.
+
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the
 pure parsers stay context-free. An exact-ref source-policy registry owns

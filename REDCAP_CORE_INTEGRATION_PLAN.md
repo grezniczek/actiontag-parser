@@ -366,7 +366,9 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    references/events/functions, event-form availability, checkbox choices,
    function arity, and directly inferable function argument types (including
    nested calls using catalog-declared result types), plus directly known
-   numeric/Boolean operator operands. It remains
+   numeric/Boolean operator operands. Typed smart-variable schemas include
+   explicit source-kind availability; the current safe baseline preserves
+   existing availability until source-specific behavior is reviewed. It remains
    editor-only and does not evaluate or alter runtime validation.
 7. Use the EM benchmark across representative projects to establish parser,
    resolver, preload, and evaluation costs before considering runtime use.
