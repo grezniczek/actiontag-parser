@@ -474,6 +474,25 @@ field that is not yet in project metadata, so it does not also receive an
 unknown-field error. Circular dependency analysis across multiple fields
 remains a later, separate graph check.
 
+That later calculation graph check must run server-side only during a safe,
+non-interactive design action (for example, after a field save or a metadata
+import has assembled the proposed project definition). It must emit warnings
+and never block or roll back that safe action. It should report the complete
+cycle path for a calculated field in a given event/repeat context: ordinary
+calc, CALCTEXT, and CALCDATE fields; direct and indirect field references; and
+potential dependencies introduced through aggregate smart variables. A cycle
+that crosses an event, repeat instance, record, or aggregate scope must be
+identified as potential rather than presented as a guaranteed runtime loop.
+
+The present `Calculate::getCalcFieldsByTriggerField()` routine is trigger
+discovery based on text matching, not a dependency graph, so it must not be
+reused as cycle proof. First add a server-only calculation-dependency builder
+with normalized source extraction for calc/CALCTEXT/CALCDATE fields, parsed
+reference edges, event/repeat-context resolution, and machine-readable
+aggregate-smart-variable dependency semantics. Exercise that builder with
+synthetic graph fixtures before connecting it to save/import feedback. This is
+deliberately deferred until that conservative foundation exists.
+
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the
 pure parsers stay context-free. An exact-ref source-policy registry owns
