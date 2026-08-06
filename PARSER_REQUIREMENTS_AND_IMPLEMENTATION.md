@@ -465,11 +465,14 @@ analyzer nevertheless enforces a restricted entry when one is declared,
 leaving a data-driven path for a future source-specific rule without inventing
 one today.
 
-The next calculation-specific rule is direct self-reference. When an editor
-supplies its target calculation, calctext, or calcdate field, warn only for an
-unqualified reference to that same field in the same context. An explicit
-other-event reference or a distinct repeat-instance reference must not produce
-this warning; circular dependency analysis is a later, separate graph check.
+Calculation authoring now warns about direct self-reference when the editor
+supplies its target field. This applies to ordinary calculation fields and to
+the Logic expression inside `@CALCTEXT(...)` or `@CALCDATE(...)`. It warns only
+for an unqualified reference to that same field; an explicit other-event or
+repeat-instance reference is permitted. The target can be a newly authored
+field that is not yet in project metadata, so it does not also receive an
+unknown-field error. Circular dependency analysis across multiple fields
+remains a later, separate graph check.
 
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the

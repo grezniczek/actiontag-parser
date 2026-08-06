@@ -368,8 +368,10 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    nested calls using catalog-declared result types), plus directly known
    numeric/Boolean operator operands. Typed smart-variable schemas include
    explicit source-kind availability; the current safe baseline preserves
-   existing availability until source-specific behavior is reviewed. It remains
-   editor-only and does not evaluate or alter runtime validation.
+   existing availability until source-specific behavior is reviewed. It also
+   warns for a calculation, CALCTEXT, or CALCDATE field that directly references
+   itself, while permitting explicit other-event or repeat-instance references.
+   It remains editor-only and does not evaluate or alter runtime validation.
 7. **Required before PR:** Follow and update
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
    for every new Smart Variable, Special Function, or Action Tag. It records
