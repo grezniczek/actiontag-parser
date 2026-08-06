@@ -471,8 +471,8 @@ the Logic expression inside `@CALCTEXT(...)` or `@CALCDATE(...)`. It warns only
 for an unqualified reference to that same field; an explicit other-event or
 repeat-instance reference is permitted. The target can be a newly authored
 field that is not yet in project metadata, so it does not also receive an
-unknown-field error. Circular dependency analysis across multiple fields
-remains a later, separate graph check.
+unknown-field error. Circular dependency analysis across multiple fields is a
+separate graph check.
 
 That later calculation graph check must run server-side only during a safe,
 non-interactive design action (for example, after a field save or a metadata
@@ -492,8 +492,15 @@ normalized calc/CALCTEXT/CALCDATE source extraction, parsed reference edges,
 event-context resolution, repeat/dynamic-context preservation as potential
 edges, and machine-readable aggregate-smart-variable dependency semantics.
 Its synthetic fixtures cover direct/indirect, event, repeat, aggregate, and
-invalid-expression cases. The remaining work is to connect its nonblocking
-cycle findings to post-save and metadata-import feedback.
+invalid-expression cases.
+
+The Online Designer now runs that graph after a successful ordinary calc,
+CALCTEXT, or CALCDATE field save, against the resulting development or draft
+metadata. It displays a non-blocking dialog only for cycle witnesses that
+contain the field just saved, with each field/event path and a clear note when
+the cycle is potential. It never blocks or rolls back the save, and it caps the
+display at ten paths. Data-dictionary and other metadata-import feedback remain
+the next integration surface.
 
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the

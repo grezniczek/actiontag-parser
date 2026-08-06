@@ -83,6 +83,9 @@ rather than preserving obsolete transitional instructions.
    safely inferred remains `['mixed']`. If the smart variable derives from
    project fields, also declare its machine-readable dependency semantics so
    server-side calculation-cycle analysis can retain the edge as potential.
+   The Online Designer uses those semantics after a calculation save to show a
+   warning-only cycle path; any new dependency kind needs a fixture covering
+   both its graph edge and its potential/definite classification.
 5. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
    in `Piping::getSpecialTagsInfo()`, but still requires a test when adding
