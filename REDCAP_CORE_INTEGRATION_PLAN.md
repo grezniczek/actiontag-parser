@@ -364,7 +364,9 @@ The eventual validator therefore needs an extensible definition/schema mechanism
 6. **Completed (first semantic scope):** Add matching PHP/browser Logic
    semantic analysis, backed by draft-aware project metadata, for unknown
    references/events/functions, event-form availability, checkbox choices,
-   function arity, and directly inferable function argument types. It remains
+   function arity, and directly inferable function argument types (including
+   nested calls using catalog-declared result types), plus directly known
+   numeric/Boolean operator operands. It remains
    editor-only and does not evaluate or alter runtime validation.
 7. Use the EM benchmark across representative projects to establish parser,
    resolver, preload, and evaluation costs before considering runtime use.

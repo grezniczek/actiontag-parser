@@ -449,9 +449,12 @@ field/smart-variable references, unknown events, fields unavailable at an
 event, checkbox misuse or unknown choice codes, unknown functions, invalid
 function arity, and directly inferable function-argument type mismatches. The
 catalog carries field type/validation/value kinds, checkbox codes, event-form
-designation, the public function catalog, and the complete base smart-variable
-set. Semantic analysis deliberately does not run after a structural error, so
-recovering malformed text does not create misleading metadata cascades. It is
+designation, function parameter and result types, and the complete base
+smart-variable set. Arithmetic operators require directly known numeric
+operands, while logical operators require directly known Boolean operands;
+unknown or mixed values are deliberately left unflagged. Semantic analysis
+does not run after a structural error, so recovering malformed text does not
+create misleading metadata cascades. It is
 diagnostic/editor-only: it does not evaluate expressions or change runtime
 validation.
 
