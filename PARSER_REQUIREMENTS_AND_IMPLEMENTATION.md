@@ -494,13 +494,20 @@ edges, and machine-readable aggregate-smart-variable dependency semantics.
 Its synthetic fixtures cover direct/indirect, event, repeat, aggregate, and
 invalid-expression cases.
 
-The Online Designer now runs that graph after a successful ordinary calc,
-CALCTEXT, or CALCDATE field save, against the resulting development or draft
-metadata. It displays a non-blocking dialog only for cycle witnesses that
-contain the field just saved, with each field/event path and a clear note when
-the cycle is potential. It never blocks or rolls back the save, and it caps the
-display at ten paths. Data-dictionary and other metadata-import feedback remain
-the next integration surface.
+The Online Designer also previews that graph before a user exits the new
+authoring workspace with **Update & Close Editor**. A read-only server request
+combines the current development/draft metadata with the pending calc,
+CALCTEXT, or CALCDATE source, including a newly added or renamed field. If a
+cycle contains that proposed field, the user sees its complete field/event
+path, its potential status where applicable, and a choice to return to the
+editor or save anyway. Choosing save records an acknowledgement for that field
+form submission, avoiding a duplicate dialog.
+
+The post-save graph check remains the fallback for edits made outside that
+preview flow. It uses the resulting development/draft metadata, displays only
+cycle witnesses containing the field just saved, caps the display at ten paths,
+and never blocks or rolls back the save. Data-dictionary and other
+metadata-import feedback remain the next integration surface.
 
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the
@@ -515,6 +522,12 @@ Custom Record Label, Custom Event Label, and Custom Repeating Instrument Label
 also performs a one-line-safe `<br>` round trip: supported existing `<br>`
 spellings display as newlines and can be saved as canonical `<br>` tags or
 spaces, while Cancel preserves the original stored text.
+
+The workspace's metadata catalog is cacheable only between unchanged project
+definitions. Online Designer field additions and edits now reload the affected
+form from the server; that refresh also replaces the cached catalog, so field
+completion and semantic diagnostics immediately reflect added, renamed, or
+deleted fields.
 
 Some exact piping policies also deliberately suppress record-field completion.
 The real-time Twilio SMS composer and Project Dashboard body do not have a

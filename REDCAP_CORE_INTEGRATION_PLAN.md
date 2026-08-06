@@ -393,12 +393,22 @@ conservative graph for calc, CALCTEXT, and CALCDATE fields. It resolves ordinary
 event-context edges, retains repeat/dynamic/aggregate dependencies as potential
 edges, and returns direct or indirect cycle witnesses.
 
-**Implemented safe action:** after a successful Online Designer save of an
-ordinary calc, CALCTEXT, or CALCDATE field, the resulting development/draft
-metadata is analyzed. A non-blocking warning lists only direct or indirect
-cycle witnesses containing the saved field; paths that include a
-repeat/event/record/conditional/aggregate edge are explicitly labeled
-potential. The save is never blocked or rolled back.
+**Implemented Online Designer flow:** when the author exits the new editor for
+an ordinary calc, CALCTEXT, or CALCDATE source, a read-only server preview
+combines the pending source with the proposed development/draft metadata. It
+lists only direct or indirect cycle witnesses containing that field, including
+the full field/event path, and offers **Return to Editor** or **Save Anyway**.
+Potential repeat/event/record/conditional/aggregate paths are explicitly
+labeled. Saving anyway records an acknowledgement so the user is not shown the
+same warning again immediately after the field save.
+
+The post-save graph warning remains the fallback for saves outside the new
+editor-preview flow. It never blocks or rolls back the save.
+
+**Metadata freshness:** each Online Designer field add/edit now reloads the
+affected form from the server and invalidates/refetches the shared authoring
+catalog, which keeps completion and semantic diagnostics correct after field
+additions, renames, and deletions.
 
 **Next surface:** data-dictionary and other metadata-import actions should run
 the same check after their proposed definition is assembled. They should retain

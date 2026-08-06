@@ -6,6 +6,11 @@ or required verification step changes. A feature is not complete merely
 because it appears in completion, help, or diagnostics: runtime behavior,
 documentation, authoring support, and test coverage must agree.
 
+When a feature consumes project metadata through the shared authoring catalog,
+also identify its invalidation boundary. Online Designer metadata changes
+reload the affected form and refetch that catalog; do not add a second client
+side field cache without an equally complete add/rename/delete refresh plan.
+
 ## First establish the contract
 
 Before changing a list or parser, write down the public spelling, parameters,
