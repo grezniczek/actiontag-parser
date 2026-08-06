@@ -370,13 +370,18 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    explicit source-kind availability; the current safe baseline preserves
    existing availability until source-specific behavior is reviewed. It remains
    editor-only and does not evaluate or alter runtime validation.
-7. Use the EM benchmark across representative projects to establish parser,
+7. **Required before PR:** Follow and update
+   [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
+   for every new Smart Variable, Special Function, or Action Tag. It records
+   the distinct runtime, parser, catalog, help, and test responsibilities so
+   authoring completion is not mistaken for runtime support.
+8. Use the EM benchmark across representative projects to establish parser,
    resolver, preload, and evaluation costs before considering runtime use.
-8. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
+9. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
    compatibility policy are ready to be stable for developers.
-9. Evaluate selective compatibility delegation in `ActionTags`, then migrate
+10. Evaluate selective compatibility delegation in `ActionTags`, then migrate
    `Form`/runtime consumers one family at a time with regression coverage.
-10. Introduce semantic tag definitions and a validator as a distinct
+11. Introduce semantic tag definitions and a validator as a distinct
    standardization project.
 
 ## Benchmarking and Runtime Readiness
