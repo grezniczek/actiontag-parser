@@ -22,7 +22,7 @@ deliberate compatibility decision.
 
 | Feature | Runtime/source registration | Shared authoring metadata and help | Authoring transport | Key checks |
 | --- | --- | --- | --- | --- |
-| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds and source availability; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
+| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -80,7 +80,9 @@ rather than preserving obsolete transitional instructions.
    `allowed_source_kinds` to the reviewed source list. Use `['*']` only after
    confirming that existing behavior is valid in every current Logic source;
    do not invent restrictions from intuition. A value whose type cannot be
-   safely inferred remains `['mixed']`.
+   safely inferred remains `['mixed']`. If the smart variable derives from
+   project fields, also declare its machine-readable dependency semantics so
+   server-side calculation-cycle analysis can retain the edge as potential.
 5. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
    in `Piping::getSpecialTagsInfo()`, but still requires a test when adding

@@ -386,16 +386,18 @@ The eventual validator therefore needs an extensible definition/schema mechanism
 11. Introduce semantic tag definitions and a validator as a distinct
    standardization project.
 
-### Deferred: server-side calculation-cycle warnings
+### Next: server-side calculation-cycle warnings
 
-Build a conservative calculation-dependency graph before adding broad cycle
-diagnostics. It must normalize calc, CALCTEXT, and CALCDATE sources; resolve
-direct and indirect field references in their event/repeat contexts; and model
-aggregate smart-variable dependencies as potential cross-record/context edges.
-Run it only after a safe field-design or metadata-import action has assembled
-the proposed project definition. Return a warning with the full detected path,
-but never block or roll back the action. `Calculate::getCalcFieldsByTriggerField()`
-is a regex trigger-discovery helper, not an appropriate cycle detector.
+**Completed foundation:** `CalculationDependencyGraphBuilder` builds a pure,
+conservative graph for calc, CALCTEXT, and CALCDATE fields. It resolves ordinary
+event-context edges, retains repeat/dynamic/aggregate dependencies as potential
+edges, and returns direct or indirect cycle witnesses.
+
+Connect the completed graph to a safe field-design and metadata-import action.
+It must run only after the proposed project definition is assembled, return a
+warning with the full detected path, and never block or roll back the action.
+`Calculate::getCalcFieldsByTriggerField()` remains a regex trigger-discovery
+helper, not a cycle detector.
 
 ## Benchmarking and Runtime Readiness
 

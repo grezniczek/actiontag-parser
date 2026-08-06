@@ -486,12 +486,14 @@ identified as potential rather than presented as a guaranteed runtime loop.
 
 The present `Calculate::getCalcFieldsByTriggerField()` routine is trigger
 discovery based on text matching, not a dependency graph, so it must not be
-reused as cycle proof. First add a server-only calculation-dependency builder
-with normalized source extraction for calc/CALCTEXT/CALCDATE fields, parsed
-reference edges, event/repeat-context resolution, and machine-readable
-aggregate-smart-variable dependency semantics. Exercise that builder with
-synthetic graph fixtures before connecting it to save/import feedback. This is
-deliberately deferred until that conservative foundation exists.
+reused as cycle proof. The pure server-side
+`CalculationDependencyGraphBuilder` now supplies the necessary foundation:
+normalized calc/CALCTEXT/CALCDATE source extraction, parsed reference edges,
+event-context resolution, repeat/dynamic-context preservation as potential
+edges, and machine-readable aggregate-smart-variable dependency semantics.
+Its synthetic fixtures cover direct/indirect, event, repeat, aggregate, and
+invalid-expression cases. The remaining work is to connect its nonblocking
+cycle findings to post-save and metadata-import feedback.
 
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the
