@@ -58,9 +58,17 @@ when that is warranted.
   enumerated, and free-text parameter contracts for the URL and survey smart
   variables. The analyzer validates a known instrument and survey status,
   warning rather than blocking if an unknown instrument might fall back to the
-  current form; completion supplies matching project instruments and duration
-  units. Other Piping parameter semantics and broader source availability
-  remain runtime behavior until their contracts are cataloged. The Edit Field dialog's
+  current form. With a named event qualifier, a known instrument outside the
+  event's designated forms is likewise an advisory warning; completion keeps
+  it available but muted. Completion supplies matching project instruments and
+  duration units. Other Piping parameter semantics and broader source availability
+  remain runtime behavior until their contracts are cataloged.
+  `PipingFieldParameterCatalog` similarly owns the evidence-backed project-field
+  modifier contract. Each catalog field carries its applicable
+  `piping_parameters` for completion, and the top-level known modifier set lets
+  the PHP/browser analyzers issue warning-only diagnostics for known modifiers
+  used on an incompatible field. Unknown modifiers remain runtime-compatible.
+  The Edit Field dialog's
   one-line `#field_note` uses the authoring workspace with piping diagnostics, Summary and Structural
   analysis tabs, reference hover documentation, and manual Ctrl+Space
   completion for fields, smart variables, and (in longitudinal projects)
@@ -80,7 +88,8 @@ when that is warranted.
   each line-break run and immediately adjoining whitespace to one space,
   matching the input surface without changing runtime piping. The workspace
   recognizes field and smart-variable colon parameters (for example
-  `[field:value]`) as opaque runtime syntax, alongside checkbox, event, and
+  `[field:value]`), diagnosing only catalog-known project-field modifiers that
+  do not apply to the target field, alongside checkbox, event, and
   repeating-instance forms; its Piping help button opens the standard REDCap
   piping explanation. Manual Ctrl+Space completion also suggests applicable
   field parameters from field type and validation metadata; it deliberately
@@ -405,9 +414,11 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    entries additionally declare event and instance qualifier support, which
    yields warning-only diagnostics when explicitly unsupported. Evidence-backed
    instrument and enum parameter contracts now provide conservative warnings,
-   metadata checks, and completion; it intentionally leaves other parameters
-   and broader source-specific smart-variable availability to runtime behavior
-   until their contracts are cataloged.
+   metadata checks, and completion. `PipingFieldParameterCatalog` now supplies
+   the matching per-field modifier contract for completion and warning-only
+   diagnostics. It intentionally leaves unknown parameters and broader
+   source-specific smart-variable availability to runtime behavior until their
+   contracts are cataloged.
 8. **Required before PR:** Follow and update
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
    for every new Smart Variable, Special Function, or Action Tag. It records

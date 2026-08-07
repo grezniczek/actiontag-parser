@@ -28,6 +28,7 @@ deliberate compatibility decision.
 | Feature | Runtime/source registration | Shared authoring metadata and help | Authoring transport | Key checks |
 | --- | --- | --- | --- | --- |
 | Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier and evidence-backed parameter contracts; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
+| Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -99,8 +100,11 @@ rather than preserving obsolete transitional instructions.
    Record any parameter only when its runtime contract is evidence-backed:
    instrument targets, enumerated values, and unrestricted free text are
    distinct kinds. Unknown instrument values that may fall back to the current
-   form must remain warning-only. Add PHP/browser semantic fixtures for every
-   supported and explicitly unsupported form.
+   form must remain warning-only. For an event-qualified reference to a known
+   project instrument, the shared event-form designation is also an advisory
+   check: keep an instrument outside that event available but muted in
+   completion and warn in semantic analysis. Add PHP/browser semantic fixtures
+   for every supported and explicitly unsupported form.
 6. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
    in `Piping::getSpecialTagsInfo()`: `PipingSemanticAnalyzer` will then
@@ -112,6 +116,30 @@ rather than preserving obsolete transitional instructions.
 7. Verify the Smart Variables reference dialog, completion, hover information,
    and every intentionally supported source policy. Do not enable field
    completion in a source that has no per-record replacement context.
+
+## Add or change a Piping field modifier
+
+1. Characterize the runtime replacement behavior in `Piping` first: exact
+   spelling, applicable field types and validation types, its interaction with
+   other modifiers, and whether an unsupported spelling is ignored or changes
+   output. Do not infer applicability from its name.
+2. Add only the evidence-backed field contract to
+   `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php`. Its
+   field-local definitions drive completion, while its complete known set lets
+   the semantic analyzers distinguish a known-but-inapplicable modifier from
+   an unknown runtime modifier. Leave the latter non-diagnostic until its
+   contract is established.
+3. Confirm `buildAuthoringSyntaxEditorCatalog()` emits both the field-local
+   `piping_parameters` and the top-level `piping_field_parameters` set. Do not
+   duplicate field-type logic in a browser completer or either semantic
+   analyzer.
+4. Add shared PHP/browser semantic fixtures for a supported field, a
+   known-but-unsupported field, and an unknown modifier. Unsupported use must
+   be a warning unless runtime rejection is conclusively established. Add
+   catalog and completion coverage, including the runtime-sensitive spelling.
+5. Verify the Piping editor's completion, hover/help text, PHP server fallback,
+   and browser analysis agree. Run the Piping parser, catalog, semantic, and
+   authoring-workspace tests before opening the PR.
 
 ## Add a Special Function
 
@@ -173,6 +201,7 @@ node UnitTests/ActionTags/ActionTagSyntaxParserJsTest.js
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Piping/PipingSyntaxParserTest.php
 node UnitTests/AuthoringSyntax/Piping/PipingSyntaxParserJsTest.js
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Catalog/PipingSmartVariableCatalogTest.php
+php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Catalog/PipingFieldParameterCatalogTest.php
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Piping/PipingSemanticAnalyzerTest.php
 node UnitTests/AuthoringSyntax/Piping/PipingSemanticAnalyzerJsTest.js
 node UnitTests/AuthoringSyntax/Piping/PipingAuthoringWorkspaceTest.js

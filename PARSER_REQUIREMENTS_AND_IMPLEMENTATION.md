@@ -445,9 +445,21 @@ parameter contracts: project instrument targets, survey-only targets, and
 enumerated modifiers such as duration units. These drive browser completion
 and PHP/browser semantic parity. An unknown instrument is a warning because
 runtime replacement may fall back to the current form; a known non-survey used
-where a survey is required is an error. Link text and other unrestricted or
-unreviewed parameters remain runtime behavior. Shared PHP/JS semantic fixtures
-cover this boundary.
+where a survey is required is an error. When a known instrument is paired with
+a known named event, an absent event-form designation is also a warning: the
+completion list leaves the instrument available but visually muted. Link text
+and other unrestricted or unreviewed parameters remain runtime behavior.
+Shared PHP/JS semantic fixtures cover this boundary.
+
+`PipingFieldParameterCatalog` separately captures evidence-backed colon
+modifiers for project fields (for example `:checked`, `:year`, and `:link`).
+The controller transports each field's applicable `piping_parameters` for
+completion and the complete `piping_field_parameters` universe for semantic
+analysis. The PHP and browser analyzers warn only when a modifier is known to
+that universe but absent from the referenced field's contract; an unknown
+modifier remains runtime-compatible. The field-local contract keeps the
+completion UI, server fallback, and browser analyzer from reimplementing
+field-type, validation, and relevant field-metadata rules independently.
 
 Manual Piping completion also consumes the catalog's named events in
 longitudinal projects. Selecting an event name produces only `[event_name]`.
