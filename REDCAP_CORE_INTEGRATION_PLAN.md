@@ -404,17 +404,15 @@ conservative graph for calc, CALCTEXT, and CALCDATE fields. It resolves ordinary
 event-context edges, retains repeat/dynamic/aggregate dependencies as potential
 edges, and returns direct or indirect cycle witnesses.
 
-**TODO — repair the Online Designer pre-close flow:** the observed behavior is
-currently that the warning appears only after the parent **Edit Field** dialog
-saves. Before the Calculation Editor closes, its **Update & Close Editor**
-action must make a read-only AJAX request that combines the proposed
-development/draft metadata with the current, still-unsaved calculation source
-and target-field identity (including a newly added or renamed field). If the
-result contains a cycle involving that target, the response must name the
-concrete offending fields and provide the complete field/event path, with
-potential repeat/event/record/conditional/aggregate paths labeled. The user
-must be able to **Return to Editor** or **Save Anyway**; the latter retains the
-acknowledgement needed to avoid a duplicate immediate post-save warning.
+**Implemented Online Designer pre-close flow:** before **Update & Close
+Editor** closes the Calculation Editor, it sends a read-only AJAX request that
+combines the active development/draft metadata with the current, still-unsaved
+calculation source and target-field identity, including a newly added or
+renamed field. A cycle involving that proposed field opens an rcDialog with
+the concrete field names and full field/event path, labeling potential
+repeat/event/record/conditional/aggregate paths. The user can **Return to
+Editor** or **Save Anyway**; the latter retains the acknowledgement needed to
+avoid an immediate duplicate post-save warning.
 
 The post-save graph warning remains the fallback for saves outside the new
 editor-preview flow. It never blocks or rolls back the save.
