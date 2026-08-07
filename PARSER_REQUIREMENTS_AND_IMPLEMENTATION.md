@@ -500,14 +500,17 @@ edges, and machine-readable aggregate-smart-variable dependency semantics.
 Its synthetic fixtures cover direct/indirect, event, repeat, aggregate, and
 invalid-expression cases.
 
-The Online Designer also previews that graph before a user exits the new
-authoring workspace with **Update & Close Editor**. A read-only server request
-combines the current development/draft metadata with the pending calc,
-CALCTEXT, or CALCDATE source, including a newly added or renamed field. If a
-cycle contains that proposed field, the user sees its complete field/event
-path, its potential status where applicable, and a choice to return to the
-editor or save anyway. Choosing save records an acknowledgement for that field
-form submission, avoiding a duplicate dialog.
+**TODO — repair and verify the Online Designer pre-close preview:** the
+current observed behavior is that the cycle warning appears only after the
+parent **Edit Field** dialog saves. Before **Update & Close Editor** closes the
+Calculation Editor, it must issue a read-only AJAX request that combines the
+current development/draft metadata with the pending calc, CALCTEXT, or
+CALCDATE source and target-field identity, including a newly added or renamed
+field. When the proposed field participates in a cycle, the response must name
+the offending fields and provide the full field/event path and potential status
+where applicable. The user must be able to return to the editor or save anyway;
+the save acknowledgement prevents the immediate post-save dialog from
+duplicating the warning.
 
 The post-save graph check remains the fallback for edits made outside that
 preview flow. It uses the resulting development/draft metadata, displays only
