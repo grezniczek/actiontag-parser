@@ -424,15 +424,15 @@ affected form from the server and invalidates/refetches the shared authoring
 catalog, which keeps completion and semantic diagnostics correct after field
 additions, renames, and deletions.
 
-**Implemented metadata-import flow:** after a successful Data Dictionary
-upload, instrument ZIP upload, or Copy Instrument operation, the server builds
-graphs for the pre-import and freshly reloaded post-import metadata. Only cycle
-witnesses introduced by that operation are presented, so unrelated legacy
-cycles do not become a new warning. The Data Dictionary flow displays the
-warning before its normal success redirect; ZIP and Copy Instrument retain the
-success dialog until the user closes the warning. All three flows are strictly
-post-commit and advisory: a diagnostic failure is logged and cannot turn a
-successful import into an error or rollback.
+**Implemented metadata-import flow:** the Data Dictionary upload builds graphs
+for the active development/draft metadata and the validated, parsed proposed
+metadata during its first review step. It shows only newly introduced cycle
+witnesses as part of the existing warnings immediately above the box containing
+**Commit Changes**; it is not a dialog and does not block commit. Instrument
+ZIP upload and Copy Instrument instead compare the pre-import graph with a
+freshly reloaded post-commit graph and retain the success dialog until the user
+closes the warning. All warnings are advisory: a diagnostic failure is logged
+and cannot turn a successful import into an error or rollback.
 `Calculate::getCalcFieldsByTriggerField()` remains a regex trigger-discovery
 helper, not a cycle detector.
 

@@ -515,10 +515,13 @@ duplicating the warning.
 The post-save graph check remains the fallback for edits made outside that
 preview flow. It uses the resulting development/draft metadata, displays only
 cycle witnesses containing the field just saved, caps the display at ten paths,
-and never blocks or rolls back the save. Data Dictionary, instrument ZIP, and
-Copy Instrument imports now compare the pre-import graph with a freshly
-reloaded post-commit graph, display only cycles introduced by the import, and
-use the same capped full-path warning body. Their warning is advisory; a
+and never blocks or rolls back the save. During the first Data Dictionary
+review, the server compares the active development/draft graph with the
+validated, parsed proposed metadata. It displays only introduced witnesses as
+part of the existing warnings immediately above the box containing **Commit
+Changes**, not as a post-commit dialog. Instrument ZIP and Copy Instrument
+imports compare the pre-import graph with a freshly reloaded post-commit graph
+and use the same capped full-path warning body. Every warning is advisory; a
 reporting failure is logged without changing the completed import result.
 
 Each authoring workspace invocation identifies its concrete source with a
