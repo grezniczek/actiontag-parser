@@ -461,6 +461,15 @@ modifier remains runtime-compatible. The field-local contract keeps the
 completion UI, server fallback, and browser analyzer from reimplementing
 field-type, validation, and relevant field-metadata rules independently.
 
+`PipingSourcePolicyCatalog` captures the narrower question of whether a named
+authoring source has a record context for project-field references at all. The
+controller sends those source policies in the same catalog used by the browser
+and server fallback. A declared recordless source keeps smart variables
+available but produces an advisory finding for `[field_name]`; an absent or
+future source policy remains compatible. This makes the completion policy and
+metadata-aware diagnostics agree without treating an authoring-source name as
+a parser concern.
+
 Manual Piping completion also consumes the catalog's named events in
 longitudinal projects. Selecting an event name produces only `[event_name]`.
 When the user begins the following bracket, completion recognizes the preceding

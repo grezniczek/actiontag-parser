@@ -68,6 +68,11 @@ when that is warranted.
   `piping_parameters` for completion, and the top-level known modifier set lets
   the PHP/browser analyzers issue warning-only diagnostics for known modifiers
   used on an incompatible field. Unknown modifiers remain runtime-compatible.
+  `PipingSourcePolicyCatalog` separately records the evidence-backed sources
+  that have no record context. It drives the workspace's field-completion
+  availability and both semantic analyzers: project-field references in those
+  sources produce a warning while smart variables remain available. Unknown
+  source kinds retain existing behavior.
   The Edit Field dialog's
   one-line `#field_note` uses the authoring workspace with piping diagnostics, Summary and Structural
   analysis tabs, reference hover documentation, and manual Ctrl+Space
@@ -416,9 +421,11 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    instrument and enum parameter contracts now provide conservative warnings,
    metadata checks, and completion. `PipingFieldParameterCatalog` now supplies
    the matching per-field modifier contract for completion and warning-only
-   diagnostics. It intentionally leaves unknown parameters and broader
-   source-specific smart-variable availability to runtime behavior until their
-   contracts are cataloged.
+   diagnostics. `PipingSourcePolicyCatalog` now provides the narrow,
+   evidence-backed record-context contract for restricted authoring sources.
+   It intentionally leaves unknown parameters and broader source-specific
+   smart-variable availability to runtime behavior until their contracts are
+   cataloged.
 8. **Required before PR:** Follow and update the Manual,
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
    for every new Smart Variable, Piping project-field modifier, Special

@@ -34,6 +34,7 @@ deliberate compatibility decision.
 | --- | --- | --- | --- | --- |
 | Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier and evidence-backed parameter contracts; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
+| Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record-context support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -145,6 +146,24 @@ rather than preserving obsolete transitional instructions.
 5. Verify the Piping editor's completion, hover/help text, PHP server fallback,
    and browser analysis agree. Run the Piping parser, catalog, semantic, and
    authoring-workspace tests before opening the PR.
+
+## Add or change Piping source capability
+
+1. Establish the named source's actual replacement context. In particular,
+   verify whether a project record is available for `[field_name]` references;
+   do not infer it from the source's UI or from smart-variable support.
+2. Add a `PipingSourcePolicyCatalog` entry only for an evidence-backed
+   restriction. An absent entry preserves existing behavior, and a restricted
+   source must not implicitly prohibit smart variables.
+3. Confirm the catalog is transported by
+   `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
+   opening and applies it as soon as it arrives, so completion,
+   Piping/reference help, browser diagnostics, and the
+   `diagnoseAuthoringSyntax()` server fallback receive the same source kind.
+4. Add PHP/browser fixtures for a project-field reference in the restricted
+   source, a smart variable in the same source, and an unknown future source
+   kind. The resulting record-context finding must be warning-only unless a
+   runtime validator itself rejects the syntax.
 
 ## Add a Special Function
 
