@@ -460,6 +460,11 @@ that universe but absent from the referenced field's contract; an unknown
 modifier remains runtime-compatible. The field-local contract keeps the
 completion UI, server fallback, and browser analyzer from reimplementing
 field-type, validation, and relevant field-metadata rules independently.
+Definitions may also share an `exclusive_group` where runtime gives only one
+modifier meaningful effect (such as checked versus unchecked checkbox choices,
+inline versus linked files, or date/time component selection). The analyzers
+warn and completion suppresses the conflicting later choice; this remains
+advisory because Piping replacement itself is unchanged.
 
 `PipingSourcePolicyCatalog` captures the narrower question of whether a named
 authoring source has a record context for project-field references at all. The

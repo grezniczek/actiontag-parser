@@ -134,15 +134,18 @@ rather than preserving obsolete transitional instructions.
    field-local definitions drive completion, while its complete known set lets
    the semantic analyzers distinguish a known-but-inapplicable modifier from
    an unknown runtime modifier. Leave the latter non-diagnostic until its
-   contract is established.
+   contract is established. Where the runtime gives one modifier precedence
+   over another or cannot meaningfully combine them, declare their shared
+   `exclusive_group` instead of reproducing that interaction in a completer.
 3. Confirm `buildAuthoringSyntaxEditorCatalog()` emits both the field-local
    `piping_parameters` and the top-level `piping_field_parameters` set. Do not
    duplicate field-type logic in a browser completer or either semantic
    analyzer.
 4. Add shared PHP/browser semantic fixtures for a supported field, a
-   known-but-unsupported field, and an unknown modifier. Unsupported use must
-   be a warning unless runtime rejection is conclusively established. Add
-   catalog and completion coverage, including the runtime-sensitive spelling.
+   known-but-unsupported field, an unknown modifier, and each cataloged
+   mutually-exclusive combination. Unsupported or incompatible use must be a
+   warning unless runtime rejection is conclusively established. Add catalog
+   and completion coverage, including the runtime-sensitive spelling.
 5. Verify the Piping editor's completion, hover/help text, PHP server fallback,
    and browser analysis agree. Run the Piping parser, catalog, semantic, and
    authoring-workspace tests before opening the PR.

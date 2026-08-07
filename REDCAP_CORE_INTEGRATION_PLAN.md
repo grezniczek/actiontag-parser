@@ -67,7 +67,9 @@ when that is warranted.
   modifier contract. Each catalog field carries its applicable
   `piping_parameters` for completion, and the top-level known modifier set lets
   the PHP/browser analyzers issue warning-only diagnostics for known modifiers
-  used on an incompatible field. Unknown modifiers remain runtime-compatible.
+  used on an incompatible field. Its `exclusive_group` metadata also prevents
+  conflicting known modifiers from being suggested together and warns if they
+  are manually combined. Unknown modifiers remain runtime-compatible.
   `PipingSourcePolicyCatalog` separately records the evidence-backed sources
   that have no record context. It drives the workspace's field-completion
   availability and both semantic analyzers: project-field references in those
