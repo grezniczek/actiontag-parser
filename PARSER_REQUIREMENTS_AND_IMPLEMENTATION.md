@@ -506,8 +506,11 @@ form submission, avoiding a duplicate dialog.
 The post-save graph check remains the fallback for edits made outside that
 preview flow. It uses the resulting development/draft metadata, displays only
 cycle witnesses containing the field just saved, caps the display at ten paths,
-and never blocks or rolls back the save. Data-dictionary and other
-metadata-import feedback remain the next integration surface.
+and never blocks or rolls back the save. Data Dictionary, instrument ZIP, and
+Copy Instrument imports now compare the pre-import graph with a freshly
+reloaded post-commit graph, display only cycles introduced by the import, and
+use the same capped full-path warning body. Their warning is advisory; a
+reporting failure is logged without changing the completed import result.
 
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the
