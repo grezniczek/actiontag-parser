@@ -44,12 +44,17 @@ when that is warranted.
   Edit and Help only: manual Ctrl+Space completion supplies smart variables
   and project field names in quoted SQL values. SQL does not receive parsing,
   validation, SQL-language completion, summary, or structural analysis.
-- Piping has PHP and browser parser mirrors validated by shared fixtures. The
-  Edit Field dialog's one-line `#field_note` uses the authoring workspace with
-  piping diagnostics, Summary and Structural analysis tabs, reference hover
-  documentation, and manual Ctrl+Space completion for fields and smart
-  variables. The field itself retains its normal direct-edit behavior; the
-  adjacent pencil button, F2, and double-click open the workspace. It warns
+- Piping has PHP and browser parser mirrors validated by shared fixtures, and
+  matching `PipingSemanticAnalyzer` products for metadata-aware diagnostics.
+  After a structurally valid reference, the analyzer checks project fields and
+  smart variables, named events, event/form designation, checkbox targets,
+  and checkbox choice codes. It intentionally leaves piping parameter and
+  source-specific smart-variable semantics to runtime behavior until those
+  contracts are cataloged. The Edit Field dialog's one-line `#field_note` uses
+  the authoring workspace with piping diagnostics, Summary and Structural
+  analysis tabs, reference hover documentation, and manual Ctrl+Space
+  completion for fields and smart variables. The field itself retains its
+  normal direct-edit behavior; the adjacent pencil button, F2, and double-click open the workspace. It warns
   before an update if the workspace contains line breaks; saving collapses
   each line-break run and immediately adjoining whitespace to one space,
   matching the input surface without changing runtime piping. The workspace
@@ -372,18 +377,24 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    warns for a calculation, CALCTEXT, or CALCDATE field that directly references
    itself, while permitting explicit other-event or repeat-instance references.
    It remains editor-only and does not evaluate or alter runtime validation.
-7. **Required before PR:** Follow and update
+7. **Completed (first Piping semantic scope):** Add matching PHP/browser
+   Piping semantic analysis, backed by the same project catalog, for unknown
+   field/smart-variable references and events, event-form availability, and
+   checkbox target/choice validation. It intentionally leaves piping
+   parameters and source-specific smart-variable availability to runtime
+   behavior until their contracts are cataloged.
+8. **Required before PR:** Follow and update
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
    for every new Smart Variable, Special Function, or Action Tag. It records
    the distinct runtime, parser, catalog, help, and test responsibilities so
    authoring completion is not mistaken for runtime support.
-8. Use the EM benchmark across representative projects to establish parser,
+9. Use the EM benchmark across representative projects to establish parser,
    resolver, preload, and evaluation costs before considering runtime use.
-9. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
+10. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
    compatibility policy are ready to be stable for developers.
-10. Evaluate selective compatibility delegation in `ActionTags`, then migrate
+11. Evaluate selective compatibility delegation in `ActionTags`, then migrate
    `Form`/runtime consumers one family at a time with regression coverage.
-11. Introduce semantic tag definitions and a validator as a distinct
+12. Introduce semantic tag definitions and a validator as a distinct
    standardization project.
 
 ### Server-side calculation-cycle warnings

@@ -430,9 +430,15 @@ only through explicit compatibility decisions.
 
 The initial real-world compatibility scan found that legitimate unique event
 names can begin with a digit (for example, `72_hours_arm_1`). The shared PHP
-and browser piping parsers accept that structural form; whether a named event
-exists remains a metadata-aware semantic concern. This is covered by the
-shared piping fixture suite.
+and browser piping parsers accept that structural form. The matching
+`PipingSemanticAnalyzer` products then consume a completed parse and the
+project authoring catalog to diagnose unknown field/smart-variable references,
+unknown named events, fields not designated for an event, and checkbox target
+or choice misuse. They do not add metadata cascades after a structural error,
+and remain diagnostic-only: runtime replacement, piping parameters, and
+source-specific smart-variable availability are deliberately out of scope
+until their contracts are represented in the catalog. Shared PHP/JS semantic
+fixtures cover this boundary.
 
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for

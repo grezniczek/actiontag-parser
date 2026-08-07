@@ -27,7 +27,7 @@ deliberate compatibility decision.
 
 | Feature | Runtime/source registration | Shared authoring metadata and help | Authoring transport | Key checks |
 | --- | --- | --- | --- | --- |
-| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
+| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -93,8 +93,12 @@ rather than preserving obsolete transitional instructions.
    both its graph edge and its potential/definite classification.
 5. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
-   in `Piping::getSpecialTagsInfo()`, but still requires a test when adding
-   typed or restricted Logic metadata.
+   in `Piping::getSpecialTagsInfo()`: `PipingSemanticAnalyzer` will then
+   recognize the base name, while `LogicSemanticAnalyzer` also consumes its
+   typed or restricted Logic metadata. Add a test for either analyzer when
+   changing its supported availability or semantics. Do not add parameter or
+   source-specific Piping diagnostics until their runtime behavior has a
+   complete catalog contract.
 6. Verify the Smart Variables reference dialog, completion, hover information,
    and every intentionally supported source policy. Do not enable field
    completion in a source that has no per-record replacement context.
