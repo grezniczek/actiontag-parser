@@ -419,11 +419,12 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    diagnostics. It intentionally leaves unknown parameters and broader
    source-specific smart-variable availability to runtime behavior until their
    contracts are cataloged.
-8. **Required before PR:** Follow and update
+8. **Required before PR:** Follow and update the Manual,
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
-   for every new Smart Variable, Special Function, or Action Tag. It records
-   the distinct runtime, parser, catalog, help, and test responsibilities so
-   authoring completion is not mistaken for runtime support.
+   for every new Smart Variable, Piping project-field modifier, Special
+   Function, or Action Tag. It records the distinct runtime, parser, catalog,
+   help, completion, diagnostic, and test responsibilities so authoring
+   completion is not mistaken for runtime support.
 9. Use the EM benchmark across representative projects to establish parser,
    resolver, preload, and evaluation costs before considering runtime use.
 10. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and

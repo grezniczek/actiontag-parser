@@ -1,10 +1,15 @@
-# Steps to Take to Add a New Smart Variable, Special Function, or Action Tag
+# Manual: Adding or Changing an Authoring-Language Feature
 
 This is the required maintenance and PR checklist for author-facing REDCap
 language features. Keep this document current whenever an implementation seam
 or required verification step changes. A feature is not complete merely
 because it appears in completion, help, or diagnostics: runtime behavior,
 documentation, authoring support, and test coverage must agree.
+
+It is the Manual for integrating new Smart Variables, Piping project-field
+modifiers, Special Functions, and Action Tags into their runtime registries,
+authoring catalogs, help, completion, diagnostics, and tests. Extend it before
+opening a PR whenever a new catalog or integration seam is introduced.
 
 When a feature consumes project metadata through the shared authoring catalog,
 also identify its invalidation boundary. Online Designer metadata changes
