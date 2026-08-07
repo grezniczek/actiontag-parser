@@ -435,10 +435,29 @@ and browser piping parsers accept that structural form. The matching
 project authoring catalog to diagnose unknown field/smart-variable references,
 unknown named events, fields not designated for an event, and checkbox target
 or choice misuse. They do not add metadata cascades after a structural error,
-and remain diagnostic-only: runtime replacement, piping parameters, and
-source-specific smart-variable availability are deliberately out of scope
-until their contracts are represented in the catalog. Shared PHP/JS semantic
-fixtures cover this boundary.
+and remain diagnostic-only. Built-in Piping smart variables receive structural
+`supports_event_qualifier` and `supports_instance_qualifier` capabilities from
+`PipingSmartVariableCatalog`; an explicitly unsupported qualifier produces a
+warning because runtime replacement accepts but ignores that context. An absent
+capability remains non-diagnostic for stale catalogs and future module-provided
+variables. `PipingSmartVariableCatalog` now also carries only evidence-backed
+parameter contracts: project instrument targets, survey-only targets, and
+enumerated modifiers such as duration units. These drive browser completion
+and PHP/browser semantic parity. An unknown instrument is a warning because
+runtime replacement may fall back to the current form; a known non-survey used
+where a survey is required is an error. Link text and other unrestricted or
+unreviewed parameters remain runtime behavior. Shared PHP/JS semantic fixtures
+cover this boundary.
+
+Manual Piping completion also consumes the catalog's named events in
+longitudinal projects. Selecting an event name produces only `[event_name]`.
+When the user begins the following bracket, completion recognizes the preceding
+event, ranks fields from its designated forms first, and keeps other project
+fields as visually muted choices. The Piping completion popup is scoped to a
+450px width (ACE's default is 300px) so field labels remain readable. Classic
+projects have no event entries to suggest. After a completed smart variable,
+the same catalog supplies named instance qualifiers: supported choices are
+active and explicitly unsupported choices remain visible but muted.
 
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
@@ -521,6 +540,12 @@ Changes**, not as a post-commit dialog. Instrument ZIP and Copy Instrument
 imports compare the pre-import graph with a freshly reloaded post-commit graph
 and use the same capped full-path warning body. Every warning is advisory; a
 reporting failure is logged without changing the completed import result.
+
+Database-backed regression coverage creates temporary Development and Draft
+Mode projects, then exercises that same pre-commit review helper against real
+project metadata. It verifies that a pre-existing active-scope cycle is not
+shown and that a newly proposed cycle is shown; the Draft Mode case proves the
+comparison reads `metadata_temp` rather than production metadata.
 
 Each authoring workspace invocation identifies its concrete source with a
 stable logical `ref`. It is intentionally UI context, not parser input: the

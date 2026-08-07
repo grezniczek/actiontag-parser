@@ -48,13 +48,34 @@ when that is warranted.
   matching `PipingSemanticAnalyzer` products for metadata-aware diagnostics.
   After a structurally valid reference, the analyzer checks project fields and
   smart variables, named events, event/form designation, checkbox targets,
-  and checkbox choice codes. It intentionally leaves piping parameter and
-  source-specific smart-variable semantics to runtime behavior until those
-  contracts are cataloged. The Edit Field dialog's one-line `#field_note` uses
-  the authoring workspace with piping diagnostics, Summary and Structural
+  and checkbox choice codes. Built-in smart-variable entries also receive
+  catalog-owned `supports_event_qualifier` and
+  `supports_instance_qualifier` properties from `PipingSmartVariableCatalog`.
+  An explicitly unsupported qualifier yields a warning only, because runtime
+  replacement still accepts the structural form; an absent property remains
+  non-diagnostic for stale payloads and future module-provided variables.
+  `PipingSmartVariableCatalog` also declares evidence-backed instrument,
+  enumerated, and free-text parameter contracts for the URL and survey smart
+  variables. The analyzer validates a known instrument and survey status,
+  warning rather than blocking if an unknown instrument might fall back to the
+  current form; completion supplies matching project instruments and duration
+  units. Other Piping parameter semantics and broader source availability
+  remain runtime behavior until their contracts are cataloged. The Edit Field dialog's
+  one-line `#field_note` uses the authoring workspace with piping diagnostics, Summary and Structural
   analysis tabs, reference hover documentation, and manual Ctrl+Space
-  completion for fields and smart variables. The field itself retains its
-  normal direct-edit behavior; the adjacent pencil button, F2, and double-click open the workspace. It warns
+  completion for fields, smart variables, and (in longitudinal projects)
+  named events. Selecting an event produces only `[event_name]`; when the
+  next bracket begins, event-designated fields rank first and fields outside
+  that event's designated forms remain available but muted. Smart variables
+  with explicit event-qualifier support are ranked alongside that context;
+  variables that explicitly ignore it remain available but muted. After a
+  completed smart variable, named instance qualifiers follow the same catalog
+  rule: supported choices are active and explicitly unsupported choices muted.
+  The Piping
+  completion popup is widened from ACE's 300px default to 450px for readable
+  field labels without changing the other authoring modes. The field itself
+  retains its normal direct-edit behavior; the adjacent pencil button, F2, and
+  double-click open the workspace. It warns
   before an update if the workspace contains line breaks; saving collapses
   each line-break run and immediately adjoining whitespace to one space,
   matching the input surface without changing runtime piping. The workspace
@@ -380,9 +401,13 @@ The eventual validator therefore needs an extensible definition/schema mechanism
 7. **Completed (first Piping semantic scope):** Add matching PHP/browser
    Piping semantic analysis, backed by the same project catalog, for unknown
    field/smart-variable references and events, event-form availability, and
-   checkbox target/choice validation. It intentionally leaves piping
-   parameters and source-specific smart-variable availability to runtime
-   behavior until their contracts are cataloged.
+   checkbox target/choice validation. Built-in `PipingSmartVariableCatalog`
+   entries additionally declare event and instance qualifier support, which
+   yields warning-only diagnostics when explicitly unsupported. Evidence-backed
+   instrument and enum parameter contracts now provide conservative warnings,
+   metadata checks, and completion; it intentionally leaves other parameters
+   and broader source-specific smart-variable availability to runtime behavior
+   until their contracts are cataloged.
 8. **Required before PR:** Follow and update
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
    for every new Smart Variable, Special Function, or Action Tag. It records
@@ -431,6 +456,12 @@ ZIP upload and Copy Instrument instead compare the pre-import graph with a
 freshly reloaded post-commit graph and retain the success dialog until the user
 closes the warning. All warnings are advisory: a diagnostic failure is logged
 and cannot turn a successful import into an error or rollback.
+
+The database-backed Data Dictionary review regression test creates temporary
+Development and Draft Mode projects. In each case, it retains a pre-existing
+cycle in the active metadata scope and verifies that the review warning names
+only cycles newly introduced by the proposed dictionary; the Draft Mode case
+therefore detects an accidental comparison with production metadata.
 `Calculate::getCalcFieldsByTriggerField()` remains a regex trigger-discovery
 helper, not a cycle detector.
 

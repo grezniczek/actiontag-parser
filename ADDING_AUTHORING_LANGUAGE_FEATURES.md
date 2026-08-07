@@ -27,7 +27,7 @@ deliberate compatibility decision.
 
 | Feature | Runtime/source registration | Shared authoring metadata and help | Authoring transport | Key checks |
 | --- | --- | --- | --- | --- |
-| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
+| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier and evidence-backed parameter contracts; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -91,15 +91,25 @@ rather than preserving obsolete transitional instructions.
    The Online Designer uses those semantics after a calculation save to show a
    warning-only cycle path; any new dependency kind needs a fixture covering
    both its graph edge and its potential/definite classification.
-5. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
+5. Characterize Piping event and instance qualifiers independently. If the
+   replacement implementation consumes either qualifier, declare the matching
+   `supports_event_qualifier` and/or `supports_instance_qualifier` values in
+   `PipingSmartVariableCatalog`; do not embed an allowlist in a semantic
+   analyzer or UI completer. The core default is `false` for both properties.
+   Record any parameter only when its runtime contract is evidence-backed:
+   instrument targets, enumerated values, and unrestricted free text are
+   distinct kinds. Unknown instrument values that may fall back to the current
+   form must remain warning-only. Add PHP/browser semantic fixtures for every
+   supported and explicitly unsupported form.
+6. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
    in `Piping::getSpecialTagsInfo()`: `PipingSemanticAnalyzer` will then
    recognize the base name, while `LogicSemanticAnalyzer` also consumes its
    typed or restricted Logic metadata. Add a test for either analyzer when
-   changing its supported availability or semantics. Do not add parameter or
-   source-specific Piping diagnostics until their runtime behavior has a
-   complete catalog contract.
-6. Verify the Smart Variables reference dialog, completion, hover information,
+   changing its supported availability or semantics. Do not add unreviewed
+   parameter or source-specific Piping diagnostics until their runtime
+   behavior has a complete catalog contract.
+7. Verify the Smart Variables reference dialog, completion, hover information,
    and every intentionally supported source policy. Do not enable field
    completion in a source that has no per-record replacement context.
 
@@ -162,6 +172,10 @@ php UnitTests/vendor/bin/phpunit UnitTests/ActionTags/ActionTagParserTest.php
 node UnitTests/ActionTags/ActionTagSyntaxParserJsTest.js
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Piping/PipingSyntaxParserTest.php
 node UnitTests/AuthoringSyntax/Piping/PipingSyntaxParserJsTest.js
+php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Catalog/PipingSmartVariableCatalogTest.php
+php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Piping/PipingSemanticAnalyzerTest.php
+node UnitTests/AuthoringSyntax/Piping/PipingSemanticAnalyzerJsTest.js
+node UnitTests/AuthoringSyntax/Piping/PipingAuthoringWorkspaceTest.js
 git diff --check
 ```
 
