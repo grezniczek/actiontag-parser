@@ -113,18 +113,26 @@ moving migration target.
    `PipingSmartVariableCatalog`; do not embed an allowlist in a semantic
    analyzer or UI completer. The core default is `false` for both properties.
    Record any parameter only when its runtime contract is evidence-backed:
-   instrument targets, enumerated values, and unrestricted free text are
-   distinct kinds. Unknown instrument values that may fall back to the current
-   form must remain warning-only. If the implementation accepts a fixed number
-   of parameters, also declare `max_parameters`; excess parameters are a
-   warning-only diagnostic, never a runtime compatibility change. Do not model
+   instrument targets, project-owned targets (such as a unique dashboard
+   name), enumerated values, and unrestricted free text are distinct kinds.
+   A project-owned target needs a read-only top-level catalog collection from
+   `buildAuthoringSyntaxEditorCatalog()` for completion and validation; omit
+   diagnostics when that collection is absent so a stale catalog remains
+   compatible. Do not use a metadata getter with a write/backfill side effect
+   merely to construct the catalog. Unknown instrument values that may fall
+   back to the current form must remain warning-only; an unknown target with no
+   runtime fallback may be an error. If the implementation accepts a fixed
+   number of parameters, also declare `max_parameters`; excess parameters are
+   a warning-only diagnostic, never a runtime compatibility change. Do not model
    the runtime's permissive colon-delimited numeric or `*-instance` parsing as
    author syntax. Mark qualifier-reviewed variables with
    `rejects_legacy_inline_instance_qualifier` so semantic analysis rejects
    `[survey-url:followup:last-instance]` and requires
    `[survey-url:followup][last-instance]`. Keep the structural parser opaque
    for variables with legitimate numeric parameters, such as
-   `[data-table:435]`. For an
+   `[data-table:435]`, and do not mistake a value in a cataloged `free_text`
+   parameter position (for example, `[dashboard-link:my_dashboard:2]`) for an
+   inline instance. For an
    event-qualified reference to a known
    project instrument, the shared event-form designation is also an advisory
    check: keep an instrument outside that event available but muted in

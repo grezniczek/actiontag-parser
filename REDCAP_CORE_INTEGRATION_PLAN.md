@@ -55,9 +55,13 @@ when that is warranted.
   replacement still accepts the structural form; an absent property remains
   non-diagnostic for stale payloads and future module-provided variables.
   `PipingSmartVariableCatalog` also declares evidence-backed instrument,
-  enumerated, and free-text parameter contracts for the URL and survey smart
-  variables, plus `max_parameters` where runtime replacement establishes an
-  exact upper bound. Catalog-backed semantic analysis rejects a legacy final
+  project-dashboard, enumerated, and free-text parameter contracts for the
+  URL and survey smart variables, plus `max_parameters` where runtime
+  replacement establishes an exact upper bound. A read-only project
+  `dashboards` collection completes and validates the named targets of
+  `[dashboard-access-code]`, `[dashboard-url]`, and `[dashboard-link]`; an
+  unknown target is an error only when that collection is current, preserving
+  stale-catalog compatibility. Catalog-backed semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
   fields, requiring a separate bracketed qualifier instead. The structural
   parser remains opaque for valid numeric smart-variable parameters, such as
@@ -66,8 +70,8 @@ when that is warranted.
   warning rather than blocking if an unknown instrument might fall back to the
   current form. With a named event qualifier, a known instrument outside the
   event's designated forms is likewise an advisory warning; completion keeps
-  it available but muted. Completion supplies matching project instruments and
-  duration units. Explicit `requires_record_context`,
+  it available but muted. Completion supplies matching project instruments,
+  dashboard unique names, and duration units. Explicit `requires_record_context`,
   `requires_event_context`, `requires_form_context`, and
   `requires_record_or_public_survey_context` metadata identifies only Smart
   Variables whose runtime replacement consumes the corresponding context.

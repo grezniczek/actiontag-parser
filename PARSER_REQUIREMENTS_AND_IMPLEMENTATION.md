@@ -445,14 +445,20 @@ parameter contracts: project instrument targets, survey-only targets, and
 enumerated modifiers such as duration units. These drive browser completion
 and PHP/browser semantic parity. An unknown instrument is a warning because
 runtime replacement may fall back to the current form; a known non-survey used
-where a survey is required is an error. When a known instrument is paired with
-a known named event, an absent event-form designation is also a warning: the
-completion list leaves the instrument available but visually muted. Link text
-and other unrestricted or unreviewed parameters remain runtime behavior. Where
-replacement code has an exact upper parameter count, the same catalog exposes
-`max_parameters`; an excess is a warning-only diagnostic. For example,
-`[survey-queue-url]` takes none and `[survey-queue-link]` takes one optional
-free-text label. Catalog-backed semantic analysis also excludes the
+where a survey is required is an error. Named project-dashboard targets are
+transported as a read-only `dashboards` collection: `[dashboard-access-code]`
+and `[dashboard-url]` take one unique dashboard name, while
+`[dashboard-link]` also accepts one free-text label. An unknown dashboard in a
+current catalog is an error because the replacement has no fallback; an absent
+collection remains non-diagnostic for stale callers. When a known instrument
+is paired with a known named event, an absent event-form designation is also a
+warning: the completion list leaves the instrument available but visually
+muted. Link text and other unrestricted or unreviewed parameters remain
+runtime behavior. Where replacement code has an exact upper parameter count,
+the same catalog exposes `max_parameters`; an excess is a warning-only
+diagnostic. For example, `[survey-queue-url]` takes none and
+`[survey-queue-link]` takes one optional free-text label. Catalog-backed
+semantic analysis also excludes the
 permissive runtime's final inline numeric or named instance from supported
 author syntax: qualifier-reviewed smart variables and project fields receive a
 blocking diagnostic for `[survey-url:followup:last-instance]` and must use
@@ -518,7 +524,11 @@ fields as visually muted choices. The Piping completion popup is scoped to a
 450px width (ACE's default is 300px) so field labels remain readable. Classic
 projects have no event entries to suggest. After a completed smart variable,
 the same catalog supplies named instance qualifiers: supported choices are
-active and explicitly unsupported choices remain visible but muted.
+active and explicitly unsupported choices remain visible but muted. For a
+dashboard smart variable's first parameter, the same popup instead completes
+the project's existing unique dashboard names and displays their titles.
+Catalog construction deliberately reads only existing names rather than
+invoking the dashboard helper that may backfill them.
 
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
