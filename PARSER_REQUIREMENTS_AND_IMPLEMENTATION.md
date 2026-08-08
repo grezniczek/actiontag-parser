@@ -587,6 +587,19 @@ the link variables accept one optional free-text label. When unavailable, the
 variables remain recognized, muted in completion, and warning-only; missing
 capability state remains stale-catalog compatible.
 
+The REDCap SHARE family—`[redcap-share-url]`, `[redcap-share-link]`,
+`[redcap-share-ehr-list-url]`, `[redcap-share-ehr-list-link]`,
+`[redcap-share-ehr]`, and `[redcap-share-ehr-id]`—has the runtime-backed
+`redcap_share` capability and a record-context requirement. Its enabled state
+is the current project's `RedcapShareFeatureGate::isAvailableForProject()`
+result, covering the actual system and project enablement checks; its catalog
+`availability_scope` is therefore `project`. This
+deliberately does not copy the legacy reference list's additional REDCap+
+visibility guard, because the replacement utility does not use it. All six
+variables accept no parameters. When the gate is unavailable, they remain
+recognized, muted in completion, and warning-only; missing state remains
+stale-catalog compatible.
+
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
 new expressions and must remain a syntax error; it is not a REDCap Logic

@@ -98,6 +98,17 @@ when that is warranted.
   URL/status variables take no parameters; link variables take one optional
   free-text label. An unavailable feature is advisory and muted, while an
   absent capability state remains compatible with stale catalogs.
+  The REDCap SHARE variables—`[redcap-share-url]`, `[redcap-share-link]`,
+  `[redcap-share-ehr-list-url]`, `[redcap-share-ehr-list-link]`,
+  `[redcap-share-ehr]`, and `[redcap-share-ehr-id]`—take no parameters and
+  require both a record and the `redcap_share` capability. Its enabled state
+  comes from `RedcapShareFeatureGate::isAvailableForProject()`, which is the
+  actual system-and-project replacement guard, so its catalog
+  `availability_scope` is `project`. It intentionally does not add the legacy
+  reference list's REDCap+ visibility condition, because Piping's SHARE
+  replacement does not use that condition. Disabled projects retain
+  recognized but muted, advisory variables; missing capability state remains
+  compatible with stale catalogs.
   Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project

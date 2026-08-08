@@ -35,7 +35,7 @@ deliberate compatibility decision.
 | Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form and record-or-public-survey context, evidence-backed parameter contracts, and named system-capability requirements; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
 | Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/public-survey-context and delivery-mode support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
-| Piping system capability | The concrete replacement guard for a named installation-wide capability | `PipingSmartVariableCatalog` definitions plus each affected variable's `required_system_capabilities` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` transports only the named capability's enabled state and author-facing label | Runtime enabled/disabled behavior; PHP/browser semantic and completion tests; stale-catalog compatibility |
+| Piping system capability | The concrete replacement guard for a named runtime-availability capability, including a current-project gate where applicable | `PipingSmartVariableCatalog` definitions plus each affected variable's `required_system_capabilities` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` transports only the named capability's enabled state and author-facing label | Runtime enabled/disabled behavior; PHP/browser semantic and completion tests; stale-catalog compatibility |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -242,26 +242,27 @@ moving migration target.
 
 1. Establish the replacement behavior first. Verify that the runtime path
    actually reads a named installation-wide setting, license/service predicate,
-   or a proven composite of them, and determine its enabled/disabled result. A
-   variable being absent from `getSpecialTagsInfo()` or hidden from a help page
-   is not, by itself, evidence that replacement rejects the syntax or resolves
-   it to empty text.
+   current-project feature gate, or a proven composite of them, and determine
+   its enabled/disabled result. A variable being absent from
+   `getSpecialTagsInfo()` or hidden from a help page is not, by itself,
+   evidence that replacement rejects the syntax or resolves it to empty text.
 2. Add a stable capability name and author-facing label to
    `PipingSmartVariableCatalog`, then attach
    `required_system_capabilities` only to the Smart Variables whose replacement
    is proven to depend on it. Keep source-context requirements in
-   `PipingSourcePolicyCatalog`; a global capability and a per-authoring-source
-   context answer different questions.
+   `PipingSourcePolicyCatalog`; a runtime availability capability and a
+   per-authoring-source context answer different questions.
 3. Have `buildAuthoringSyntaxEditorCatalog()` transport only the minimal
-   capability state needed by the editor, normally its `enabled` boolean and
-   the catalog's label. An enabled boolean may represent an inseparable set of
-   runtime prerequisites, such as a global feature setting plus an active
-   license; document that composition beside the catalog entry. Never expose
-   an unrelated configuration value, a setting's contents, or an
-   installation-wide list merely for completion. If a legacy runtime registry
-   hides the variable while its replacement remains structurally valid,
-   preserve or inject a documented authoring entry so it stays recognized
-   rather than becoming an unknown variable.
+   capability state needed by the editor, normally its `enabled` boolean,
+   catalog label, and `availability_scope` (`system` or `project`). An enabled
+   boolean may represent an inseparable set of runtime prerequisites, such as
+   a global feature setting plus an active license or a current-project feature
+   gate; document that composition beside the catalog entry. Never expose an
+   unrelated configuration value, a
+   setting's contents, or an installation-wide list merely for completion. If
+   a legacy runtime registry hides the variable while its replacement remains
+   structurally valid, preserve or inject a documented authoring entry so it
+   stays recognized rather than becoming an unknown variable.
 4. Mirror the catalog contract in the PHP and browser semantic analyzers. A
    known disabled capability should be an advisory finding that explains the
    runtime result, and completion should keep the variable visible but muted.
