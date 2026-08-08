@@ -556,6 +556,16 @@ and `missing`; categorical fields also support `unique`; numeric fields support
 the complete output set; and descriptive fields support none. A missing field
 capability remains non-diagnostic for a stale catalog.
 
+`[data-table]` now has one optional, canonical positive-integer `project_id`
+parameter. Omission (or an empty parameter) retains its runtime meaning of the
+current project. A malformed explicit value is a browser/server semantic error.
+Target lifecycle checks are deliberately server-backed: the browser sends only
+the expression's requested IDs to a narrow AJAX endpoint, which returns no
+titles or project catalog. A nonexistent, deleted, or Completed target is an
+error; Analysis/Cleanup is a warning; Development and Production targets,
+including Production Draft Mode, remain valid. The server fallback uses the
+same requested-target lookup.
+
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
 new expressions and must remain a syntax error; it is not a REDCap Logic

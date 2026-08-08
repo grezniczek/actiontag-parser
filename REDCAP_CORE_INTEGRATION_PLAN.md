@@ -77,7 +77,13 @@ when that is warranted.
   descriptive fields have none. Existing numeric-column findings are retained;
   nonnumeric cases such as `[stats-table:record_id:unique]` receive a separate
   warning-only finding. Absent field capability remains compatible with stale
-  catalogs. Catalog-backed
+  catalogs. `[data-table]` similarly has one optional canonical positive
+  `project_id`. Its browser/server semantic contract rejects a malformed
+  explicit value, while lifecycle validation is server-backed and receives
+  only IDs requested by the expression—not an installation-wide project
+  catalog or titles. Missing, deleted, and Completed target projects are
+  errors; Analysis/Cleanup is a warning; Development and Production (including
+  Draft Mode) are valid. Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
   fields, requiring a separate bracketed qualifier instead. The structural
