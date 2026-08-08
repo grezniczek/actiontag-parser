@@ -174,7 +174,10 @@ moving migration target.
    Piping still accepts it, list it through
    `getLegacyReferenceOmittedSmartVariables()` and inject its controller entry
    without `required_system_capabilities`; it must remain active rather than
-   receive an invented availability warning.
+   receive an invented availability warning. For example,
+   `[dashboard-access-code]` is hidden from legacy help when public dashboards
+   are disabled, but its replacement remains active and is therefore cataloged
+   this way rather than as a public-dashboard capability.
 6. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
    in `Piping::getSpecialTagsInfo()`: `PipingSemanticAnalyzer` will then

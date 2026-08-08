@@ -134,6 +134,11 @@ when that is warranted.
   availability warning. Source policies and completion now use the matching
   `requires_user_context`/`has_user_context` capability alongside record,
   event, form, and public-survey context.
+  `[dashboard-access-code]` likewise remains runtime-recognized when the
+  global public-dashboard setting hides only its legacy help entry: its Piping
+  replacement still retrieves the access code for a named current-project
+  dashboard. The catalog injects it without a system capability, so it stays
+  active and uses the existing one-dashboard target validation and completion.
   Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project

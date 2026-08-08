@@ -630,6 +630,14 @@ disabled. `[user-acg-name]` still reads the user's stored group, while
 `[acg-noncompliance-table]` computes its own report; neither has the same
 runtime gate and neither receives a fabricated availability warning.
 
+`[dashboard-access-code]` is also injected if public dashboards are globally
+disabled. That setting hides only its legacy help entry; its
+`pipeSpecialTags()` case still resolves a named dashboard in the current
+project and retrieves its access code. It therefore remains active without a
+system-capability warning or muted completion, using the same one-dashboard
+parameter contract, current-project target validation, and completion list as
+`[dashboard-url]`.
+
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
 new expressions and must remain a syntax error; it is not a REDCap Logic
