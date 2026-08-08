@@ -115,7 +115,10 @@ moving migration target.
    Record any parameter only when its runtime contract is evidence-backed:
    instrument targets, enumerated values, and unrestricted free text are
    distinct kinds. Unknown instrument values that may fall back to the current
-   form must remain warning-only. For an event-qualified reference to a known
+   form must remain warning-only. If the implementation accepts a fixed number
+   of parameters, also declare `max_parameters`; excess parameters are a
+   warning-only diagnostic, never a runtime compatibility change. For an
+   event-qualified reference to a known
    project instrument, the shared event-form designation is also an advisory
    check: keep an instrument outside that event available but muted in
    completion and warn in semantic analysis. Add PHP/browser semantic fixtures

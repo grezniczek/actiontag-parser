@@ -448,7 +448,11 @@ runtime replacement may fall back to the current form; a known non-survey used
 where a survey is required is an error. When a known instrument is paired with
 a known named event, an absent event-form designation is also a warning: the
 completion list leaves the instrument available but visually muted. Link text
-and other unrestricted or unreviewed parameters remain runtime behavior.
+and other unrestricted or unreviewed parameters remain runtime behavior. Where
+replacement code has an exact upper parameter count, the same catalog exposes
+`max_parameters`; an excess is a warning-only diagnostic. For example,
+`[survey-queue-url]` takes none and `[survey-queue-link]` takes one optional
+free-text label.
 The same catalog's explicit `requires_record_context`,
 `requires_event_context`, `requires_form_context`, and
 `requires_record_or_public_survey_context` capabilities are limited to runtime

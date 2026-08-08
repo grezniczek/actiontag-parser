@@ -56,7 +56,8 @@ when that is warranted.
   non-diagnostic for stale payloads and future module-provided variables.
   `PipingSmartVariableCatalog` also declares evidence-backed instrument,
   enumerated, and free-text parameter contracts for the URL and survey smart
-  variables. The analyzer validates a known instrument and survey status,
+  variables, plus `max_parameters` where runtime replacement establishes an
+  exact upper bound. The analyzer validates a known instrument and survey status,
   warning rather than blocking if an unknown instrument might fall back to the
   current form. With a named event qualifier, a known instrument outside the
   event's designated forms is likewise an advisory warning; completion keeps
