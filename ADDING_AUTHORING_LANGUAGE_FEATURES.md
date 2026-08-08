@@ -147,6 +147,14 @@ moving migration target.
    its name, and catalog any project-specific public form transported by the
    source policy (for example, Twilio's public `[survey-url]`, whose runtime
    target is the project's `firstForm`).
+   When a family delegates an unbounded parameter tail to a shared runtime
+   helper, model only a helper contract that can be proven for every member.
+   For example, `supports_report_filter` records that the first uppercase
+   `R-…` token after the field-list argument of aggregate functions, Smart
+   Charts, and Smart Tables selects a project report and short-circuits other
+   filters. Analyze and complete that token using the read-only `reports`
+   collection; do not infer contracts for the helper's remaining DAG, event,
+   record, or chart-specific tokens until separately characterized.
 6. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
    in `Piping::getSpecialTagsInfo()`: `PipingSemanticAnalyzer` will then

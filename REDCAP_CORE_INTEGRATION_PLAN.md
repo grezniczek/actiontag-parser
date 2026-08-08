@@ -64,7 +64,11 @@ when that is warranted.
   stale-catalog compatibility. The matching read-only `reports` collection
   completes and validates the target of `[report-access-code]`; its runtime
   requires an uppercase `R-` prefix, which is also diagnosed before the
-  project lookup. Catalog-backed semantic analysis rejects a legacy final
+  project lookup. Aggregate Smart Functions, Smart Charts, and Smart Tables
+  also declare `supports_report_filter`: their first uppercase `R-` token
+  after the field-list argument is completed and validated against that same
+  collection, matching `parseSmartParams()` early return. Catalog-backed
+  semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
   fields, requiring a separate bracketed qualifier instead. The structural
   parser remains opaque for valid numeric smart-variable parameters, such as

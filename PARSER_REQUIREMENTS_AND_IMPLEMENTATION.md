@@ -535,6 +535,16 @@ invoking the dashboard helper that may backfill them. `[report-access-code]`
 similarly completes existing `R-…` report names and their titles without
 invoking the report helper that backfills missing names.
 
+The same `reports` collection is used by the cataloged
+`supports_report_filter` capability of aggregate Smart Functions, Smart
+Charts, and Smart Tables. `Piping::parseSmartParams()` removes whitespace,
+uses the first uppercase `R-…` token after the field-list argument as a report
+filter, and returns before inspecting later filtering tokens. Semantic analysis
+therefore validates and completes only that first token; a lower-case `r-…`, a
+report-looking field-list entry, and later `R-…` tokens remain runtime parsing
+behavior. The rest of the helper's record, event, DAG, table, and chart
+parameters are intentionally unreviewed.
+
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
 new expressions and must remain a syntax error; it is not a REDCap Logic
