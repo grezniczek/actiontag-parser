@@ -450,14 +450,17 @@ a known named event, an absent event-form designation is also a warning: the
 completion list leaves the instrument available but visually muted. Link text
 and other unrestricted or unreviewed parameters remain runtime behavior.
 The same catalog's explicit `requires_record_context`,
-`requires_event_context`, and `requires_form_context` capabilities are limited
-to runtime cases that read or require the corresponding value directly. In a
-named source that declares the corresponding `has_*_context: false`, those
-variables produce a warning and remain visibly muted in completion. The
-Twilio manual-invitation path passes its first project event but no record or
-form; Project Dashboard rendering passes none of these contexts. Other
-variables (including Twilio's supported public survey URL form) remain
-available. This avoids a guess-driven Smart Variable allow-list.
+`requires_event_context`, `requires_form_context`, and
+`requires_record_or_public_survey_context` capabilities are limited to runtime
+cases that read or require the corresponding value directly. In a named source
+that declares the corresponding `has_*_context: false`, those variables
+produce a warning and remain visibly muted in completion. The Twilio
+manual-invitation path passes its first project event and a public-survey route
+but no record or form; it transports the project's `firstForm` name so
+the authoring tools offer and accept only that public URL/link target. Project
+Dashboard rendering passes none of these contexts, so survey URLs and links
+are advisory warnings there. This avoids a guess-driven Smart Variable
+allow-list.
 Shared PHP/JS semantic fixtures cover this boundary.
 
 `PipingFieldParameterCatalog` separately captures evidence-backed colon
@@ -476,14 +479,15 @@ warn and completion suppresses the conflicting later choice; this remains
 advisory because Piping replacement itself is unchanged.
 
 `PipingSourcePolicyCatalog` captures the narrower question of whether a named
-authoring source has record, event, and form contexts at all. The controller
-sends those source policies in the same catalog used by the browser and server
-fallback. A declared recordless source suppresses project-field completion and
-produces an advisory finding for `[field_name]`; it also warns only for Smart
-Variables that explicitly require a context the source does not provide. An
-absent or future source policy remains compatible. This makes completion and
-metadata-aware diagnostics agree without treating an authoring-source name as
-a parser concern.
+authoring source has record, event, form, or public-survey contexts at all. The
+controller sends those source policies in the same catalog used by the browser
+and server fallback. The Twilio policy additionally carries its project first
+form as `public_survey_form`. A declared recordless source suppresses
+project-field completion and produces an advisory finding for `[field_name]`;
+it also warns only for Smart Variables that explicitly require a context the
+source does not provide. An absent or future source policy remains compatible.
+This makes completion and metadata-aware diagnostics agree without treating an
+authoring-source name as a parser concern.
 
 Manual Piping completion also consumes the catalog's named events in
 longitudinal projects. Selecting an event name produces only `[event_name]`.

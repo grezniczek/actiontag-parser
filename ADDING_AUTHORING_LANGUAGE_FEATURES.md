@@ -32,9 +32,9 @@ deliberate compatibility decision.
 
 | Feature | Runtime/source registration | Shared authoring metadata and help | Authoring transport | Key checks |
 | --- | --- | --- | --- | --- |
-| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form context, and evidence-backed parameter contracts; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
+| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form and record-or-public-survey context, and evidence-backed parameter contracts; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
-| Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form-context support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
+| Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/public-survey-context support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -122,9 +122,12 @@ moving migration target.
    for every supported and explicitly unsupported form. If a Piping smart
    variable's replacement explicitly consumes a record, event, or form, set
    its `requires_record_context`, `requires_event_context`, or
-   `requires_form_context` capability. Do not infer this from its name, and do
-   not mark a variable that has a documented context-free runtime form (for
-   example, Twilio's public `[survey-url]`).
+   `requires_form_context` capability. When a variable can resolve through
+   either a record or a documented public-survey route, use
+   `requires_record_or_public_survey_context` instead. Do not infer this from
+   its name, and catalog any project-specific public form transported by the
+   source policy (for example, Twilio's public `[survey-url]`, whose runtime
+   target is the project's `firstForm`).
 6. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
    in `Piping::getSpecialTagsInfo()`: `PipingSemanticAnalyzer` will then
@@ -167,10 +170,13 @@ moving migration target.
 ## Add or change Piping source capability
 
 1. Establish the named source's actual replacement context. In particular,
-   verify whether a project record, event, or form is available and set the
-   corresponding `has_record_context`, `has_event_context`, and
-   `has_form_context` properties accordingly; do not infer it from the
-   source's UI or from general smart-variable support.
+   verify whether a project record, event, form, or public-survey route is
+   available and set the corresponding `has_record_context`,
+   `has_event_context`, `has_form_context`, and
+   `has_public_survey_context` properties accordingly. If the public route is
+   limited to one project form, transport that form as `public_survey_form`; do
+   not infer any of these facts from the source's UI or from general
+   smart-variable support.
 2. Add a `PipingSourcePolicyCatalog` entry only for an evidence-backed
    restriction. An absent entry preserves existing behavior. A recordless
    source prohibits project-field completion and affects only smart variables
@@ -183,9 +189,10 @@ moving migration target.
    `diagnoseAuthoringSyntax()` server fallback receive the same source kind.
 4. Add PHP/browser fixtures for a project-field reference, a smart variable
    requiring each unavailable context, and a context-independent smart
-   variable in the restricted source, plus an unknown future source kind. The
-   resulting context findings must be warning-only unless a runtime validator
-   itself rejects the syntax.
+   variable in the restricted source, plus an unknown future source kind. For
+   a public-survey route, cover the supported public form and a different known
+   survey form. The resulting context findings must be warning-only unless a
+   runtime validator itself rejects the syntax.
 
 ## Add a Special Function
 

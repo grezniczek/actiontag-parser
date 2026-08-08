@@ -62,10 +62,11 @@ when that is warranted.
   event's designated forms is likewise an advisory warning; completion keeps
   it available but muted. Completion supplies matching project instruments and
   duration units. Explicit `requires_record_context`,
-  `requires_event_context`, and `requires_form_context` metadata identifies
-  only Smart Variables whose runtime replacement consumes the corresponding
-  context. Other Piping parameter semantics and broader source availability
-  remain runtime behavior until their contracts are cataloged.
+  `requires_event_context`, `requires_form_context`, and
+  `requires_record_or_public_survey_context` metadata identifies only Smart
+  Variables whose runtime replacement consumes the corresponding context.
+  Other Piping parameter semantics and broader source availability remain
+  runtime behavior until their contracts are cataloged.
   `PipingFieldParameterCatalog` similarly owns the evidence-backed project-field
   modifier contract. Each catalog field carries its applicable
   `piping_parameters` for completion, and the top-level known modifier set lets
@@ -77,10 +78,13 @@ when that is warranted.
   that have no record context. It drives the workspace's field-completion
   availability and both semantic analyzers: project-field references in those
   sources produce a warning, while only Smart Variables that explicitly
-  require an unavailable record, event, or form are muted in completion and
-  warned. Twilio's manual invitation path provides the first project event but
-  no record or form; Project Dashboard rendering provides none of those three
-  contexts. Unknown source kinds retain existing behavior.
+  require an unavailable record, event, form, or public-survey route are muted
+  in completion and warned. Twilio's manual invitation path provides the first
+project event and the public route for the project's `firstForm`, but no record or form;
+  Project Dashboard rendering provides none of those contexts. The Twilio
+  policy transports its project-specific public survey form, so completion and
+  warnings reject another known survey. Unknown source kinds retain existing
+  behavior.
   The Edit Field dialog's
   one-line `#field_note` uses the authoring workspace with piping diagnostics, Summary and Structural
   analysis tabs, reference hover documentation, and manual Ctrl+Space
@@ -430,8 +434,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    metadata checks, and completion. `PipingFieldParameterCatalog` now supplies
    the matching per-field modifier contract for completion and warning-only
    diagnostics. `PipingSourcePolicyCatalog` now provides the narrow,
-   evidence-backed record/event/form-context contract for restricted authoring
-   sources.
+   evidence-backed record/event/form/public-survey-context contract for
+   restricted authoring sources.
    It intentionally leaves unknown parameters and broader source-specific
    smart-variable availability to runtime behavior until their contracts are
    cataloged.
