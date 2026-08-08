@@ -68,6 +68,16 @@ when that is warranted.
   also declare `supports_report_filter`: their first uppercase `R-` token
   after the field-list argument is completed and validated against that same
   collection, matching `parseSmartParams()` early return. Catalog-backed
+  Stats Table output semantics use the cataloged columns plus each field's
+  read-only `stats_table_supported_columns` list, both derived from
+  `DataExport::getDescriptiveStats()`. This keeps browser completion and
+  PHP/browser diagnostics aligned when the runtime will leave a selected
+  output blank: the record ID has only `count` and `missing`, categorical
+  fields also have `unique`, numeric fields have the complete set, and
+  descriptive fields have none. Existing numeric-column findings are retained;
+  nonnumeric cases such as `[stats-table:record_id:unique]` receive a separate
+  warning-only finding. Absent field capability remains compatible with stale
+  catalogs. Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
   fields, requiring a separate bracketed qualifier instead. The structural

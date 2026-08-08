@@ -545,6 +545,17 @@ report-looking field-list entry, and later `R-…` tokens remain runtime parsing
 behavior. The rest of the helper's record, event, DAG, table, and chart
 parameters are intentionally unreviewed.
 
+For `[stats-table]`, the catalog also describes the runtime-supported output
+columns and each project field carries a `stats_table_supported_columns` list
+derived from `DataExport::getDescriptiveStats()`. Both analyzers warn, and
+completion mutes only when appropriate, for a requested output that REDCap
+will leave blank. This preserves the existing numeric-column warning for
+`min`/`max`/`mean`/`median`/`stdev`/`sum`, while covering field-specific cases
+such as `unique` on the record ID field. The record ID supports only `count`
+and `missing`; categorical fields also support `unique`; numeric fields support
+the complete output set; and descriptive fields support none. A missing field
+capability remains non-diagnostic for a stale catalog.
+
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
 new expressions and must remain a syntax error; it is not a REDCap Logic
