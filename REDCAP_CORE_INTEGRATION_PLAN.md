@@ -83,7 +83,10 @@ when that is warranted.
   only IDs requested by the expression—not an installation-wide project
   catalog or titles. Missing, deleted, and Completed target projects are
   errors; Analysis/Cleanup is a warning; Development and Production (including
-  Draft Mode) are valid. Catalog-backed
+  Draft Mode) are valid. `[calendar-url]` accepts no parameters, while
+  `[calendar-link]` accepts one optional free-text label; extra parameters are
+  advisory because runtime ignores them. Global Calendar Feed availability
+  remains a separate future system-configuration policy. Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
   fields, requiring a separate bracketed qualifier instead. The structural

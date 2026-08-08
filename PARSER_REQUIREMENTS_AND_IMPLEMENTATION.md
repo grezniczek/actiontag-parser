@@ -566,6 +566,13 @@ error; Analysis/Cleanup is a warning; Development and Production targets,
 including Production Draft Mode, remain valid. The server fallback uses the
 same requested-target lookup.
 
+Calendar Feed variables have the runtime-backed parameter contracts
+`[calendar-url]` (no parameters) and `[calendar-link:link_text]` (one optional
+free-text label). Extra parameters are warning-only because runtime ignores
+them. The existing record-context diagnostic remains independent. Whether the
+global Calendar Feed setting should also produce an advisory diagnostic is
+deliberately deferred until its system-configuration policy is modeled.
+
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
 new expressions and must remain a syntax error; it is not a REDCap Logic
