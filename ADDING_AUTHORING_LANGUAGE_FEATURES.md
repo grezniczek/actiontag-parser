@@ -32,9 +32,10 @@ deliberate compatibility decision.
 
 | Feature | Runtime/source registration | Shared authoring metadata and help | Authoring transport | Key checks |
 | --- | --- | --- | --- | --- |
-| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form and record-or-public-survey context, and evidence-backed parameter contracts; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
+| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form and record-or-public-survey context, evidence-backed parameter contracts, and named system-capability requirements; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
 | Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/public-survey-context and delivery-mode support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
+| Piping system capability | The concrete replacement guard for a named installation-wide capability | `PipingSmartVariableCatalog` definitions plus each affected variable's `required_system_capabilities` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` transports only the named capability's enabled state and author-facing label | Runtime enabled/disabled behavior; PHP/browser semantic and completion tests; stale-catalog compatibility |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -116,17 +117,23 @@ moving migration target.
    instrument targets, project-owned targets (such as a unique dashboard or
    report name), enumerated values, and unrestricted free text are distinct
    kinds.
-   A project-owned target needs a read-only top-level catalog collection from
-   `buildAuthoringSyntaxEditorCatalog()` for completion and validation; omit
-   diagnostics when that collection is absent so a stale catalog remains
-   compatible. Do not use a metadata getter with a write/backfill side effect
-   merely to construct the catalog. Unknown instrument values that may fall
-   back to the current form must remain warning-only; an unknown target with no
-   runtime fallback may be an error. If the implementation accepts a fixed
-   number of parameters, also declare `max_parameters`; excess parameters are
-   a warning-only diagnostic, never a runtime compatibility change. Do not model
-   the runtime's permissive colon-delimited numeric or `*-instance` parsing as
-   author syntax. Mark qualifier-reviewed variables with
+   A project-owned target scoped to the current project needs a read-only
+   top-level catalog collection from `buildAuthoringSyntaxEditorCatalog()` for
+   completion and validation; omit diagnostics when that collection is absent
+   so a stale catalog remains compatible. Do not use a metadata getter with a
+   write/backfill side effect merely to construct the catalog. A cross-project
+   target or any target whose complete collection would be unnecessarily broad
+   or sensitive must instead use a narrow source-bounded AJAX diagnostic lookup:
+   send only identifiers already present in the expression, return only the
+   resulting findings, retain immediate local checks in both analyzers, and
+   cancel or disregard stale browser requests. Do not enumerate target titles
+   or a global catalog merely to support validation. Unknown instrument values
+   that may fall back to the current form must remain warning-only; an unknown
+   target with no runtime fallback may be an error. If the implementation
+   accepts a fixed number of parameters, also declare `max_parameters`; excess
+   parameters are a warning-only diagnostic, never a runtime compatibility
+   change. Do not model the runtime's permissive colon-delimited numeric or
+   `*-instance` parsing as author syntax. Mark qualifier-reviewed variables with
    `rejects_legacy_inline_instance_qualifier` so semantic analysis rejects
    `[survey-url:followup:last-instance]` and requires
    `[survey-url:followup][last-instance]`. Keep the structural parser opaque
@@ -155,6 +162,11 @@ moving migration target.
    filters. Analyze and complete that token using the read-only `reports`
    collection; do not infer contracts for the helper's remaining DAG, event,
    record, or chart-specific tokens until separately characterized.
+   If the runtime replacement is explicitly guarded by an installation-wide
+   feature and returns empty output when that feature is disabled, attach the
+   named system capability rather than encoding that condition in a source
+   policy. Follow the system-capability procedure below; a help-only or UI-only
+   registration guard is not evidence that replacement has the same behavior.
 6. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
    in `Piping::getSpecialTagsInfo()`: `PipingSemanticAnalyzer` will then
@@ -226,6 +238,38 @@ moving migration target.
    survey form. The resulting context findings must be warning-only unless a
    runtime validator itself rejects the syntax.
 
+## Add or change a Piping system capability
+
+1. Establish the replacement behavior first. Verify that the runtime path
+   actually reads a named installation-wide setting and determine its
+   enabled/disabled result. A variable being absent from `getSpecialTagsInfo()`
+   or hidden from a help page is not, by itself, evidence that replacement
+   rejects the syntax or resolves it to empty text.
+2. Add a stable capability name and author-facing label to
+   `PipingSmartVariableCatalog`, then attach
+   `required_system_capabilities` only to the Smart Variables whose replacement
+   is proven to depend on it. Keep source-context requirements in
+   `PipingSourcePolicyCatalog`; a global capability and a per-authoring-source
+   context answer different questions.
+3. Have `buildAuthoringSyntaxEditorCatalog()` transport only the minimal
+   capability state needed by the editor, normally its `enabled` boolean and
+   the catalog's label. Never expose an unrelated configuration value, a
+   setting's contents, or an installation-wide list merely for completion. If
+   a legacy runtime registry hides the variable while its replacement remains
+   structurally valid, preserve or inject a documented authoring entry so it
+   stays recognized rather than becoming an unknown variable.
+4. Mirror the catalog contract in the PHP and browser semantic analyzers. A
+   known disabled capability should be an advisory finding that explains the
+   runtime result, and completion should keep the variable visible but muted.
+   Missing capability state must remain non-diagnostic for stale catalogs.
+   Do not change structural parsing, Piping replacement, or runtime validation
+   merely to enforce an authoring warning.
+5. Test enabled, disabled, and absent-state behavior in the runtime owner and
+   in PHP/browser semantics and completion. Include any controller catalog
+   transport test available for the seam. Update the help/reference behavior
+   and this manual when a new capability representation or transport rule is
+   introduced.
+
 ## Add a Special Function
 
 1. Implement and secure the runtime behavior first. Add its public name to
@@ -287,6 +331,7 @@ php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Piping/PipingSyntaxPa
 node UnitTests/AuthoringSyntax/Piping/PipingSyntaxParserJsTest.js
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Catalog/PipingSmartVariableCatalogTest.php
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Catalog/PipingFieldParameterCatalogTest.php
+php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Catalog/PipingSourcePolicyCatalogTest.php
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Piping/PipingSemanticAnalyzerTest.php
 node UnitTests/AuthoringSyntax/Piping/PipingSemanticAnalyzerJsTest.js
 node UnitTests/AuthoringSyntax/Piping/PipingAuthoringWorkspaceTest.js
