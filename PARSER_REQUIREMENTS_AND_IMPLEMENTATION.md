@@ -452,7 +452,12 @@ and other unrestricted or unreviewed parameters remain runtime behavior. Where
 replacement code has an exact upper parameter count, the same catalog exposes
 `max_parameters`; an excess is a warning-only diagnostic. For example,
 `[survey-queue-url]` takes none and `[survey-queue-link]` takes one optional
-free-text label.
+free-text label. Catalog-backed semantic analysis also excludes the
+permissive runtime's final inline numeric or named instance from supported
+author syntax: qualifier-reviewed smart variables and project fields receive a
+blocking diagnostic for `[survey-url:followup:last-instance]` and must use
+`[survey-url:followup][last-instance]`. The structural parser remains opaque
+where numeric parameters are legitimate, such as `[data-table:435]`.
 The same catalog's explicit `requires_record_context`,
 `requires_event_context`, `requires_form_context`, and
 `requires_record_or_public_survey_context` capabilities are limited to runtime

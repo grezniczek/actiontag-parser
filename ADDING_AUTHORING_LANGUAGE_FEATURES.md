@@ -117,7 +117,14 @@ moving migration target.
    distinct kinds. Unknown instrument values that may fall back to the current
    form must remain warning-only. If the implementation accepts a fixed number
    of parameters, also declare `max_parameters`; excess parameters are a
-   warning-only diagnostic, never a runtime compatibility change. For an
+   warning-only diagnostic, never a runtime compatibility change. Do not model
+   the runtime's permissive colon-delimited numeric or `*-instance` parsing as
+   author syntax. Mark qualifier-reviewed variables with
+   `rejects_legacy_inline_instance_qualifier` so semantic analysis rejects
+   `[survey-url:followup:last-instance]` and requires
+   `[survey-url:followup][last-instance]`. Keep the structural parser opaque
+   for variables with legitimate numeric parameters, such as
+   `[data-table:435]`. For an
    event-qualified reference to a known
    project instrument, the shared event-form designation is also an advisory
    check: keep an instrument outside that event available but muted in

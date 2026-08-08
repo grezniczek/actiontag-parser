@@ -57,7 +57,12 @@ when that is warranted.
   `PipingSmartVariableCatalog` also declares evidence-backed instrument,
   enumerated, and free-text parameter contracts for the URL and survey smart
   variables, plus `max_parameters` where runtime replacement establishes an
-  exact upper bound. The analyzer validates a known instrument and survey status,
+  exact upper bound. Catalog-backed semantic analysis rejects a legacy final
+  inline numeric or named instance for qualifier-reviewed variables and project
+  fields, requiring a separate bracketed qualifier instead. The structural
+  parser remains opaque for valid numeric smart-variable parameters, such as
+  `[data-table:435]`. The analyzer validates a known instrument and survey
+  status,
   warning rather than blocking if an unknown instrument might fall back to the
   current form. With a named event qualifier, a known instrument outside the
   event's designated forms is likewise an advisory warning; completion keeps
