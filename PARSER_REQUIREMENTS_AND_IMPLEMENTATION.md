@@ -488,6 +488,13 @@ it also warns only for Smart Variables that explicitly require a context the
 source does not provide. An absent or future source policy remains compatible.
 This makes completion and metadata-aware diagnostics agree without treating an
 authoring-source name as a parser concern.
+When source replacement depends on a selected delivery mode, the same policy
+can declare `piping_delivery_types`. The Twilio manual-invitation editor passes
+the current `delivery_type` as `pipingDeliveryType`; only `SMS_INVITE_WEB`
+calls `Piping::pipeSpecialTags()`. Any other selected method receives a
+warning for each syntactically valid reference, mutes initial smart-variable
+completion, and suppresses qualifier and parameter suggestions. No selection
+preserves compatibility for older callers and static review contexts.
 
 Manual Piping completion also consumes the catalog's named events in
 longitudinal projects. Selecting an event name produces only `[event_name]`.

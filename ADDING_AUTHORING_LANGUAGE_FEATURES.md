@@ -34,7 +34,7 @@ deliberate compatibility decision.
 | --- | --- | --- | --- | --- |
 | Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form and record-or-public-survey context, and evidence-backed parameter contracts; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
-| Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/public-survey-context support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
+| Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/public-survey-context and delivery-mode support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -177,6 +177,11 @@ moving migration target.
    limited to one project form, transport that form as `public_survey_form`; do
    not infer any of these facts from the source's UI or from general
    smart-variable support.
+   If Piping itself runs only for specified runtime delivery types, list those
+   values as `piping_delivery_types` and have the authoring opener pass its
+   current selection as `pipingDeliveryType`. An absent selection remains
+   compatible, while a known unsupported selection must warn and mute Piping
+   completion rather than reject the source text.
 2. Add a `PipingSourcePolicyCatalog` entry only for an evidence-backed
    restriction. An absent entry preserves existing behavior. A recordless
    source prohibits project-field completion and affects only smart variables

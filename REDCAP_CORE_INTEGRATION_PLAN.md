@@ -85,6 +85,12 @@ project event and the public route for the project's `firstForm`, but no record 
   policy transports its project-specific public survey form, so completion and
   warnings reject another known survey. Unknown source kinds retain existing
   behavior.
+  A source policy may also limit Piping itself to explicit
+  `piping_delivery_types`. Twilio supplies the live delivery selection to both
+  browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;
+  other methods receive a warning and muted/suppressed completion because the
+  message would contain literal brackets. Absent delivery selection preserves
+  compatibility.
   The Edit Field dialog's
   one-line `#field_note` uses the authoring workspace with piping diagnostics, Summary and Structural
   analysis tabs, reference hover documentation, and manual Ctrl+Space
