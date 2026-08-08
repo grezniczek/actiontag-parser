@@ -576,6 +576,17 @@ variables remain recognized, appear muted in completion, and receive an
 advisory that runtime resolves them to empty text rather than an unknown-name
 error. Missing capability state remains compatible with stale catalogs.
 
+Email Verification/Unsubscribe variables have the same catalog treatment.
+`[email-verified]`, `[email-verify-url]`, `[email-verify-link]`,
+`[email-unsubscribed]`, `[email-unsubscribe-url]`, and
+`[email-unsubscribe-link]` require a record and the
+`email_verify_unsubscribe` capability. The capability's enabled state is the
+runtime conjunction of the global Email Verification/Unsubscribe setting and
+active REDCap+ features. The URL and status variables accept no parameters;
+the link variables accept one optional free-text label. When unavailable, the
+variables remain recognized, muted in completion, and warning-only; missing
+capability state remains stale-catalog compatible.
+
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
 new expressions and must remain a syntax error; it is not a REDCap Logic

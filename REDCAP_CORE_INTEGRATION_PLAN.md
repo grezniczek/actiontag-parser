@@ -89,6 +89,15 @@ when that is warranted.
   `calendar_feed` system capability. A disabled global Calendar Feed leaves
   those variables recognized but muted and produces an advisory that runtime
   resolves them to empty text; missing state remains stale-catalog compatible.
+  The Email Verification/Unsubscribe family follows that same contract:
+  `[email-verified]`, `[email-verify-url]`, `[email-verify-link]`,
+  `[email-unsubscribed]`, `[email-unsubscribe-url]`, and
+  `[email-unsubscribe-link]` all require a record and the composite
+  `email_verify_unsubscribe` capability. Its one enabled state represents both
+  the global setting and active REDCap+ features, exactly as replacement does.
+  URL/status variables take no parameters; link variables take one optional
+  free-text label. An unavailable feature is advisory and muted, while an
+  absent capability state remains compatible with stale catalogs.
   Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project

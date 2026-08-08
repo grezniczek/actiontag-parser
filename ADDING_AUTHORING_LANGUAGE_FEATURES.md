@@ -241,10 +241,11 @@ moving migration target.
 ## Add or change a Piping system capability
 
 1. Establish the replacement behavior first. Verify that the runtime path
-   actually reads a named installation-wide setting and determine its
-   enabled/disabled result. A variable being absent from `getSpecialTagsInfo()`
-   or hidden from a help page is not, by itself, evidence that replacement
-   rejects the syntax or resolves it to empty text.
+   actually reads a named installation-wide setting, license/service predicate,
+   or a proven composite of them, and determine its enabled/disabled result. A
+   variable being absent from `getSpecialTagsInfo()` or hidden from a help page
+   is not, by itself, evidence that replacement rejects the syntax or resolves
+   it to empty text.
 2. Add a stable capability name and author-facing label to
    `PipingSmartVariableCatalog`, then attach
    `required_system_capabilities` only to the Smart Variables whose replacement
@@ -253,11 +254,14 @@ moving migration target.
    context answer different questions.
 3. Have `buildAuthoringSyntaxEditorCatalog()` transport only the minimal
    capability state needed by the editor, normally its `enabled` boolean and
-   the catalog's label. Never expose an unrelated configuration value, a
-   setting's contents, or an installation-wide list merely for completion. If
-   a legacy runtime registry hides the variable while its replacement remains
-   structurally valid, preserve or inject a documented authoring entry so it
-   stays recognized rather than becoming an unknown variable.
+   the catalog's label. An enabled boolean may represent an inseparable set of
+   runtime prerequisites, such as a global feature setting plus an active
+   license; document that composition beside the catalog entry. Never expose
+   an unrelated configuration value, a setting's contents, or an
+   installation-wide list merely for completion. If a legacy runtime registry
+   hides the variable while its replacement remains structurally valid,
+   preserve or inject a documented authoring entry so it stays recognized
+   rather than becoming an unknown variable.
 4. Mirror the catalog contract in the PHP and browser semantic analyzers. A
    known disabled capability should be an advisory finding that explains the
    runtime result, and completion should keep the variable visible but muted.
