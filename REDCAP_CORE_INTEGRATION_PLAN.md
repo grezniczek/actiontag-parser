@@ -123,6 +123,17 @@ when that is warranted.
   option parameter. Browser and server semantics warn for a malformed explicit
   ID or an extra parameter, but not for an omitted ID: Rewards-aware renderers
   may provide it implicitly or replace redemption tokens before normal Piping.
+  The Access Control Group placeholders—`[user-acg-name]`,
+  `[user-acg-noncompliant-rights]`, and `[acg-noncompliance-table]`—also remain
+  runtime-recognized when their legacy help entries are hidden. They require a
+  user context and take no parameters. Only
+  `[user-acg-noncompliant-rights]` receives the `access_control_groups`
+  capability: when disabled, its external helper call is intercepted and the
+  variable resolves empty. The user-group name and noncompliance table use
+  different unguarded runtime paths, so they remain active without an
+  availability warning. Source policies and completion now use the matching
+  `requires_user_context`/`has_user_context` capability alongside record,
+  event, form, and public-survey context.
   Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
@@ -135,7 +146,7 @@ when that is warranted.
   event's designated forms is likewise an advisory warning; completion keeps
   it available but muted. Completion supplies matching project instruments,
   dashboard/report unique names, and duration units. Explicit `requires_record_context`,
-  `requires_event_context`, `requires_form_context`, and
+  `requires_event_context`, `requires_form_context`, `requires_user_context`, and
   `requires_record_or_public_survey_context` metadata identifies only Smart
   Variables whose runtime replacement consumes the corresponding context.
   Other Piping parameter semantics and broader source availability remain
@@ -151,7 +162,7 @@ when that is warranted.
   that have no record context. It drives the workspace's field-completion
   availability and both semantic analyzers: project-field references in those
   sources produce a warning, while only Smart Variables that explicitly
-  require an unavailable record, event, form, or public-survey route are muted
+  require an unavailable record, event, form, user, or public-survey route are muted
   in completion and warned. Twilio's manual invitation path provides the first
 project event and the public route for the project's `firstForm`, but no record or form;
   Project Dashboard rendering provides none of those contexts. The Twilio

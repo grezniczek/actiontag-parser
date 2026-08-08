@@ -468,13 +468,13 @@ blocking diagnostic for `[survey-url:followup:last-instance]` and must use
 `[survey-url:followup][last-instance]`. The structural parser remains opaque
 where numeric parameters are legitimate, such as `[data-table:435]`.
 The same catalog's explicit `requires_record_context`,
-`requires_event_context`, `requires_form_context`, and
+`requires_event_context`, `requires_form_context`, `requires_user_context`, and
 `requires_record_or_public_survey_context` capabilities are limited to runtime
 cases that read or require the corresponding value directly. In a named source
 that declares the corresponding `has_*_context: false`, those variables
 produce a warning and remain visibly muted in completion. The Twilio
 manual-invitation path passes its first project event and a public-survey route
-but no record or form; it transports the project's `firstForm` name so
+but no record, form, or user; it transports the project's `firstForm` name so
 the authoring tools offer and accept only that public URL/link target. Project
 Dashboard rendering passes none of these contexts, so survey URLs and links
 are advisory warnings there. This avoids a guess-driven Smart Variable
@@ -497,7 +497,7 @@ warn and completion suppresses the conflicting later choice; this remains
 advisory because Piping replacement itself is unchanged.
 
 `PipingSourcePolicyCatalog` captures the narrower question of whether a named
-authoring source has record, event, form, or public-survey contexts at all. The
+authoring source has record, event, form, user, or public-survey contexts at all. The
 controller sends those source policies in the same catalog used by the browser
 and server fallback. The Twilio policy additionally carries its project first
 form as `public_survey_form`. A declared recordless source suppresses
@@ -617,6 +617,18 @@ warning-only. No missing-option warning is emitted: Rewards-specific renderers
 can inject an option ID or directly replace redemption tokens before normal
 Piping runs, so absence is source-dependent rather than a general syntax
 error.
+
+The Access Control Group placeholders—`[user-acg-name]`,
+`[user-acg-noncompliant-rights]`, and `[acg-noncompliance-table]`—are likewise
+injected when their legacy help entries are hidden. All require a user context:
+their Piping cases throw without a user after the normal USERID fallback is
+unavailable, so sources without user context receive an advisory and muted
+completion. They accept no parameters. The global feature state is modeled
+only for `[user-acg-noncompliant-rights]`: its external call is intercepted by
+`AccessControlGroup::__callStatic()` and resolves empty when the feature is
+disabled. `[user-acg-name]` still reads the user's stored group, while
+`[acg-noncompliance-table]` computes its own report; neither has the same
+runtime gate and neither receives a fabricated availability warning.
 
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
