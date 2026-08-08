@@ -85,8 +85,11 @@ when that is warranted.
   errors; Analysis/Cleanup is a warning; Development and Production (including
   Draft Mode) are valid. `[calendar-url]` accepts no parameters, while
   `[calendar-link]` accepts one optional free-text label; extra parameters are
-  advisory because runtime ignores them. Global Calendar Feed availability
-  remains a separate future system-configuration policy. Catalog-backed
+  advisory because runtime ignores them. Their catalog entries require the
+  `calendar_feed` system capability. A disabled global Calendar Feed leaves
+  those variables recognized but muted and produces an advisory that runtime
+  resolves them to empty text; missing state remains stale-catalog compatible.
+  Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
   fields, requiring a separate bracketed qualifier instead. The structural

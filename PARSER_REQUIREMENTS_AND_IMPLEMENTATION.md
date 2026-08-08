@@ -569,9 +569,12 @@ same requested-target lookup.
 Calendar Feed variables have the runtime-backed parameter contracts
 `[calendar-url]` (no parameters) and `[calendar-link:link_text]` (one optional
 free-text label). Extra parameters are warning-only because runtime ignores
-them. The existing record-context diagnostic remains independent. Whether the
-global Calendar Feed setting should also produce an advisory diagnostic is
-deliberately deferred until its system-configuration policy is modeled.
+them. The existing record-context diagnostic remains independent. Their
+catalog entries declare a `calendar_feed` system-capability requirement; the
+editor receives only that named setting and its enabled/disabled state. When disabled, both
+variables remain recognized, appear muted in completion, and receive an
+advisory that runtime resolves them to empty text rather than an unknown-name
+error. Missing capability state remains compatible with stale catalogs.
 
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
