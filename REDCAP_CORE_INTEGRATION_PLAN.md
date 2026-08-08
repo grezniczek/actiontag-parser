@@ -109,6 +109,20 @@ when that is warranted.
   replacement does not use that condition. Disabled projects retain
   recognized but muted, advisory variables; missing capability state remains
   compatible with stale catalogs.
+  The Rewards variables—`[reward-amount]`, `[reward-product-id]`,
+  `[reward-product-name]`, `[reward-status]`, `[reward-redcap-order-id]`,
+  `[reward-provider-order-id]`, `[reward-redemption-details]`,
+  `[reward-redemption-link]`, `[reward-redemption-url]`,
+  `[reward-redemption-code]`, `[reward-redemption-instructions]`,
+  `[reward-redemption-credentials]`, `[reward-link]`, and `[reward-url]`—are
+  runtime-recognized even when `Piping::getSpecialTagsInfo()` hides their
+  legacy help group. The catalog injects them without a system capability,
+  because that help condition is not a `pipeSpecialTags()` replacement guard.
+  They require a record, use an event qualifier to select its arm, ignore an
+  instance qualifier, and accept at most one explicit `R-<positive integer>`
+  option parameter. Browser and server semantics warn for a malformed explicit
+  ID or an extra parameter, but not for an omitted ID: Rewards-aware renderers
+  may provide it implicitly or replace redemption tokens before normal Piping.
   Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project

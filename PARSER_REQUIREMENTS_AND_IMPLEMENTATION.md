@@ -600,6 +600,24 @@ variables accept no parameters. When the gate is unavailable, they remain
 recognized, muted in completion, and warning-only; missing state remains
 stale-catalog compatible.
 
+The Rewards family—`[reward-amount]`, `[reward-product-id]`,
+`[reward-product-name]`, `[reward-status]`, `[reward-redcap-order-id]`,
+`[reward-provider-order-id]`, the six `[reward-redemption-*]` variables, and
+the `[reward-link]`/`[reward-url]` aliases—is a deliberately different case.
+`Piping::getSpecialTagsInfo()` hides its legacy help group behind Rewards
+feature, project, and REDCap+ presentation conditions, but
+`Piping::pipeSpecialTags()` still recognizes and converts the family without
+checking those conditions. The authoring catalog therefore injects the family
+when that reference group is absent, without adding a system-capability
+warning or muting completion. Normal Piping requires a record, honors an event
+qualifier to choose the record arm, ignores an instance suffix, accepts at
+most one explicit `R-<positive integer>` option parameter, and otherwise
+resolves empty text. An explicit malformed option ID and extra parameters are
+warning-only. No missing-option warning is emitted: Rewards-specific renderers
+can inject an option ID or directly replace redemption tokens before normal
+Piping runs, so absence is source-dependent rather than a general syntax
+error.
+
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for
 new expressions and must remain a syntax error; it is not a REDCap Logic

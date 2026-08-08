@@ -32,7 +32,7 @@ deliberate compatibility decision.
 
 | Feature | Runtime/source registration | Shared authoring metadata and help | Authoring transport | Key checks |
 | --- | --- | --- | --- | --- |
-| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form and record-or-public-survey context, evidence-backed parameter contracts, and named system-capability requirements; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
+| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form and record-or-public-survey context, evidence-backed parameter contracts, named system-capability requirements, and runtime-recognized names omitted from legacy help; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
 | Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/public-survey-context and delivery-mode support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
 | Piping system capability | The concrete replacement guard for a named runtime-availability capability, including a current-project gate where applicable | `PipingSmartVariableCatalog` definitions plus each affected variable's `required_system_capabilities` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` transports only the named capability's enabled state and author-facing label | Runtime enabled/disabled behavior; PHP/browser semantic and completion tests; stale-catalog compatibility |
@@ -115,8 +115,11 @@ moving migration target.
    analyzer or UI completer. The core default is `false` for both properties.
    Record any parameter only when its runtime contract is evidence-backed:
    instrument targets, project-owned targets (such as a unique dashboard or
-   report name), enumerated values, and unrestricted free text are distinct
-   kinds.
+   report name), format-only opaque IDs, enumerated values, and unrestricted
+   free text are distinct kinds. Do not require an otherwise documented
+   parameter when a feature-specific renderer can validly inject or replace it
+   before normal Piping runs; record that source distinction and add a
+   source-specific check only when its integration is also cataloged.
    A project-owned target scoped to the current project needs a read-only
    top-level catalog collection from `buildAuthoringSyntaxEditorCatalog()` for
    completion and validation; omit diagnostics when that collection is absent
@@ -167,6 +170,11 @@ moving migration target.
    named system capability rather than encoding that condition in a source
    policy. Follow the system-capability procedure below; a help-only or UI-only
    registration guard is not evidence that replacement has the same behavior.
+   When the legacy reference hides a runtime-recognized variable but normal
+   Piping still accepts it, list it through
+   `getLegacyReferenceOmittedSmartVariables()` and inject its controller entry
+   without `required_system_capabilities`; it must remain active rather than
+   receive an invented availability warning.
 6. Confirm `buildAuthoringSyntaxEditorCatalog()` carries it to both browser
    analysis and the server fallback. This is automatic for values registered
    in `Piping::getSpecialTagsInfo()`: `PipingSemanticAnalyzer` will then
