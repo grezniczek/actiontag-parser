@@ -450,13 +450,16 @@ transported as a read-only `dashboards` collection: `[dashboard-access-code]`
 and `[dashboard-url]` take one unique dashboard name, while
 `[dashboard-link]` also accepts one free-text label. An unknown dashboard in a
 current catalog is an error because the replacement has no fallback; an absent
-collection remains non-diagnostic for stale callers. When a known instrument
-is paired with a known named event, an absent event-form designation is also a
-warning: the completion list leaves the instrument available but visually
-muted. Link text and other unrestricted or unreviewed parameters remain
-runtime behavior. Where replacement code has an exact upper parameter count,
-the same catalog exposes `max_parameters`; an excess is a warning-only
-diagnostic. For example, `[survey-queue-url]` takes none and
+collection remains non-diagnostic for stale callers. `[report-access-code]`
+uses the same read-only target pattern for existing unique report names. Its
+runtime target must start with uppercase `R-`; a current report collection
+diagnoses an unknown target as an error, while an absent collection remains
+compatible. When a known instrument is paired with a known named event, an
+absent event-form designation is also a warning: the completion list leaves
+the instrument available but visually muted. Link text and other unrestricted
+or unreviewed parameters remain runtime behavior. Where replacement code has
+an exact upper parameter count, the same catalog exposes `max_parameters`; an
+excess is a warning-only diagnostic. For example, `[survey-queue-url]` takes none and
 `[survey-queue-link]` takes one optional free-text label. Catalog-backed
 semantic analysis also excludes the
 permissive runtime's final inline numeric or named instance from supported
@@ -528,7 +531,9 @@ active and explicitly unsupported choices remain visible but muted. For a
 dashboard smart variable's first parameter, the same popup instead completes
 the project's existing unique dashboard names and displays their titles.
 Catalog construction deliberately reads only existing names rather than
-invoking the dashboard helper that may backfill them.
+invoking the dashboard helper that may backfill them. `[report-access-code]`
+similarly completes existing `R-…` report names and their titles without
+invoking the report helper that backfills missing names.
 
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for

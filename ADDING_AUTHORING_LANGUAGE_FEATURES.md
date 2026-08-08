@@ -113,8 +113,9 @@ moving migration target.
    `PipingSmartVariableCatalog`; do not embed an allowlist in a semantic
    analyzer or UI completer. The core default is `false` for both properties.
    Record any parameter only when its runtime contract is evidence-backed:
-   instrument targets, project-owned targets (such as a unique dashboard
-   name), enumerated values, and unrestricted free text are distinct kinds.
+   instrument targets, project-owned targets (such as a unique dashboard or
+   report name), enumerated values, and unrestricted free text are distinct
+   kinds.
    A project-owned target needs a read-only top-level catalog collection from
    `buildAuthoringSyntaxEditorCatalog()` for completion and validation; omit
    diagnostics when that collection is absent so a stale catalog remains

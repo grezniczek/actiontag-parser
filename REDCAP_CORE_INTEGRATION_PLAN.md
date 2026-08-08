@@ -61,7 +61,10 @@ when that is warranted.
   `dashboards` collection completes and validates the named targets of
   `[dashboard-access-code]`, `[dashboard-url]`, and `[dashboard-link]`; an
   unknown target is an error only when that collection is current, preserving
-  stale-catalog compatibility. Catalog-backed semantic analysis rejects a legacy final
+  stale-catalog compatibility. The matching read-only `reports` collection
+  completes and validates the target of `[report-access-code]`; its runtime
+  requires an uppercase `R-` prefix, which is also diagnosed before the
+  project lookup. Catalog-backed semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
   fields, requiring a separate bracketed qualifier instead. The structural
   parser remains opaque for valid numeric smart-variable parameters, such as
@@ -71,7 +74,7 @@ when that is warranted.
   current form. With a named event qualifier, a known instrument outside the
   event's designated forms is likewise an advisory warning; completion keeps
   it available but muted. Completion supplies matching project instruments,
-  dashboard unique names, and duration units. Explicit `requires_record_context`,
+  dashboard/report unique names, and duration units. Explicit `requires_record_context`,
   `requires_event_context`, `requires_form_context`, and
   `requires_record_or_public_survey_context` metadata identifies only Smart
   Variables whose runtime replacement consumes the corresponding context.
