@@ -488,6 +488,11 @@ it also warns only for Smart Variables that explicitly require a context the
 source does not provide. An absent or future source policy remains compatible.
 This makes completion and metadata-aware diagnostics agree without treating an
 authoring-source name as a parser concern.
+The default Survey Queue custom-text renderer supplies its record and the
+project first event but no current form, so form-dependent Smart Variables are
+warning-only and muted while field, record, and event references remain
+available. Its language-specific queue translations use their own rendering
+contexts and are deliberately not claimed by this default-source policy.
 When source replacement depends on a selected delivery mode, the same policy
 can declare `piping_delivery_types`. The Twilio manual-invitation editor passes
 the current `delivery_type` as `pipingDeliveryType`; only `SMS_INVITE_WEB`

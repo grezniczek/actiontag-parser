@@ -85,6 +85,10 @@ project event and the public route for the project's `firstForm`, but no record 
   policy transports its project-specific public survey form, so completion and
   warnings reject another known survey. Unknown source kinds retain existing
   behavior.
+  The default Survey Queue custom-text renderer supplies a record and the
+  project first event but no form, so only form-dependent Smart Variables are
+  muted and warned; its language-specific translation path is intentionally
+  outside that default-source policy.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;
