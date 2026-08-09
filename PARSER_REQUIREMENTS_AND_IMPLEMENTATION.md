@@ -481,6 +481,16 @@ source with no current form, the editor therefore keeps the title variable
 available to complete an explicit survey instrument but warns for the omitted,
 unknown, or non-survey target. These three variables ignore event and instance
 qualifiers, which completion mutes and semantic analysis warns about.
+`[is-survey]` and `[is-form]` instead inspect the global `PAGE` constant, not
+Piping arguments. They accept no parameters and ignore event/instance
+qualifiers. `[is-survey]` is `1` only on `surveys/index.php`; `[is-form]` is
+`1` only on `DataEntry/index.php` with the required `id` and `page` request
+values. `truthy_runtime_page` records the proven page condition without
+misrepresenting these valid variables as form-context consumers. A source
+policy declares `piping_runtime_page` only where its route is fixed: Survey
+Queue custom text is rendered on `surveys/index.php`, so `[is-survey]` remains
+active there while `[is-form]` is muted and warned as a fixed `0`. Sources
+whose route can vary retain normal runtime compatibility.
 The same catalog's explicit `requires_record_context`,
 `requires_event_context`, `requires_form_context`,
 `requires_form_or_instrument_parameter`, `requires_user_context`, and

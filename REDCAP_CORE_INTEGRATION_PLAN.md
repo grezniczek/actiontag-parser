@@ -174,6 +174,13 @@ when that is warranted.
   complete `[survey-title:followup]`, while an omitted, unknown, or non-survey
   target is warned as unable to resolve there. The three variables' ignored
   event/instance qualifiers are muted in completion and warned semantically.
+  `[is-survey]` and `[is-form]` are distinct PAGE-state booleans: neither
+  accepts parameters or qualifiers, and neither consumes form metadata.
+  `truthy_runtime_page` documents the page where each can be `1`; a source
+  policy provides `piping_runtime_page` only for fixed routes. Survey Queue
+  custom text runs on `surveys/index.php`, keeping `[is-survey]` active and
+  warning/muting `[is-form]` as a fixed `0`; variable routes remain
+  non-diagnostic.
   `PipingFieldParameterCatalog` similarly owns the evidence-backed project-field
   modifier contract. Each catalog field carries its applicable
   `piping_parameters` for completion, and the top-level known modifier set lets

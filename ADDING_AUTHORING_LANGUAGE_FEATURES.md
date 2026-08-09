@@ -158,15 +158,20 @@ moving migration target.
    `requires_form_context` or `requires_user_context` capability. When a variable can resolve through
    either a record or a documented public-survey route, use
    `requires_record_or_public_survey_context` instead. Do not infer this from
-   its name: when a variable can use either the current form or a particular
-   cataloged instrument parameter, use
+   its name, and catalog any project-specific public form transported by the
+   source policy (for example, Twilio's public `[survey-url]`, whose runtime
+   target is the project's `firstForm`). When a variable can use either the
+   current form or a particular cataloged instrument parameter, use
    `requires_form_or_instrument_parameter` for that explicit fallback (for
    example, `[survey-title:survey_form]`). The semantic layer must allow the
    valid parameter in a form-less source while warning when neither route can
    resolve.
-   its name, and catalog any project-specific public form transported by the
-   source policy (for example, Twilio's public `[survey-url]`, whose runtime
-   target is the project's `firstForm`).
+   When a Smart Variable's truth value instead depends on the global runtime
+   page, use `truthy_runtime_page` rather than inventing record/event/form
+   context. Add a matching `piping_runtime_page` source-policy value only when
+   that source always renders on one proven page; then warn and mute the
+   variable if its known output is fixed to `0`. Do not declare a page for a
+   source that can render through multiple routes.
    When a family delegates an unbounded parameter tail to a shared runtime
    helper, model only a helper contract that can be proven for every member.
    For example, `supports_report_filter` records that the first uppercase
