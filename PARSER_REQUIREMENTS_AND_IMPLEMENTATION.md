@@ -504,17 +504,24 @@ label. They therefore use the same record, event, and
 `[form-link]` is deliberately not diagnosed when a current form exists: the
 runtime treats it as the custom link label fallback. Without a current form it
 cannot select a target, so the source-context warning still applies.
-`[survey-access-code]` uses the generated survey-link route and can therefore
-resolve either from a record or from the same recordless public first-survey
-route as `[survey-url]` and `[survey-link]`. `[survey-return-code]` instead
-calls `Survey::getSurveyReturnCode()` and immediately returns empty text
-without a record. Both codes consume the current event (or a supported event
-qualifier) and need the current survey form or a known explicit survey
-parameter in a form-less record-backed source. In Twilio's recordless public
-route, completion leaves a bare access code active and limits an explicit
-survey to the configured public first form; return codes remain muted and
-warned because they cannot use that route. Response-specific code generation
-or availability remains a runtime result.
+`[survey-url]` and `[survey-link]` derive their target link from the current
+event, survey form, and optional instance qualifier. Both can use either a
+record or the recordless public first-survey route, and otherwise require the
+current survey form or a known explicit survey parameter. A form-less
+record-backed source therefore prompts for a survey target; Twilio's public
+route leaves a bare URL/link active and limits an explicit target to its
+configured first form. `[survey-link:custom text]` is a current-form label
+shortcut, not a public-target selection, so it is warned in that recordless
+route. `[survey-access-code]` derives its value through the same prepared
+survey-link route. `[survey-return-code]` instead calls
+`Survey::getSurveyReturnCode()` and immediately returns empty text without a
+record. Both codes consume the current event (or a supported event qualifier)
+and need the current survey form or a known explicit survey parameter in a
+form-less record-backed source. In Twilio's recordless public route,
+completion leaves a bare access code active and limits an explicit survey to
+the configured public first form; return codes remain muted and warned because
+they cannot use that route. Response-specific code generation or availability
+remains a runtime result.
 `[is-survey]` and `[is-form]` instead inspect the global `PAGE` constant, not
 Piping arguments. They accept no parameters and ignore event/instance
 qualifiers. `[is-survey]` is `1` only on `surveys/index.php`; `[is-form]` is

@@ -182,7 +182,11 @@ moving migration target.
    form-or-instrument requirements. The form-or-instrument check must treat
    that documented public route as a target only in a recordless public source;
    completion should neither request an unnecessary parameter nor offer a
-   different known survey. `[survey-access-code]` is the reference case.
+   different known survey. `[survey-url]`, `[survey-link]`, and
+   `[survey-access-code]` are the reference cases. A `diagnose_unknown: false`
+   link-text shorthand must still be diagnosed when the source lacks the
+   current form that makes the fallback possible; it is not a public-survey
+   target.
    Do not use this fallback for a record-bound response lookup merely because
    it takes the same instrument parameter: `[survey-return-code]` still
    requires a record. Add public-route, record, event, target-form, and
