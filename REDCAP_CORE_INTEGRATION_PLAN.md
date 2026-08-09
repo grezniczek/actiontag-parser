@@ -196,7 +196,12 @@ when that is warranted.
   optional instance from their shared runtime path. They can use a record or
   Twilio's public first-survey route; otherwise a form-less record-backed
   source must name a known survey. The public route keeps a bare URL/link
-  active and limits explicit completion to its first survey.
+  active and limits explicit completion to its first survey. They and
+  `[survey-access-code]` additionally support a separately cataloged bare
+  survey-participant target: an explicit participant source can resolve the
+  no-parameter, unqualified form from the participant's current survey. This
+  does not relax the event/form/record checks for `[survey-url:survey_form]`, which
+  redirects the target away from that participant.
   `[survey-link:custom text]` is a current-form label fallback, so it is
   warned when it cannot select a public target. `[survey-access-code]` derives
   its value through that same route. `[survey-return-code]` calls
@@ -302,6 +307,9 @@ project event and the public route for the project's `firstForm`, but no record 
   Participant List. Mixed selections retain completion but label and warn on
   direct record/event/form-dependent references; recordless selections hide
   field completion and receive the existing unavailable-context warnings.
+  Their bare `[survey-url]`, `[survey-link]`, and `[survey-access-code]`
+  references are the narrow exception: their verified participant fallback
+  remains available, while explicit survey targets continue to warn.
   That state is supplied to both browser analysis and the server diagnostic
   fallback. The policy also records its guaranteed participant/user contexts
   and `Surveys/email_participants.php` evaluation route.

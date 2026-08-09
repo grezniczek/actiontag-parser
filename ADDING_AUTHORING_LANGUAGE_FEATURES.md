@@ -187,6 +187,15 @@ moving migration target.
    link-text shorthand must still be diagnosed when the source lacks the
    current form that makes the fallback possible; it is not a public-survey
    target.
+   A distinct bare-variable participant route is likewise explicit:
+   `supports_survey_participant_context` is appropriate only where the
+   replacement can derive its target from the supplied participant and only
+   with no first instrument parameter or event/instance qualifier. The three
+   survey variables above are the reference cases. The semantic layer must
+   suppress their record/event/form findings in a source that explicitly declares
+   `has_survey_participant_context: true`, while retaining those findings for
+   `[survey-url:some_survey]`, whose target no longer matches the supplied
+   participant.
    Do not use this fallback for a record-bound response lookup merely because
    it takes the same instrument parameter: `[survey-return-code]` still
    requires a record. Add public-route, record, event, target-form, and
@@ -275,6 +284,10 @@ moving migration target.
    omission is intentionally not treated as support. This prevents a newly
    cataloged source from accidentally claiming the fallback merely because it
    has no record.
+   This record-or-participant route is distinct from the bare-target survey
+   route described by `supports_survey_participant_context`: the latter does
+   not turn an explicit instrument parameter into a participant-supported
+   target.
    Add a source policy only when the declared runtime context is invariant for
    every use of that authoring surface. A recipient-dependent sender such as
    the bulk Survey Invitation composer must not claim one

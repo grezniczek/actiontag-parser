@@ -464,10 +464,10 @@ excess is a warning-only diagnostic. For example, `[survey-queue-url]` takes non
 accepts a record or a numeric survey participant ID, which it first resolves
 to a record before constructing the queue link. They therefore use the
 separate `requires_record_or_survey_participant_context` capability—not the
-recordless public-survey route. No currently cataloged source passes that
-participant context, so existing source diagnostics are unchanged; a future
-source must explicitly declare `has_survey_participant_context: true` only
-after its runtime call is verified. Catalog-backed
+recordless public-survey route. The bulk Survey Invitation composer is the
+first cataloged participant source; any future source must explicitly declare
+`has_survey_participant_context: true` only after its runtime call is
+verified. Catalog-backed
 semantic analysis also excludes the
 permissive runtime's final inline numeric or named instance from supported
 author syntax: qualifier-reviewed smart variables and project fields receive a
@@ -517,10 +517,18 @@ record or the recordless public first-survey route, and otherwise require the
 current survey form or a known explicit survey parameter. A form-less
 record-backed source therefore prompts for a survey target; Twilio's public
 route leaves a bare URL/link active and limits an explicit target to its
-configured first form. `[survey-link:custom text]` is a current-form label
-shortcut, not a public-target selection, so it is warned in that recordless
-route. `[survey-access-code]` derives its value through the same prepared
-survey-link route. `[survey-return-code]` instead calls
+configured first form. A source that explicitly supplies a survey participant
+has a separate bare-target route: `[survey-url]`, `[survey-link]`, and
+`[survey-access-code]` use that participant's current survey only when their
+first instrument parameter and event/instance qualifiers are omitted. The
+catalog represents that narrow route with
+`supports_survey_participant_context`, so recordless bulk Survey Invitations
+keep those bare variables active but still warn for an explicit target such as
+`[survey-url:followup]`. `[survey-link:custom text]` is a
+current-form label shortcut, not a public- or participant-target selection,
+so it is warned when no current form can make the shorthand meaningful.
+`[survey-access-code]` derives its value through the same prepared survey-link
+route. `[survey-return-code]` instead calls
 `Survey::getSurveyReturnCode()` and immediately returns empty text without a
 record. Both codes consume the current event (or a supported event qualifier)
 and need the current survey form or a known explicit survey parameter in a
@@ -548,8 +556,10 @@ that provenance to the opener, which supplies a live three-state
 Smart Variable completion available but labels record-dependent entries and
 warns at completed references that only some selected recipients can resolve
 them. A fully recordless selection suppresses project-field completion and
-uses the established unavailable-context warnings; a fully record-backed
-selection has normal completion and no advisory. The same narrow state is
+uses the established unavailable-context warnings, except that the bare
+participant-backed `[survey-url]`, `[survey-link]`, and
+`[survey-access-code]` remain available; a fully record-backed selection has
+normal completion and no advisory. The same narrow state is
 passed to the browser analyzer and the server diagnostic fallback. The bulk
 policy separately declares its guaranteed participant and authenticated-user
 contexts and its `Surveys/email_participants.php` evaluation route.
@@ -646,8 +656,8 @@ warn and completion suppresses the conflicting later choice; this remains
 advisory because Piping replacement itself is unchanged.
 
 `PipingSourcePolicyCatalog` captures the narrower question of whether a named
-authoring source has record, event, form, user, public-survey, or proven
-repeating-event contexts at all. The
+authoring source has record, event, form, user, public-survey,
+survey-participant, or proven repeating-event contexts at all. The
 controller sends those source policies in the same catalog used by the browser
 and server fallback. The Twilio policy additionally carries its project first
 form as `public_survey_form`. A declared recordless source suppresses
