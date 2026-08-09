@@ -192,6 +192,15 @@ when that is warranted.
   a survey. The otherwise permissive first parameter of `[form-link]` remains
   undiagnosed only when a current form permits its runtime custom-label
   fallback; in a form-less source it cannot resolve a target and is warned.
+  `[survey-access-code]` derives its value through the survey-link path, so it
+  shares `[survey-url]`/`[survey-link]`'s record-or-public-survey route.
+  `[survey-return-code]` calls `Survey::getSurveyReturnCode()` and has no
+  recordless fallback. Both consume the event and a survey target, supplied by
+  the current form or an explicit known survey parameter in a form-less
+  record-backed source. The Twilio public first-survey route therefore leaves
+  a bare access code active and restricts explicit survey completion to that
+  form, while a return code is muted and warned for its missing record.
+  Whether a response yields a code is runtime state, not an authoring error.
   `[is-survey]` and `[is-form]` are distinct PAGE-state booleans: neither
   accepts parameters or qualifiers, and neither consumes form metadata.
   `truthy_runtime_page` documents the page where each can be `1`; a source

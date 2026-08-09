@@ -176,6 +176,17 @@ moving migration target.
    runtime has a proven fallback. For `[form-link]`, its first parameter can
    be custom link text when a current form exists, but cannot resolve a target
    in a form-less source, where the capability check must still warn.
+   If a survey variable derives its result from a generated survey link and
+   the runtime also supports the recordless public first-survey route, use
+   `requires_record_or_public_survey_context` alongside its event and
+   form-or-instrument requirements. The form-or-instrument check must treat
+   that documented public route as a target only in a recordless public source;
+   completion should neither request an unnecessary parameter nor offer a
+   different known survey. `[survey-access-code]` is the reference case.
+   Do not use this fallback for a record-bound response lookup merely because
+   it takes the same instrument parameter: `[survey-return-code]` still
+   requires a record. Add public-route, record, event, target-form, and
+   parameter-completion fixtures for each distinction.
    If a bare repeat-instance Smart Variable needs the current form but can
    instead read a repeating current event, use
    `requires_form_or_repeating_event_context`. A named source may claim that
