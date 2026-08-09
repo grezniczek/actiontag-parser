@@ -521,6 +521,12 @@ parameters and ignore event/instance qualifiers. They resolve blank if neither
 user route is available, so the catalog treats them as advisory user-context
 requirements: known userless sources mute and warn them without blocking a
 valid expression in a source that can provide `USERID` at runtime.
+`[project-title]`, `[project-id]`, `[project-status]`, `[project-purpose]`,
+`[project-irb-number]`, `[redcap-base-url]`, `[redcap-version]`,
+`[redcap-version-url]`, and `[survey-base-url]` come from the active project
+or application configuration. They accept no parameters and ignore
+event/instance qualifiers, but remain available in every project-scoped
+authoring source without record, event, form, or user context.
 The same catalog's explicit `requires_record_context`,
 `requires_event_context`, `requires_form_context`,
 `requires_form_or_instrument_parameter`, `requires_user_context`, and

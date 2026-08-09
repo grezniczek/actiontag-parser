@@ -204,8 +204,14 @@ when that is warranted.
   `[user-role-*]` are parameterless values derived only from Piping's supplied
   user or its authenticated-request `USERID` fallback. They ignore
   event/instance qualifiers and resolve blank without either route, so known
-  userless sources warn/mute them advisory-only; sources that may provide the
+ userless sources warn/mute them advisory-only; sources that may provide the
   fallback retain runtime compatibility.
+  `[project-title]`, `[project-id]`, `[project-status]`, `[project-purpose]`,
+  `[project-irb-number]`, `[redcap-base-url]`, `[redcap-version]`,
+  `[redcap-version-url]`, and `[survey-base-url]` are parameterless global
+  project/application values. They ignore event/instance qualifiers but remain
+  available in any project-scoped authoring source, independent of record,
+  event, form, and user context.
   `PipingFieldParameterCatalog` similarly owns the evidence-backed project-field
   modifier contract. Each catalog field carries its applicable
   `piping_parameters` for completion, and the top-level known modifier set lets

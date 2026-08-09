@@ -194,6 +194,10 @@ moving migration target.
    when it produces an empty or otherwise unusable value without either route,
    but keep the resulting diagnostic advisory because other runtime sources
    may legitimately provide the fallback.
+   Do not invent a record/event/form/user requirement for a replacement that
+   reads only the active project or application configuration. Catalog its
+   zero-parameter and ignored-qualifier behavior, and verify that it remains
+   available in every project-scoped authoring source.
    When a family delegates an unbounded parameter tail to a shared runtime
    helper, model only a helper contract that can be proven for every member.
    For example, `supports_report_filter` records that the first uppercase
