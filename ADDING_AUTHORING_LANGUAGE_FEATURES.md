@@ -165,7 +165,10 @@ moving migration target.
    `requires_form_or_instrument_parameter` for that explicit fallback (for
    example, `[survey-title:survey_form]`). The semantic layer must allow the
    valid parameter in a form-less source while warning when neither route can
-   resolve.
+   resolve. Survey response timestamps and durations are a representative
+   combined contract: their first parameter can select the survey form, while
+   their replacement still separately needs record and event context. Do not
+   turn a missing participant response into an authoring diagnostic.
    If a bare repeat-instance Smart Variable needs the current form but can
    instead read a repeating current event, use
    `requires_form_or_repeating_event_context`. A named source may claim that

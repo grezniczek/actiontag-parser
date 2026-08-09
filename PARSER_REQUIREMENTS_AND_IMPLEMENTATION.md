@@ -481,6 +481,19 @@ source with no current form, the editor therefore keeps the title variable
 available to complete an explicit survey instrument but warns for the omitted,
 unknown, or non-survey target. These three variables ignore event and instance
 qualifiers, which completion mutes and semantic analysis warns about.
+The survey-progress family—`[survey-date-completed]`,
+`[survey-time-completed]`, `[survey-date-started]`,
+`[survey-time-started]`, `[survey-duration]`, and
+`[survey-duration-completed]`—instead queries a survey response using the
+current record, event, target survey form, and optional instance qualifier.
+Each supports event and instance qualifiers and may select its survey through
+the first parameter when no current form is supplied. The catalog therefore
+requires record and event contexts plus
+`requires_form_or_instrument_parameter`: a form-less source keeps these
+variables available to complete a known survey parameter but warns for an
+omitted, unknown, or non-survey target. This remains source-context advice;
+whether the selected participant has actually started or completed that survey
+is normal runtime output, not an authoring diagnostic.
 `[is-survey]` and `[is-form]` instead inspect the global `PAGE` constant, not
 Piping arguments. They accept no parameters and ignore event/instance
 qualifiers. `[is-survey]` is `1` only on `surveys/index.php`; `[is-form]` is

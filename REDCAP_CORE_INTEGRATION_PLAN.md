@@ -174,6 +174,15 @@ when that is warranted.
   complete `[survey-title:followup]`, while an omitted, unknown, or non-survey
   target is warned as unable to resolve there. The three variables' ignored
   event/instance qualifiers are muted in completion and warned semantically.
+  `[survey-date-completed]`, `[survey-time-completed]`,
+  `[survey-date-started]`, `[survey-time-started]`, `[survey-duration]`, and
+  `[survey-duration-completed]` query a target survey response by record,
+  event, form, and optionally instance. They accept their cataloged event and
+  instance qualifiers. Their first survey-instrument parameter is an explicit
+  substitute for a missing current form, so form-less sources keep the family
+  available with a prompt to name a known survey while known recordless or
+  eventless sources mute and warn it. Missing response timestamps remain a
+  runtime result rather than an authoring finding.
   `[is-survey]` and `[is-form]` are distinct PAGE-state booleans: neither
   accepts parameters or qualifiers, and neither consumes form metadata.
   `truthy_runtime_page` documents the page where each can be `1`; a source
