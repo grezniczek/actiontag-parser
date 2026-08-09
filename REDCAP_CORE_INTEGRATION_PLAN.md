@@ -273,6 +273,13 @@ project event and the public route for the project's `firstForm`, but no record 
   policy transports its project-specific public survey form, so completion and
   warnings reject another known survey. Unknown source kinds retain existing
   behavior.
+  `[survey-queue-url]` and `[survey-queue-link]` additionally model the
+  proven runtime alternative of a numeric survey participant ID, which their
+  replacement resolves to a record before building the queue link. This is
+  represented by `requires_record_or_survey_participant_context`; it is not a
+  public-survey route. The capability is opt-in for known source policies—no
+  current workspace source receives a participant ID, so none declares
+  `has_survey_participant_context: true` and their existing warnings remain.
   The default Survey Queue custom-text renderer supplies a record and the
   project first event but no form. Its transported repeating-event state lets
   form-or-repeating-event Smart Variables remain available only when that

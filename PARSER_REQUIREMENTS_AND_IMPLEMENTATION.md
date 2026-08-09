@@ -460,7 +460,14 @@ the instrument available but visually muted. Link text and other unrestricted
 or unreviewed parameters remain runtime behavior. Where replacement code has
 an exact upper parameter count, the same catalog exposes `max_parameters`; an
 excess is a warning-only diagnostic. For example, `[survey-queue-url]` takes none and
-`[survey-queue-link]` takes one optional free-text label. Catalog-backed
+`[survey-queue-link]` takes one optional free-text label. Their replacement
+accepts a record or a numeric survey participant ID, which it first resolves
+to a record before constructing the queue link. They therefore use the
+separate `requires_record_or_survey_participant_context` capability—not the
+recordless public-survey route. No currently cataloged source passes that
+participant context, so existing source diagnostics are unchanged; a future
+source must explicitly declare `has_survey_participant_context: true` only
+after its runtime call is verified. Catalog-backed
 semantic analysis also excludes the
 permissive runtime's final inline numeric or named instance from supported
 author syntax: qualifier-reviewed smart variables and project fields receive a

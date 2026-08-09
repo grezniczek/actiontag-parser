@@ -266,6 +266,15 @@ moving migration target.
    example, MyCap participant Piping variables require a record, whereas the
    MyCap project-code variable does not; neither receives a fabricated
    MyCap-enabled availability capability.
+   When a replacement has a distinct, verified alternative context, model the
+   alternative rather than weakening its record requirement globally. For
+   example, `[survey-queue-url]` and `[survey-queue-link]` can convert a
+   numeric survey participant ID into a record, so they use
+   `requires_record_or_survey_participant_context`. A known source policy may
+   satisfy that only with an explicit `has_survey_participant_context: true`;
+   omission is intentionally not treated as support. This prevents a newly
+   cataloged source from accidentally claiming the fallback merely because it
+   has no record.
 7. Verify the Smart Variables reference dialog, completion, hover information,
    and every intentionally supported source policy. Do not enable field
    completion in a source that has no per-record replacement context.
