@@ -504,6 +504,16 @@ tag, so a structurally valid prepended event or an appended instance does not
 alter these values. They accept no parameters; completion mutes ignored
 qualifiers and semantic analysis warns about them, while known eventless
 sources warn and mute the variables themselves.
+The bare relative-event values follow the same no-parameter, ignored-qualifier
+contract. `[previous-event-name]`, `[previous-event-label]`,
+`[next-event-name]`, and `[next-event-label]` need a current event and resolve
+blank when there is no adjacent event. `[first-event-name]`,
+`[first-event-label]`, `[last-event-name]`, and `[last-event-label]` instead
+use Piping's intentional first-event fallback when no current event is passed,
+so they remain available in known eventless sources. These names also retain
+their separate structural role as dynamic event selectors before another
+Piping reference; the bare-variable catalog contract does not restrict that
+following reference's qualifier capability.
 The same catalog's explicit `requires_record_context`,
 `requires_event_context`, `requires_form_context`,
 `requires_form_or_instrument_parameter`, `requires_user_context`, and

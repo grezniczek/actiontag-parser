@@ -184,6 +184,11 @@ moving migration target.
    reads only the incoming event ID. Verify the preprocessor's per-reference
    event handling before declaring an event qualifier supported: structural
    acceptance alone does not mean that a replacement consumes it.
+   Relative-event names need the same distinction: catalog their bare
+   Smart-Variable replacement independently of their documented structural
+   role as a dynamic event selector before a following Piping reference. Test
+   whether a missing current event resolves blank or a runtime helper supplies
+   a fallback before setting `requires_event_context`.
    When a family delegates an unbounded parameter tail to a shared runtime
    helper, model only a helper contract that can be proven for every member.
    For example, `supports_report_filter` records that the first uppercase

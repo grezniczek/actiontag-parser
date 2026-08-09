@@ -193,6 +193,13 @@ when that is warranted.
   event and appended instance segments are accepted structurally but ignored;
   their catalog entries let completion and diagnostics surface that fact and
   mute them in known eventless sources.
+  Bare `[previous-event-*]` and `[next-event-*]` values need an event context
+  and resolve blank at a boundary, whereas bare `[first-event-*]` and
+  `[last-event-*]` values retain Piping's intentional project-first-event
+  fallback when no event is passed. All eight accept no parameters and ignore
+  outer event/instance qualifiers. Their independent use as a dynamic event
+  selector before another Piping reference remains governed by that following
+  reference's qualifier capability.
   `PipingFieldParameterCatalog` similarly owns the evidence-backed project-field
   modifier contract. Each catalog field carries its applicable
   `piping_parameters` for completion, and the top-level known modifier set lets
