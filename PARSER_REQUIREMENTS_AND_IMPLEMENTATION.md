@@ -514,6 +514,13 @@ so they remain available in known eventless sources. These names also retain
 their separate structural role as dynamic event selectors before another
 Piping reference; the bare-variable catalog contract does not restrict that
 following reference's qualifier capability.
+`[user-name]`, `[user-fullname]`, `[user-email]`, the three `[user-dag-*]`
+values, and the three `[user-role-*]` values derive solely from the supplied
+user (or Piping's authenticated-request `USERID` fallback). They accept no
+parameters and ignore event/instance qualifiers. They resolve blank if neither
+user route is available, so the catalog treats them as advisory user-context
+requirements: known userless sources mute and warn them without blocking a
+valid expression in a source that can provide `USERID` at runtime.
 The same catalog's explicit `requires_record_context`,
 `requires_event_context`, `requires_form_context`,
 `requires_form_or_instrument_parameter`, `requires_user_context`, and

@@ -200,6 +200,12 @@ when that is warranted.
   outer event/instance qualifiers. Their independent use as a dynamic event
   selector before another Piping reference remains governed by that following
   reference's qualifier capability.
+  `[user-name]`, `[user-fullname]`, `[user-email]`, `[user-dag-*]`, and
+  `[user-role-*]` are parameterless values derived only from Piping's supplied
+  user or its authenticated-request `USERID` fallback. They ignore
+  event/instance qualifiers and resolve blank without either route, so known
+  userless sources warn/mute them advisory-only; sources that may provide the
+  fallback retain runtime compatibility.
   `PipingFieldParameterCatalog` similarly owns the evidence-backed project-field
   modifier contract. Each catalog field carries its applicable
   `piping_parameters` for completion, and the top-level known modifier set lets

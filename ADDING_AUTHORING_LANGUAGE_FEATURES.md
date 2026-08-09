@@ -189,6 +189,11 @@ moving migration target.
    role as a dynamic event selector before a following Piping reference. Test
    whether a missing current event resolves blank or a runtime helper supplies
    a fallback before setting `requires_event_context`.
+   For user-derived values, distinguish the trusted supplied-user or `USERID`
+   fallback from the variable's no-user result. Catalog `requires_user_context`
+   when it produces an empty or otherwise unusable value without either route,
+   but keep the resulting diagnostic advisory because other runtime sources
+   may legitimately provide the fallback.
    When a family delegates an unbounded parameter tail to a shared runtime
    helper, model only a helper contract that can be proven for every member.
    For example, `supports_report_filter` records that the first uppercase
