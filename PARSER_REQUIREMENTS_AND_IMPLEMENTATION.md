@@ -467,6 +467,11 @@ author syntax: qualifier-reviewed smart variables and project fields receive a
 blocking diagnostic for `[survey-url:followup:last-instance]` and must use
 `[survey-url:followup][last-instance]`. The structural parser remains opaque
 where numeric parameters are legitimate, such as `[data-table:435]`.
+Randomization is a separately documented exception: `[rand-number:2]` is its
+sequence-reference parameter, rather than an inline instance qualifier, and
+`[rand-time:2:value]`/`[rand-utc-time:2:value]` additionally request a raw
+timestamp. That explicit contract is cataloged rather than inferred from the
+generic preprocessor's broader numeric shuffling.
 The same catalog's explicit `requires_record_context`,
 `requires_event_context`, `requires_form_context`, `requires_user_context`, and
 `requires_record_or_public_survey_context` capabilities are limited to runtime
@@ -650,6 +655,15 @@ but ignore both a preceding event qualifier and an instance suffix. The link
 accepts one optional free-text label; the other MyCap variables take no
 parameters. No MyCap-enabled availability capability is fabricated because
 these Piping cases do not test that setting.
+
+The Randomization variables require a record because their helper looks up an
+allocation by record. They ignore event qualifiers and support only a numeric
+bracketed instance suffix as an alternative sequence reference; named instance
+suffixes are muted and warned. `[rand-number]` accepts one optional positive
+integer `:n`. `[rand-time]` and `[rand-utc-time]` accept up to a positive
+integer reference and/or `value` for the raw timestamp (including the
+documented `:n:value` form). The analyzer cannot safely infer how many
+randomizations a project has, so it validates only the positive-integer shape.
 
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for

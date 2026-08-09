@@ -136,7 +136,11 @@ moving migration target.
    accepts a fixed number of parameters, also declare `max_parameters`; excess
    parameters are a warning-only diagnostic, never a runtime compatibility
    change. Do not model the runtime's permissive colon-delimited numeric or
-   `*-instance` parsing as author syntax. Mark qualifier-reviewed variables with
+   `*-instance` parsing as author syntax, except for an explicitly documented
+   parameter contract in the replacement case itself. For example,
+   `[rand-number:2]` is Randomization's documented sequence-reference
+   parameter, while the runtime's other numeric shuffling remains outside the
+   authoring grammar. Mark qualifier-reviewed variables with
    `rejects_legacy_inline_instance_qualifier` so semantic analysis rejects
    `[survey-url:followup:last-instance]` and requires
    `[survey-url:followup][last-instance]`. Keep the structural parser opaque

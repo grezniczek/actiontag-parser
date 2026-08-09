@@ -144,6 +144,11 @@ when that is warranted.
   select the participant's arm but ignore event/instance qualifiers; the link
   accepts one optional free-text label. They have no modeled MyCap-enabled
   capability: their Piping replacement does not test the project setting.
+  Randomization variables require a record and ignore event qualifiers. Their
+  documented inline `:n` sequence reference is an exception to the normal
+  prohibition on inline instances; the timestamp variables may additionally
+  use `value` for raw output. They also accept a numeric bracketed instance as
+  the same reference, while named instance choices are muted and warned.
   Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
