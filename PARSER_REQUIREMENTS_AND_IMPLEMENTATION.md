@@ -540,10 +540,13 @@ The same `reports` collection is used by the cataloged
 Charts, and Smart Tables. `Piping::parseSmartParams()` removes whitespace,
 uses the first uppercase `R-…` token after the field-list argument as a report
 filter, and returns before inspecting later filtering tokens. Semantic analysis
-therefore validates and completes only that first token; a lower-case `r-…`, a
-report-looking field-list entry, and later `R-…` tokens remain runtime parsing
-behavior. The rest of the helper's record, event, DAG, table, and chart
-parameters are intentionally unreviewed.
+therefore validates and completes the first report token, warns that later
+distinct report tokens are ignored, and likewise warns when the report makes a
+recognized current-context, named-DAG, or named-event filter ineffective. It
+completes `record-name`, `event-name`, and `user-dag-name` filters with their
+source-context availability, plus project DAG and event names (preferring a
+DAG when a name collides). Unknown free-form tokens—including lower-case
+`r-…` and report-like field-list entries—remain opaque runtime behavior.
 
 For `[stats-table]`, the catalog also describes the runtime-supported output
 columns and each project field carries a `stats_table_supported_columns` list
@@ -637,6 +640,16 @@ project and retrieves its access code. It therefore remains active without a
 system-capability warning or muted completion, using the same one-dashboard
 parameter contract, current-project target validation, and completion list as
 `[dashboard-url]`.
+
+The MyCap project code has no record requirement. The three participant
+variables—`[mycap-participant-code]`, `[mycap-participant-url]`, and
+`[mycap-participant-link:link_text]`—do: the participant-code helper rejects a
+missing record, while the URL/link cases guard their complete replacement. The
+participant variables use the current runtime event to select the relevant arm,
+but ignore both a preceding event qualifier and an instance suffix. The link
+accepts one optional free-text label; the other MyCap variables take no
+parameters. No MyCap-enabled availability capability is fabricated because
+these Piping cases do not test that setting.
 
 The same scan established the calculation compatibility policy. Historic
 client-side JavaScript/jQuery stored in calculation fields is now illegal for

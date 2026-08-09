@@ -186,6 +186,11 @@ moving migration target.
    changing its supported availability or semantics. Do not add unreviewed
    parameter or source-specific Piping diagnostics until their runtime
    behavior has a complete catalog contract.
+   A direct record guard or helper precondition is sufficient evidence for a
+   `requires_record_context` rule even when no feature setting is checked. For
+   example, MyCap participant Piping variables require a record, whereas the
+   MyCap project-code variable does not; neither receives a fabricated
+   MyCap-enabled availability capability.
 7. Verify the Smart Variables reference dialog, completion, hover information,
    and every intentionally supported source policy. Do not enable field
    completion in a source that has no per-record replacement context.

@@ -139,6 +139,11 @@ when that is warranted.
   replacement still retrieves the access code for a named current-project
   dashboard. The catalog injects it without a system capability, so it stays
   active and uses the existing one-dashboard target validation and completion.
+  MyCap's project code is context-independent; its participant code, URL, and
+  link require a record. The latter three use the current runtime event to
+  select the participant's arm but ignore event/instance qualifiers; the link
+  accepts one optional free-text label. They have no modeled MyCap-enabled
+  capability: their Piping replacement does not test the project setting.
   Catalog-backed
   semantic analysis rejects a legacy final
   inline numeric or named instance for qualifier-reviewed variables and project
