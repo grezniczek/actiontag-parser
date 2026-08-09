@@ -272,14 +272,20 @@ project event and the public route for the project's `firstForm`, but no record 
   Project Dashboard rendering provides none of those contexts. The Twilio
   policy transports its project-specific public survey form, so completion and
   warnings reject another known survey. Unknown source kinds retain existing
-  behavior.
+  behavior. A source that evaluates once for each selected recipient may use
+  `recipient_dependent_contexts` instead of incorrectly asserting a binary
+  capability: the opener supplies each named context as `guaranteed`,
+  `partial`, or `unavailable` through the browser and server semantic
+  contexts. Partial remains advisory and preserves completion; unavailable
+  retains the established restriction behavior.
   `[survey-queue-url]` and `[survey-queue-link]` additionally model the
   proven runtime alternative of a numeric survey participant ID, which their
   replacement resolves to a record before building the queue link. This is
   represented by `requires_record_or_survey_participant_context`; it is not a
-  public-survey route. The capability is opt-in for known source policies—no
-  current workspace source receives a participant ID, so none declares
-  `has_survey_participant_context: true` and their existing warnings remain.
+  public-survey route. The capability is opt-in for known source policies—the
+  bulk Survey Invitation composer is the first cataloged workspace source to
+  declare `has_survey_participant_context: true`, after its recordless
+  invitation branch was verified.
   The follow-up Survey Invitation dialog is opened from Data Entry and pipes
   both its subject and content before queueing. Its shared
   `survey_invitation_followup_email` policy therefore supplies the current
@@ -287,12 +293,18 @@ project event and the public route for the project's `firstForm`, but no record 
   fallback. It also records `Surveys/invite_participant_popup.php` as the
   actual evaluation route, so `[is-survey]` and `[is-form]` are correctly
   muted and warned as fixed `0` rather than inheriting the surrounding Data
-  Entry page. By contrast, the bulk invitation composer intentionally has no
-  record-context policy: `email_participants.php` resolves text once per
-  selected participant, which may be record-backed or an initial-survey
-  participant with only a participant ID. A binary policy would either warn
-  on valid record-bound recipients or conceal failures for recordless ones;
-  model that only after recipient-conditional source contexts are available.
+  Entry page. The bulk invitation composer has a recipient-conditional policy:
+  `email_participants.php` resolves text once per selected participant, using
+  record, event, and form arguments only for record-backed recipients and a
+  participant ID for recordless initial-survey recipients. Its source policy
+  names those three `recipient_dependent_contexts`, while the opener derives
+  their live `guaranteed`, `partial`, or `unavailable` state from the selected
+  Participant List. Mixed selections retain completion but label and warn on
+  direct record/event/form-dependent references; recordless selections hide
+  field completion and receive the existing unavailable-context warnings.
+  That state is supplied to both browser analysis and the server diagnostic
+  fallback. The policy also records its guaranteed participant/user contexts
+  and `Surveys/email_participants.php` evaluation route.
   The default Survey Queue custom-text renderer supplies a record and the
   project first event but no form. Its transported repeating-event state lets
   form-or-repeating-event Smart Variables remain available only when that
@@ -654,7 +666,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the matching per-field modifier contract for completion and warning-only
    diagnostics. `PipingSourcePolicyCatalog` now provides the narrow,
    evidence-backed record/event/form/public-survey-context contract for
-   restricted authoring sources.
+   restricted authoring sources, including recipient-dependent three-state
+   contexts when the concrete sender can derive them from its selected list.
    It intentionally leaves unknown parameters and broader source-specific
    smart-variable availability to runtime behavior until their contracts are
    cataloged.

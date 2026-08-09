@@ -34,7 +34,7 @@ deliberate compatibility decision.
 | --- | --- | --- | --- | --- |
 | Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form/user, record-or-public-survey, and form-or-repeating-event context, evidence-backed parameter contracts, named system-capability requirements, and runtime-recognized names omitted from legacy help; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
-| Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/user/public-survey/repeating-event context and delivery-mode support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
+| Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/user/public-survey/repeating-event context, recipient-dependent context, and delivery-mode support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
 | Piping system capability | The concrete replacement guard for a named runtime-availability capability, including a current-project gate where applicable | `PipingSmartVariableCatalog` definitions plus each affected variable's `required_system_capabilities` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` transports only the named capability's enabled state and author-facing label | Runtime enabled/disabled behavior; PHP/browser semantic and completion tests; stale-catalog compatibility |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
@@ -276,12 +276,17 @@ moving migration target.
    cataloged source from accidentally claiming the fallback merely because it
    has no record.
    Add a source policy only when the declared runtime context is invariant for
-   every use of that authoring surface. Do not reduce a recipient-dependent
-   sender such as the bulk Survey Invitation composer to a single
-   `has_record_context` value: its selected recipients can include both
-   record-backed and recordless participants. First extend the policy and UI
-   contract to represent the conditional context, then add its diagnostics and
-   completion behavior with fixture coverage.
+   every use of that authoring surface. A recipient-dependent sender such as
+   the bulk Survey Invitation composer must not claim one
+   `has_record_context` value when its selection can mix record-backed and
+   recordless participants. Instead, list only the non-invariant contexts in
+   `recipient_dependent_contexts`; the opener must derive each from the live
+   selected list as `guaranteed`, `partial`, or `unavailable` and pass that
+   narrow map as `pipingContextAvailability`. The workspace transports the
+   same map as `piping_context_availability` to browser analysis and the
+   server fallback. `partial` must preserve completion and warn at completed
+   direct dependencies; `unavailable` retains ordinary restricted-source
+   behavior. Omit a context state when no current selection can prove it.
    If Piping runs on a fixed endpoint rather than the screen that opened the
    editor, declare its exact `piping_runtime_page`. This lets page-state
    Smart Variables such as `[is-survey]` and `[is-form]` be diagnosed from the
@@ -335,6 +340,15 @@ moving migration target.
    current selection as `pipingDeliveryType`. An absent selection remains
    compatible, while a known unsupported selection must warn and mute Piping
    completion rather than reject the source text.
+   When one template is rendered independently for selected recipients, do
+   not turn the record/event/form distinction into a fixed boolean. Verify the
+   exact branches, declare the variable contexts in
+   `recipient_dependent_contexts`, expose the minimum per-recipient provenance
+   needed by the authoring opener, and have it return only `guaranteed`,
+   `partial`, or `unavailable` values through `pipingContextAvailability`.
+   A selection with no recipients must omit those states rather than invent a
+   restriction. The server fallback receives the same JSON map as
+   `piping_context_availability`; validate its values before semantic analysis.
 2. Add a `PipingSourcePolicyCatalog` entry only for an evidence-backed
    restriction. An absent entry preserves existing behavior. A recordless
    source prohibits project-field completion and affects only smart variables
@@ -348,6 +362,9 @@ moving migration target.
 4. Add PHP/browser fixtures for a project-field reference, a smart variable
    requiring each unavailable context, and a context-independent smart
    variable in the restricted source, plus an unknown future source kind. For
+   a recipient-dependent policy, cover all-guaranteed, mixed/partial, and
+   fully-unavailable selections; assert completion remains available but
+   labelled for partial context, and is suppressed only when unavailable. For
    a public-survey route, cover the supported public form and a different known
    survey form. The resulting context findings must be warning-only unless a
    runtime validator itself rejects the syntax.

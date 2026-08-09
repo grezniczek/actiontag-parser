@@ -536,11 +536,23 @@ They can therefore receive normal field and context-aware Smart Variable
 completion. Their Piping call runs on `Surveys/invite_participant_popup.php`,
 so the fixed source policy also warns/mutes `[is-survey]` and `[is-form]` as
 zero rather than inheriting the Data Entry page's state. The bulk invitation
-composer deliberately has no corresponding
-binary policy: it pipes separately for each selected participant, some of
-whom may be recordless initial-survey participants. Until the policy model can
-express that conditional recipient context, its existing non-restrictive
-completion and diagnostics remain safer than a blanket record assertion.
+composer uses the shared `survey_invitation_bulk_email` policy, but declares
+its record, event, and form contexts as `recipient_dependent_contexts` rather
+than as fixed booleans. `email_participants.php` pipes each selected
+participant independently: a record-backed participant receives record,
+event, and survey-form arguments, while a recordless initial-survey
+participant receives only its participant ID. The Participant List exposes
+that provenance to the opener, which supplies a live three-state
+`piping_context_availability` value—`guaranteed`, `partial`, or
+`unavailable`—for those three contexts. A mixed selection keeps field and
+Smart Variable completion available but labels record-dependent entries and
+warns at completed references that only some selected recipients can resolve
+them. A fully recordless selection suppresses project-field completion and
+uses the established unavailable-context warnings; a fully record-backed
+selection has normal completion and no advisory. The same narrow state is
+passed to the browser analyzer and the server diagnostic fallback. The bulk
+policy separately declares its guaranteed participant and authenticated-user
+contexts and its `Surveys/email_participants.php` evaluation route.
 `[is-survey]` and `[is-form]` instead inspect the global `PAGE` constant, not
 Piping arguments. They accept no parameters and ignore event/instance
 qualifiers. `[is-survey]` is `1` only on `surveys/index.php`; `[is-form]` is
