@@ -172,6 +172,14 @@ moving migration target.
    that source always renders on one proven page; then warn and mute the
    variable if its known output is fixed to `0`. Do not declare a page for a
    source that can render through multiple routes.
+   If a Smart Variable's replacement reads only the current record (including
+   a current-record Data Access Group lookup), set `requires_record_context`.
+   If it ignores the structurally accepted event/instance qualifiers and has
+   no colon parameters, record those three facts together through
+   `QUALIFIER_CAPABILITIES`, an empty `PARAMETER_DEFINITIONS` entry, and a
+   zero `MAX_PARAMETER_COUNTS` entry. This lets completion and diagnostics
+   distinguish a recordless source from a deliberately ignored qualifier or
+   an invalid authored parameter.
    When a family delegates an unbounded parameter tail to a shared runtime
    helper, model only a helper contract that can be proven for every member.
    For example, `supports_report_filter` records that the first uppercase

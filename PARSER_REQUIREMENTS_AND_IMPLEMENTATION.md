@@ -491,6 +491,12 @@ policy declares `piping_runtime_page` only where its route is fixed: Survey
 Queue custom text is rendered on `surveys/index.php`, so `[is-survey]` remains
 active there while `[is-form]` is muted and warned as a fixed `0`. Sources
 whose route can vary retain normal runtime compatibility.
+`[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
+`[record-dag-label]` read the current record only; the DAG variables then look
+up that record's assigned Data Access Group. They accept no parameters and
+ignore event/instance qualifiers. Their explicit record-context requirement
+therefore mutes and warns them in proven recordless sources, while a current
+record without a Data Access Group remains a normal blank runtime result.
 The same catalog's explicit `requires_record_context`,
 `requires_event_context`, `requires_form_context`,
 `requires_form_or_instrument_parameter`, `requires_user_context`, and

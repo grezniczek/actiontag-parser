@@ -181,6 +181,12 @@ when that is warranted.
   custom text runs on `surveys/index.php`, keeping `[is-survey]` active and
   warning/muting `[is-form]` as a fixed `0`; variable routes remain
   non-diagnostic.
+  `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
+  `[record-dag-label]` are current-record values: their Piping cases ignore
+  parameters and event/instance qualifiers, and the DAG variants look up the
+  current record's assigned Data Access Group. Their catalog entries require a
+  record context, so known recordless sources warn and mute them without
+  treating an unassigned DAG as an authoring error.
   `PipingFieldParameterCatalog` similarly owns the evidence-backed project-field
   modifier contract. Each catalog field carries its applicable
   `piping_parameters` for completion, and the top-level known modifier set lets
