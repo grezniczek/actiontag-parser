@@ -158,6 +158,12 @@ moving migration target.
    `requires_form_context` or `requires_user_context` capability. When a variable can resolve through
    either a record or a documented public-survey route, use
    `requires_record_or_public_survey_context` instead. Do not infer this from
+   its name: when a variable can use either the current form or a particular
+   cataloged instrument parameter, use
+   `requires_form_or_instrument_parameter` for that explicit fallback (for
+   example, `[survey-title:survey_form]`). The semantic layer must allow the
+   valid parameter in a form-less source while warning when neither route can
+   resolve.
    its name, and catalog any project-specific public form transported by the
    source policy (for example, Twilio's public `[survey-url]`, whose runtime
    target is the project's `firstForm`).

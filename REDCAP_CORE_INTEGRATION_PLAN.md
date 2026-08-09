@@ -161,11 +161,19 @@ when that is warranted.
   event's designated forms is likewise an advisory warning; completion keeps
   it available but muted. Completion supplies matching project instruments,
   dashboard/report unique names, and duration units. Explicit `requires_record_context`,
-  `requires_event_context`, `requires_form_context`, `requires_user_context`, and
+  `requires_event_context`, `requires_form_context`,
+  `requires_form_or_instrument_parameter`, `requires_user_context`, and
   `requires_record_or_public_survey_context` metadata identifies only Smart
   Variables whose runtime replacement consumes the corresponding context.
   Other Piping parameter semantics and broader source availability remain
   runtime behavior until their contracts are cataloged.
+  `[instrument-name]` and `[instrument-label]` require the current form (or a
+  runtime survey participant), take no parameters, and ignore event/instance
+  qualifiers. `[survey-title]` likewise falls back to that form but can use a
+  single known survey-instrument parameter. Thus a form-less source can
+  complete `[survey-title:followup]`, while an omitted, unknown, or non-survey
+  target is warned as unable to resolve there. The three variables' ignored
+  event/instance qualifiers are muted in completion and warned semantically.
   `PipingFieldParameterCatalog` similarly owns the evidence-backed project-field
   modifier contract. Each catalog field carries its applicable
   `piping_parameters` for completion, and the top-level known modifier set lets

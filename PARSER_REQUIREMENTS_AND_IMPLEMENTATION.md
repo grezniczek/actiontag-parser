@@ -472,8 +472,18 @@ sequence-reference parameter, rather than an inline instance qualifier, and
 `[rand-time:2:value]`/`[rand-utc-time:2:value]` additionally request a raw
 timestamp. That explicit contract is cataloged rather than inferred from the
 generic preprocessor's broader numeric shuffling.
+`[instrument-name]` and `[instrument-label]` read the current form (or the
+form identified by a supplied survey participant) and accept neither
+parameters nor event/instance qualifiers. `[survey-title]` has the same
+fallback but may instead use one known survey instrument parameter, as in
+`[survey-title:followup]`; it resolves blank for a non-survey form. In a known
+source with no current form, the editor therefore keeps the title variable
+available to complete an explicit survey instrument but warns for the omitted,
+unknown, or non-survey target. These three variables ignore event and instance
+qualifiers, which completion mutes and semantic analysis warns about.
 The same catalog's explicit `requires_record_context`,
-`requires_event_context`, `requires_form_context`, `requires_user_context`, and
+`requires_event_context`, `requires_form_context`,
+`requires_form_or_instrument_parameter`, `requires_user_context`, and
 `requires_record_or_public_survey_context` capabilities are limited to runtime
 cases that read or require the corresponding value directly. In a named source
 that declares the corresponding `has_*_context: false`, those variables
