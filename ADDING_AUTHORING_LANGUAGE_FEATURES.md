@@ -32,9 +32,9 @@ deliberate compatibility decision.
 
 | Feature | Runtime/source registration | Shared authoring metadata and help | Authoring transport | Key checks |
 | --- | --- | --- | --- | --- |
-| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form/user and record-or-public-survey context, evidence-backed parameter contracts, named system-capability requirements, and runtime-recognized names omitted from legacy help; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
+| Smart variable | `Classes/Piping.php`: `Piping::getSpecialTagsInfo()` plus its replacement implementation | `Classes/AuthoringSyntax/Catalog/LogicSmartVariableCatalog.php` for Logic value kinds, source availability, and server-only dependency semantics; `Classes/AuthoringSyntax/Catalog/PipingSmartVariableCatalog.php` for Piping qualifier, record/event/form/user, record-or-public-survey, and form-or-repeating-event context, evidence-backed parameter contracts, named system-capability requirements, and runtime-recognized names omitted from legacy help; existing Smart Variables help is generated from `Piping` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; Piping and Logic semantic diagnostics; PHP/JS parser fixtures if its grammar is new |
 | Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
-| Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/user/public-survey-context and delivery-mode support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
+| Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/user/public-survey/repeating-event context and delivery-mode support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
 | Piping system capability | The concrete replacement guard for a named runtime-availability capability, including a current-project gate where applicable | `PipingSmartVariableCatalog` definitions plus each affected variable's `required_system_capabilities` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` transports only the named capability's enabled state and author-facing label | Runtime enabled/disabled behavior; PHP/browser semantic and completion tests; stale-catalog compatibility |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
@@ -166,6 +166,15 @@ moving migration target.
    example, `[survey-title:survey_form]`). The semantic layer must allow the
    valid parameter in a form-less source while warning when neither route can
    resolve.
+   If a bare repeat-instance Smart Variable needs the current form but can
+   instead read a repeating current event, use
+   `requires_form_or_repeating_event_context`. A named source may claim that
+   alternative only with an evidence-backed `has_repeating_event_context`
+   value. Transport project-dependent repeat state (for example, a renderer
+   fixed to the project's first event) rather than treating any longitudinal
+   source as repeating. Keep this distinct from `[field][last-instance]` and
+   related structural instance qualifiers, whose runtime behavior belongs to
+   the following field reference.
    When a Smart Variable's truth value instead depends on the global runtime
    page, use `truthy_runtime_page` rather than inventing record/event/form
    context. Add a matching `piping_runtime_page` source-policy value only when
@@ -266,10 +275,13 @@ moving migration target.
 ## Add or change Piping source capability
 
 1. Establish the named source's actual replacement context. In particular,
-   verify whether a project record, event, form, user, or public-survey route is
+   verify whether a project record, event, form, user, public-survey route, or
+   repeating-event alternative is
    available and set the corresponding `has_record_context`,
    `has_event_context`, `has_form_context`, `has_user_context`, and
-   `has_public_survey_context` properties accordingly. If the public route is
+   `has_public_survey_context` properties accordingly. Use
+   `has_repeating_event_context` only when the exact event passed to Piping is
+   known to repeat. If the public route is
    limited to one project form, transport that form as `public_survey_form`; do
    not infer any of these facts from the source's UI or from general
    smart-variable support.

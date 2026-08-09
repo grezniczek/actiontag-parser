@@ -200,6 +200,18 @@ when that is warranted.
   outer event/instance qualifiers. Their independent use as a dynamic event
   selector before another Piping reference remains governed by that following
   reference's qualifier capability.
+  The bare standalone instance values—`[previous-instance]`,
+  `[current-instance]`, `[next-instance]`, `[first-instance]`,
+  `[last-instance]`, and `[new-instance]`—need a record and event plus either
+  a form or a repeating event. Their cataloged
+  `requires_form_or_repeating_event_context` property keeps that explicit
+  alternative distinct from a normal form requirement and from structural
+  `[field][*-instance]` syntax. The form-less Survey Queue policy receives the
+  actual repeat status of the project first event, so completion and advisory
+  diagnostics mute the variables only when neither context can resolve them.
+  This remains an availability check: runtime output still depends on the
+  actual repeat-instance list and, for `[new-instance]`, whether that form or
+  event really repeats.
   `[user-name]`, `[user-fullname]`, `[user-email]`, `[user-dag-*]`, and
   `[user-role-*]` are parameterless values derived only from Piping's supplied
   user or its authenticated-request `USERID` fallback. They ignore
@@ -223,7 +235,8 @@ when that is warranted.
   that have no record context. It drives the workspace's field-completion
   availability and both semantic analyzers: project-field references in those
   sources produce a warning, while only Smart Variables that explicitly
-  require an unavailable record, event, form, user, or public-survey route are muted
+  require an unavailable record, event, form, user, public-survey, or
+  repeating-event route are muted
   in completion and warned. Twilio's manual invitation path provides the first
 project event and the public route for the project's `firstForm`, but no record or form;
   Project Dashboard rendering provides none of those contexts. The Twilio
@@ -231,9 +244,10 @@ project event and the public route for the project's `firstForm`, but no record 
   warnings reject another known survey. Unknown source kinds retain existing
   behavior.
   The default Survey Queue custom-text renderer supplies a record and the
-  project first event but no form, so only form-dependent Smart Variables are
-  muted and warned; its language-specific translation path is intentionally
-  outside that default-source policy.
+  project first event but no form. Its transported repeating-event state lets
+  form-or-repeating-event Smart Variables remain available only when that
+  exact first event repeats; its language-specific translation path is
+  intentionally outside that default-source policy.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

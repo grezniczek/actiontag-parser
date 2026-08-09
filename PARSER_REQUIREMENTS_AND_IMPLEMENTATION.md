@@ -514,6 +514,22 @@ so they remain available in known eventless sources. These names also retain
 their separate structural role as dynamic event selectors before another
 Piping reference; the bare-variable catalog contract does not restrict that
 following reference's qualifier capability.
+The standalone repeat-instance values—`[previous-instance]`,
+`[current-instance]`, `[next-instance]`, `[first-instance]`,
+`[last-instance]`, and `[new-instance]`—are separately cataloged as bare
+Smart Variables. They require record and event contexts plus either the
+current form or a repeating current event. The last alternative is represented
+by `requires_form_or_repeating_event_context`, because the runtime can obtain
+repeat-event instances without a form argument. They accept no colon
+parameters and do not consume outer event or instance qualifiers; their
+distinct use after a field reference remains the structural relative-instance
+mechanism for that field. The controller transports the known repeating state
+of the project first event to form-less sources. Therefore Survey Queue custom
+text mutes and warns the family when that first event is nonrepeating, but
+keeps it available when the first event itself repeats. This is a context
+availability contract, not a value guarantee: previous/next still resolve
+blank at a missing neighboring instance, and new-instance remains blank in a
+nonrepeating form context.
 `[user-name]`, `[user-fullname]`, `[user-email]`, the three `[user-dag-*]`
 values, and the three `[user-role-*]` values derive solely from the supplied
 user (or Piping's authenticated-request `USERID` fallback). They accept no
@@ -558,7 +574,8 @@ warn and completion suppresses the conflicting later choice; this remains
 advisory because Piping replacement itself is unchanged.
 
 `PipingSourcePolicyCatalog` captures the narrower question of whether a named
-authoring source has record, event, form, user, or public-survey contexts at all. The
+authoring source has record, event, form, user, public-survey, or proven
+repeating-event contexts at all. The
 controller sends those source policies in the same catalog used by the browser
 and server fallback. The Twilio policy additionally carries its project first
 form as `public_survey_form`. A declared recordless source suppresses
@@ -570,8 +587,11 @@ authoring-source name as a parser concern.
 The default Survey Queue custom-text renderer supplies its record and the
 project first event but no current form, so form-dependent Smart Variables are
 warning-only and muted while field, record, and event references remain
-available. Its language-specific queue translations use their own rendering
-contexts and are deliberately not claimed by this default-source policy.
+available. Its transported `has_repeating_event_context` value is the actual
+repeating state of that first event, allowing only the cataloged form-or-repeat
+alternative when it is true. Its language-specific queue translations use
+their own rendering contexts and are deliberately not claimed by this
+default-source policy.
 When source replacement depends on a selected delivery mode, the same policy
 can declare `piping_delivery_types`. The Twilio manual-invitation editor passes
 the current `delivery_type` as `pipingDeliveryType`; only `SMS_INVITE_WEB`
