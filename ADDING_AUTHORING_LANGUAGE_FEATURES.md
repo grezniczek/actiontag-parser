@@ -275,6 +275,17 @@ moving migration target.
    omission is intentionally not treated as support. This prevents a newly
    cataloged source from accidentally claiming the fallback merely because it
    has no record.
+   Add a source policy only when the declared runtime context is invariant for
+   every use of that authoring surface. Do not reduce a recipient-dependent
+   sender such as the bulk Survey Invitation composer to a single
+   `has_record_context` value: its selected recipients can include both
+   record-backed and recordless participants. First extend the policy and UI
+   contract to represent the conditional context, then add its diagnostics and
+   completion behavior with fixture coverage.
+   If Piping runs on a fixed endpoint rather than the screen that opened the
+   editor, declare its exact `piping_runtime_page`. This lets page-state
+   Smart Variables such as `[is-survey]` and `[is-form]` be diagnosed from the
+   evaluation route, not from an assumed surrounding page.
 7. Verify the Smart Variables reference dialog, completion, hover information,
    and every intentionally supported source policy. Do not enable field
    completion in a source that has no per-record replacement context.

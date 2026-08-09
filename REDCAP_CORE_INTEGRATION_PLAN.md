@@ -261,8 +261,8 @@ when that is warranted.
   used on an incompatible field. Its `exclusive_group` metadata also prevents
   conflicting known modifiers from being suggested together and warns if they
   are manually combined. Unknown modifiers remain runtime-compatible.
-  `PipingSourcePolicyCatalog` separately records the evidence-backed sources
-  that have no record context. It drives the workspace's field-completion
+  `PipingSourcePolicyCatalog` separately records evidence-backed runtime
+  contexts for named authoring sources. It drives the workspace's field-completion
   availability and both semantic analyzers: project-field references in those
   sources produce a warning, while only Smart Variables that explicitly
   require an unavailable record, event, form, user, public-survey, or
@@ -280,6 +280,19 @@ project event and the public route for the project's `firstForm`, but no record 
   public-survey route. The capability is opt-in for known source policies—no
   current workspace source receives a participant ID, so none declares
   `has_survey_participant_context: true` and their existing warnings remain.
+  The follow-up Survey Invitation dialog is opened from Data Entry and pipes
+  both its subject and content before queueing. Its shared
+  `survey_invitation_followup_email` policy therefore supplies the current
+  record, event, selected survey form, and authenticated-request `USERID`
+  fallback. It also records `Surveys/invite_participant_popup.php` as the
+  actual evaluation route, so `[is-survey]` and `[is-form]` are correctly
+  muted and warned as fixed `0` rather than inheriting the surrounding Data
+  Entry page. By contrast, the bulk invitation composer intentionally has no
+  record-context policy: `email_participants.php` resolves text once per
+  selected participant, which may be record-backed or an initial-survey
+  participant with only a participant ID. A binary policy would either warn
+  on valid record-bound recipients or conceal failures for recordless ones;
+  model that only after recipient-conditional source contexts are available.
   The default Survey Queue custom-text renderer supplies a record and the
   project first event but no form. Its transported repeating-event state lets
   form-or-repeating-event Smart Variables remain available only when that

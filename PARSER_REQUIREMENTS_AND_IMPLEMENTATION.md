@@ -529,6 +529,18 @@ completion leaves a bare access code active and limits an explicit survey to
 the configured public first form; return codes remain muted and warned because
 they cannot use that route. Response-specific code generation or availability
 remains a runtime result.
+The follow-up Survey Invitation subject and rich-text content share a single
+source policy because their Data Entry submit path pipes both with the current
+record, event, selected survey form, and authenticated-request user fallback.
+They can therefore receive normal field and context-aware Smart Variable
+completion. Their Piping call runs on `Surveys/invite_participant_popup.php`,
+so the fixed source policy also warns/mutes `[is-survey]` and `[is-form]` as
+zero rather than inheriting the Data Entry page's state. The bulk invitation
+composer deliberately has no corresponding
+binary policy: it pipes separately for each selected participant, some of
+whom may be recordless initial-survey participants. Until the policy model can
+express that conditional recipient context, its existing non-restrictive
+completion and diagnostics remain safer than a blanket record assertion.
 `[is-survey]` and `[is-form]` instead inspect the global `PAGE` constant, not
 Piping arguments. They accept no parameters and ignore event/instance
 qualifiers. `[is-survey]` is `1` only on `surveys/index.php`; `[is-form]` is
