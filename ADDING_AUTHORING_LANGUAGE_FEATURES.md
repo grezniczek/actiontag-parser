@@ -180,6 +180,10 @@ moving migration target.
    zero `MAX_PARAMETER_COUNTS` entry. This lets completion and diagnostics
    distinguish a recordless source from a deliberately ignored qualifier or
    an invalid authored parameter.
+   Apply the same combined contract to current-event values whose replacement
+   reads only the incoming event ID. Verify the preprocessor's per-reference
+   event handling before declaring an event qualifier supported: structural
+   acceptance alone does not mean that a replacement consumes it.
    When a family delegates an unbounded parameter tail to a shared runtime
    helper, model only a helper contract that can be proven for every member.
    For example, `supports_report_filter` records that the first uppercase

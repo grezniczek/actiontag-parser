@@ -187,6 +187,12 @@ when that is warranted.
   current record's assigned Data Access Group. Their catalog entries require a
   record context, so known recordless sources warn and mute them without
   treating an unassigned DAG as an authoring error.
+  `[arm-number]`, `[arm-label]`, `[event-id]`, `[event-number]`,
+  `[event-name]`, and `[event-label]` are likewise parameterless current-event
+  values. Piping restores the incoming event ID per replacement, so prepended
+  event and appended instance segments are accepted structurally but ignored;
+  their catalog entries let completion and diagnostics surface that fact and
+  mute them in known eventless sources.
   `PipingFieldParameterCatalog` similarly owns the evidence-backed project-field
   modifier contract. Each catalog field carries its applicable
   `piping_parameters` for completion, and the top-level known modifier set lets

@@ -497,6 +497,13 @@ up that record's assigned Data Access Group. They accept no parameters and
 ignore event/instance qualifiers. Their explicit record-context requirement
 therefore mutes and warns them in proven recordless sources, while a current
 record without a Data Access Group remains a normal blank runtime result.
+`[arm-number]`, `[arm-label]`, `[event-id]`, `[event-number]`,
+`[event-name]`, and `[event-label]` similarly read only the current event. The
+Piping preprocessor restores the incoming event ID before it replaces each
+tag, so a structurally valid prepended event or an appended instance does not
+alter these values. They accept no parameters; completion mutes ignored
+qualifiers and semantic analysis warns about them, while known eventless
+sources warn and mute the variables themselves.
 The same catalog's explicit `requires_record_context`,
 `requires_event_context`, `requires_form_context`,
 `requires_form_or_instrument_parameter`, `requires_user_context`, and
