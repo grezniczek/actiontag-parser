@@ -169,6 +169,13 @@ moving migration target.
    combined contract: their first parameter can select the survey form, while
    their replacement still separately needs record and event context. Do not
    turn a missing participant response into an authoring diagnostic.
+   `[form-url]` and `[form-link]` use the same capability with a target that
+   may be any project form, so the completion prompt must say `instrument`,
+   not `survey instrument`; they also separately consume record and event
+   context. A parameter may have `diagnose_unknown: false` only where the
+   runtime has a proven fallback. For `[form-link]`, its first parameter can
+   be custom link text when a current form exists, but cannot resolve a target
+   in a form-less source, where the capability check must still warn.
    If a bare repeat-instance Smart Variable needs the current form but can
    instead read a repeating current event, use
    `requires_form_or_repeating_event_context`. A named source may claim that

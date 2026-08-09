@@ -183,6 +183,15 @@ when that is warranted.
   available with a prompt to name a known survey while known recordless or
   eventless sources mute and warn it. Missing response timestamps remain a
   runtime result rather than an authoring finding.
+  `[form-url]` and `[form-link]` build a Data Entry URL from record, event,
+  form, and optional instance. Both accept event and instance qualifiers and
+  can select any known project form through their first parameter when no
+  current form exists; `[form-link]` has a second free-text label parameter.
+  They share the record/event and form-or-known-instrument contract, but use
+  the generic `instrument` completion prompt because their target need not be
+  a survey. The otherwise permissive first parameter of `[form-link]` remains
+  undiagnosed only when a current form permits its runtime custom-label
+  fallback; in a form-less source it cannot resolve a target and is warned.
   `[is-survey]` and `[is-form]` are distinct PAGE-state booleans: neither
   accepts parameters or qualifiers, and neither consumes form metadata.
   `truthy_runtime_page` documents the page where each can be `1`; a source

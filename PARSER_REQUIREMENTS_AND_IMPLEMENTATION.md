@@ -494,6 +494,16 @@ variables available to complete a known survey parameter but warns for an
 omitted, unknown, or non-survey target. This remains source-context advice;
 whether the selected participant has actually started or completed that survey
 is normal runtime output, not an authoring diagnostic.
+`[form-url]` and `[form-link]` build a Data Entry URL from the current record,
+event, form, and optional instance qualifier. Both accept event and instance
+qualifiers and their first parameter may select any known project form when
+the source has no current form; `[form-link]` accepts a second free-text link
+label. They therefore use the same record, event, and
+`requires_form_or_instrument_parameter` contract, but completion calls for an
+`instrument` rather than a `survey instrument`. An unknown first parameter of
+`[form-link]` is deliberately not diagnosed when a current form exists: the
+runtime treats it as the custom link label fallback. Without a current form it
+cannot select a target, so the source-context warning still applies.
 `[is-survey]` and `[is-form]` instead inspect the global `PAGE` constant, not
 Piping arguments. They accept no parameters and ignore event/instance
 qualifiers. `[is-survey]` is `1` only on `surveys/index.php`; `[is-form]` is
