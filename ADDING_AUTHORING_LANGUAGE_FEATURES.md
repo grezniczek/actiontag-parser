@@ -122,6 +122,10 @@ advisory `deprecated_action_tag` at the authored `@PREFILL` name but continue
 to report the shared syntax and field-applicability diagnostics. The runtime
 selects `@SETVALUE`'s value if both tags appear together; retain that collision
 behavior rather than inventing an authoring restriction.
+`@READONLY` has an explicit no-parameter contract. Its runtime consumes an
+exact whitespace-delimited token, not a value; warn for assignments and
+parenthesized arguments instead of treating a whitespace-dependent legacy
+spelling as supported syntax.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
@@ -596,10 +600,11 @@ moving migration target.
    an unknown-name finding is advisory only. Include a feature-specific runtime
    test for field-type/context restrictions.
 5. Add an `ActionTagCatalog` property only after tracing the precise runtime
-   consumer. A required parenthesized expression, quoted assignment, target
-   field type, validation prefix, or allowed field-type/validation combination
-   must be represented per tag and verified in matching PHP/browser semantic
-   fixtures. Retain any runtime-observable distinction such as a
+   consumer. A required parenthesized expression, quoted assignment, explicit
+   no-parameter form, target field type, validation prefix, or allowed
+   field-type/validation combination must be represented per tag and verified
+   in matching PHP/browser semantic fixtures. Retain any runtime-observable
+   distinction such as a
    whitespace-only quoted `@DEFAULT` value. Treat compatibility with a legacy
    form that saves but does not calculate as an advisory warning. For a
    runtime-compatible legacy synonym, give the old name the same proven

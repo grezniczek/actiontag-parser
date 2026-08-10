@@ -696,7 +696,10 @@ and are likewise not applied to File Upload/Signature fields. The catalog gives
 `@SETVALUE`, without changing its accepted syntax or applicability. When both
 are present, the existing `DataEntry` runtime chooses `@SETVALUE`'s value; the
 authoring layer preserves that collision precedence without creating a new
-restriction. `@CALCTEXT`/`@CALCDATE`
+restriction. `@READONLY` explicitly accepts no parameter: its runtime checks
+for the exact whitespace-delimited tag token, so assignments and parenthesized
+arguments receive a warning rather than allowing whitespace-dependent legacy
+spellings. `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
 workspace sends its unsaved type and validation to the fallback endpoint,
@@ -774,7 +777,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    File Upload/Signature exclusion, `@PLACEHOLDER` quoted-value and
    field-type/Auto Complete contract, matching `@SETVALUE`/deprecated
    `@PREFILL` quoted-value and File Upload/Signature contracts (with a
-   name-only replacement advisory for `@PREFILL`), plus
+   name-only replacement advisory for `@PREFILL`), an explicit no-parameter
+   contract for `@READONLY`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

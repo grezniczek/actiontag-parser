@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes six explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes seven explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -493,6 +493,11 @@ retaining all of the shared syntax and applicability diagnostics. If both tags
 are present on a field, the existing runtime selects `@SETVALUE`'s value; that
 collision precedence is preserved rather than inferred as a separate editor
 restriction.
+`@READONLY` is likewise an explicit no-parameter contract. Its runtime owner,
+`Form::disableFieldViaActionTag()`, recognizes the exact whitespace-delimited
+tag token rather than parsing a value. The editor therefore warns for
+assignments and parenthesized arguments instead of endorsing a
+whitespace-dependent legacy spelling such as `@READONLY = value`.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no
