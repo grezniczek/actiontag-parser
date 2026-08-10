@@ -166,6 +166,15 @@ cataloged `excluded_matrix_field` contract needs the Field Annotation launcher
 to supply the current unsaved Matrix Group state to both local and server
 semantic analysis; warn only when that state is known. Do not infer a
 record-page availability restriction from the editor.
+`@MAXCHECKED` uses the permissive `Form::getValueInActionTag()` extractor, then
+casts its Checkbox-field assignment to an integer before handing it to the
+browser selection limiter. It applies to Checkbox matrices too. Use
+`requires_assignment`, `requires_nonempty_assignment_value`, and
+`requires_positive_integer` together when a traced runtime/documented contract
+requires a canonical positive integer, while accepting either quoted or
+unquoted values that the extractor can read. The warning must remain advisory:
+legacy fractions and text are coerced by runtime rather than rejected. Do not
+add a matrix or import-context restriction where the renderer has neither.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

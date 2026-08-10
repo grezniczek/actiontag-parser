@@ -733,6 +733,14 @@ and True-False target contract. All three applicable renderers skip shuffling
 matrix fields. Field Annotation passes its live Matrix Group state to the
 browser and fallback endpoint, which warns only for a known matrix field; a
 missing context is deliberately non-restrictive.
+`@MAXCHECKED` reads an equals-assignment through
+`Form::getValueInActionTag()` only while rendering a Checkbox field, including
+a Checkbox matrix, and sends its integer-cast value to the browser's checkbox
+handlers. Only a result above zero limits selections. The catalog therefore
+requires a nonempty canonical positive integer and warns about permissive
+legacy values that truncate or yield no cap, while preserving quoted and
+unquoted extractor forms. It deliberately does not infer record-page/survey
+availability or data-import enforcement from Field Annotation.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -818,7 +826,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@HIDDEN-PDF`, and the quoted choice-list/choice-field contract for
    `@HIDECHOICE` and `@SHOWCHOICE`, the Checkbox-only assignment contract for
    `@NONEOFTHEABOVE`, and the choice-field/non-matrix, ignored-parameter
-   contract for `@RANDOMORDER`, plus
+   contract for `@RANDOMORDER`, plus the Checkbox-only positive-integer
+   assignment contract for `@MAXCHECKED`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

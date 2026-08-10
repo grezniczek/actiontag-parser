@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes seventeen explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes eighteen explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -545,6 +545,15 @@ when that state proves the field is a matrix; an absent context remains
 compatible. The source remains unqualified because the editor does not know
 whether a specific authoring session will render on a record-bearing Data Entry
 or Survey page.
+`@MAXCHECKED` uses `Form::getValueInActionTag()` on Checkbox fields, including
+Checkbox matrices, then passes the integer-cast result to the browser click
+handlers. A cap is active only above zero; the runtime's permissive coercion
+can truncate a fraction or turn malformed text into no cap. The catalog instead
+requires a nonempty equals assignment containing a canonical positive integer,
+while retaining quoted and unquoted values that the extractor accepts. This is
+warning-only authoring guidance, not a new runtime validator. Its UI-only
+record-form/survey behavior and lack of data-import enforcement remain outside
+the Field Annotation context contract.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no
