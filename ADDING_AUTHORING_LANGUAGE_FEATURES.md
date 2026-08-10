@@ -139,6 +139,12 @@ proven parameter and target-form properties.
 `@HIDDEN-PDF` has the same no-parameter shape, but a distinct PDF-only runtime
 surface. `PDF` applies it only after resolving `@IF`; do not infer a warning
 from the Field Annotation editor's non-PDF context.
+`@HIDECHOICE` uses the shared simple quoted-value extractor for a nonempty
+comma-delimited choice-code list. `DataEntry` resolves Piping in that list and
+uses it only for Checkbox, Radio, Drop-down/SQL, Yes-No, and True-False choice
+renderers. Warn for a known different field type, but do not attempt to
+validate choice codes that Piping may supply or reject matrix fields whose
+runtime behavior is limited rather than absent.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

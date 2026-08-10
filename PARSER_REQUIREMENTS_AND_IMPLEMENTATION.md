@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes thirteen explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes fourteen explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -512,6 +512,13 @@ tokens, which remains outside this structural authoring contract.
 `@IF`, then omits fields only when `Form::hasHiddenPdfActionTag()` finds its
 exact token. The Field Annotation editor has no PDF-rendering state, so it
 intentionally supplies no PDF-context availability warning.
+`@HIDECHOICE` uses the same simple quote-delimited extractor for a nonempty
+comma-delimited choice-code list, which `DataEntry` resolves through Piping
+before comparing against rendered choices. It is applied only by the Checkbox,
+Radio, Drop-down/SQL, Yes-No, and True-False renderers; the editor warns for a
+known different target type but does not validate codes, because the list may
+be dynamic Piping. Matrix fields retain their existing limited runtime
+behavior, rather than receiving a new authoring restriction.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no

@@ -710,6 +710,11 @@ unchanged and outside the structural contract.
 `@HIDDEN-PDF` also accepts no parameter. The PDF renderer applies it after
 runtime `@IF` resolution, but the Field Annotation editor deliberately does
 not infer a PDF-rendering context or availability warning.
+`@HIDECHOICE` requires a nonempty quoted, comma-delimited choice-code list;
+`DataEntry` resolves Piping in that list and consumes it only for Checkbox,
+Radio, Drop-down/SQL, Yes-No, and True-False choice renderers. The advisory
+warns for a known different field type, without attempting to validate possibly
+dynamic choice codes or restrict the runtime's limited matrix behavior.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -791,8 +796,9 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    name-only replacement advisory for `@PREFILL`), an explicit no-parameter
    contract for the `@READONLY` family and a known-non-survey warning for
    `@READONLY-SURVEY`, matching no-parameter contracts and a known-non-survey
-   warning for the `@HIDDEN` family, plus a no-parameter-only contract for
-   `@HIDDEN-PDF`, plus
+   warning for the `@HIDDEN` family, a no-parameter-only contract for
+   `@HIDDEN-PDF`, and the quoted choice-list/choice-field contract for
+   `@HIDECHOICE`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.
