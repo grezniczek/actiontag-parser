@@ -193,6 +193,17 @@ known not to be a survey, but must not predict completed-response counts,
 validate map codes against metadata, or warn when both MAXCHOICE variants are
 present: runtime rendering deliberately gives the survey-completion variant
 precedence.
+`@NOMISSING` proves why a no-parameter catalog property must not automatically
+mean “parameter ignored.” The broad rendered-field matcher recognizes the tag
+name before attached text, but shared `Form::hasActionTag()` consumers require
+an exact space-delimited token for missing-code labels, exports, checkbox
+pseudo-fields, and import validation. Use `parameter.kind: none` so attached
+assignments or arguments receive the normal no-parameter warning. Its effect
+also depends on the project’s parsed `missing_data_codes`; expose only the
+boolean `has_missing_data_codes` in the editor catalog and use
+`requires_missing_data_codes` to warn when it is known false. Do not add a
+field-type restriction, and retain compatibility when an older catalog does
+not supply the availability state.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes twenty explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes twenty-one explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -574,6 +574,18 @@ survey-completion variant. Field Annotation therefore declares
 `requires_survey_form` and warns only for a known non-survey form; it does not
 predict response counts, add choice-membership validation, or invent a
 collision diagnostic for the runtime precedence.
+`@NOMISSING` has a deliberately bare syntax. The rendered-field tag matcher
+can recognize its name before attached text, but the `Form::hasActionTag()`
+checks that govern missing-code labels, exports, checkbox pseudo-fields, and
+import validation require the exact space-delimited token. The catalog
+therefore uses `parameter.kind: none` rather than treating a parameter as
+ignored. `DataEntry` and the record/export paths act only when the project's
+parsed `missing_data_codes` collection is nonempty. The shared authoring
+catalog exposes that boolean, so Field Annotation warns only when the current
+project proves no Missing Data Codes are configured; absent availability data
+remains non-restrictive because an administrator may enable the feature later.
+There is no field-type restriction: the tag's runtime consequences are
+field-specific, but its bare form is valid wherever annotation is accepted.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no

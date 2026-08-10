@@ -758,6 +758,14 @@ adds `requires_survey_form` while retaining the shared map checks; Field
 Annotation warns only when the current form is known not to be a survey and
 does not attempt count prediction, metadata choice validation, or a synthetic
 tag-conflict warning.
+`@NOMISSING` is a bare tag. Although the rendered-field matcher can recognize
+its name before attached text, the `Form::hasActionTag()` consumers for labels,
+exports, and import validation require the exact space-delimited token; its
+catalog must therefore reject parameters rather than call them ignored. The
+editor catalog carries the project’s parsed Missing Data Code availability and
+warns only when that state is known false. It adds no field-type rule, because
+runtime support is broader than any one renderer and configuration may later
+be enabled.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -847,6 +855,7 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    assignment contract for `@MAXCHECKED`, plus the parenthesized choice-limit
    map and choice-field contract for `@MAXCHOICE`, plus its survey-only,
    completed-response variant `@MAXCHOICE-SURVEY-COMPLETE`, plus
+   the bare, Missing-Data-Code-aware contract for `@NOMISSING`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.
