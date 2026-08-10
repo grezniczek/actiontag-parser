@@ -145,6 +145,11 @@ uses it only for Checkbox, Radio, Drop-down/SQL, Yes-No, and True-False choice
 renderers. Warn for a known different field type, but do not attempt to
 validate choice codes that Piping may supply or reject matrix fields whose
 runtime behavior is limited rather than absent.
+`@SHOWCHOICE` shares that quoted-list and choice-field contract. Its runtime
+replaces the `@HIDECHOICE` result with all unlisted choice codes, so retain the
+documented precedence without emitting a synthetic conflict warning. Do not
+add a matrix restriction: the runtime computes a per-field hide list, but its
+matrix-header path has no matching `@SHOWCHOICE` support.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

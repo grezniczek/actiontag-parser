@@ -715,6 +715,11 @@ not infer a PDF-rendering context or availability warning.
 Radio, Drop-down/SQL, Yes-No, and True-False choice renderers. The advisory
 warns for a known different field type, without attempting to validate possibly
 dynamic choice codes or restrict the runtime's limited matrix behavior.
+`@SHOWCHOICE` has the same quoted choice-list and choice-field contract. It
+replaces any `@HIDECHOICE` result with all codes not explicitly shown, so the
+runtime's documented precedence is retained without a synthetic conflict
+warning. Its matrix behavior remains outside the catalog because the per-field
+hide list and matrix-header rendering do not have matching support.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -798,7 +803,7 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@READONLY-SURVEY`, matching no-parameter contracts and a known-non-survey
    warning for the `@HIDDEN` family, a no-parameter-only contract for
    `@HIDDEN-PDF`, and the quoted choice-list/choice-field contract for
-   `@HIDECHOICE`, plus
+   `@HIDECHOICE` and `@SHOWCHOICE`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.
