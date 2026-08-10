@@ -24,6 +24,19 @@ source-specific title-bar control. That toggle stores and restores its prior
 geometry and disables drag/resize while fullscreen. An authoring source field
 must remain `readonly` and return focus to a safe control when closing; never
 leave a direct-edit fallback or focus loop behind the workspace.
+The shared expand/compress glyph is deliberately compact and vertically aligned
+with rcDialog's close control; do not add workspace-specific styling to change
+that title-bar geometry.
+Consumers that need scripted control must use `ctx.setFullscreen(boolean)`
+after `dialog:shown`, with `ctx.isFullscreen()` for state, rather than reaching
+into `ctx._dialog`; this works even when the visible toggle is omitted.
+
+When a source already has substantial runtime-owned reference material, keep
+that endpoint as the authority. For SQL fields, load the project-scoped
+`Design/sql_field_explanation.php` JSON response only when the workspace Help
+tab is selected, render its trusted server-authored content there, and provide
+a contained scroll area for long examples. Do not copy that guidance into the
+workspace or open a second dialog.
 
 ## First establish the contract
 

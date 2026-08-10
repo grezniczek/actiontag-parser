@@ -927,7 +927,21 @@ viewport inset, and disables dragging and resizing; collapsing restores the
 saved position, dimensions, and resize controls. The Field Annotation source
 textarea is read-only and opens only on click, with closure focus explicitly
 returned to the field-name control so it cannot reopen itself or accept direct
-text while an editor is active.
+text while an editor is active. A consumer can enter or collapse the same
+dynamic mode programmatically after `dialog:shown` with
+`ctx.setFullscreen(boolean)` and read it with `ctx.isFullscreen()`, even when
+the title-bar control is not shown; static `size: "fullscreen"` dialogs are
+intentionally not collapsible through that API. The compact title-bar glyph is
+optically aligned with the close control by rcDialog itself, rather than by
+workspace-specific CSS.
+
+SQL keeps its deliberately limited authoring contract: ACE highlights the
+supported SQL surface and supplies manual scoped completion, but does not
+claim SQL parsing or validation. Its Help tab lazily retrieves the existing
+project-scoped `Design/sql_field_explanation.php` JSON payload when opened and
+renders that established guidance below the editor-specific notes. This keeps
+the legacy SQL documentation as the single source of truth and avoids another
+dialog.
 
 Database-backed regression coverage creates temporary Development and Draft
 Mode projects, then exercises that same pre-commit review helper against real

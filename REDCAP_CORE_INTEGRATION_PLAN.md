@@ -43,7 +43,10 @@ when that is warranted.
   bracketed SQL-field smart variables and data-table placeholders. It exposes
   Edit and Help only: manual Ctrl+Space completion supplies smart variables
   and project field names in quoted SQL values. SQL does not receive parsing,
-  validation, SQL-language completion, summary, or structural analysis.
+  validation, SQL-language completion, summary, or structural analysis. When
+  the author opens Help, it lazily appends the established, server-authored
+  `Design/sql_field_explanation.php` payload in that tab; its content is not
+  duplicated in the workspace or opened in a second dialog.
 - Piping has PHP and browser parser mirrors validated by shared fixtures, and
   matching `PipingSemanticAnalyzer` products for metadata-aware diagnostics.
   After a structurally valid reference, the analyzer checks project fields and
@@ -382,6 +385,12 @@ project event and the public route for the project's `firstForm`, but no record 
   the dialog at a 10-pixel viewport inset, and disables drag/resize; collapse
   restores the recorded geometry and controls. It no longer relies on jQuery
   UI icon CSS, widget behavior, or workspace-specific geometry CSS.
+- Programmatic consumers use `ctx.setFullscreen(boolean)` after
+  `dialog:shown` and `ctx.isFullscreen()` to share that exact behavior without
+  exposing a title-bar button. The dynamic API deliberately rejects static
+  `size: "fullscreen"` dialogs, which have no restorable collapsed geometry.
+- rcDialog owns the fullscreen glyph's compact size and vertical alignment with
+  its close control, so the workspace must not override those title-bar styles.
 - The Field Annotation source textarea is read-only and click-only. Closing
   its editor restores focus to `#field_name`, rather than the source's old
   focus opener, so it cannot immediately reopen or become a direct text-entry
@@ -389,9 +398,6 @@ project event and the public route for the project's `firstForm`, but no record 
 
 ### Deferred authoring UI/UX refinements
 
-- Add SQL-specific help based on `Design/sql_field_explanation.php`, either as
-  a dedicated workspace tab or through an adjacent help button. Decide the
-  presentation before duplicating the explanatory content.
 - When the Dynamic Query Tool is enabled, expose its link beside the existing
   authoring-workspace reference/explanation buttons, consistent with the Edit
   Field dialog.
