@@ -136,6 +136,9 @@ form context or a stale catalog cannot prove that fact.
 no-parameter and form/survey contracts. Retain the runtime's `@IF` resolution
 as separate behavior: the catalog validates only the active tag's explicitly
 proven parameter and target-form properties.
+`@HIDDEN-PDF` has the same no-parameter shape, but a distinct PDF-only runtime
+surface. `PDF` applies it only after resolving `@IF`; do not infer a warning
+from the Field Annotation editor's non-PDF context.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
