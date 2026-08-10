@@ -720,6 +720,11 @@ replaces any `@HIDECHOICE` result with all codes not explicitly shown, so the
 runtime's documented precedence is retained without a synthetic conflict
 warning. Its matrix behavior remains outside the catalog because the per-field
 hide list and matrix-header rendering do not have matching support.
+`@NONEOFTHEABOVE` requires a nonempty equals assignment on a Checkbox field.
+Its runtime accepts an unquoted or quote-delimited comma-separated value,
+filters the resulting codes against the field's choices, and does not Pipe the value.
+The catalog does not add code-membership diagnostics; the existing structural
+unquoted-parameter compatibility advisory remains independent.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -803,7 +808,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@READONLY-SURVEY`, matching no-parameter contracts and a known-non-survey
    warning for the `@HIDDEN` family, a no-parameter-only contract for
    `@HIDDEN-PDF`, and the quoted choice-list/choice-field contract for
-   `@HIDECHOICE` and `@SHOWCHOICE`, plus
+   `@HIDECHOICE` and `@SHOWCHOICE`, plus the Checkbox-only assignment contract
+   for `@NONEOFTHEABOVE`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

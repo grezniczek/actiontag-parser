@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes fifteen explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes sixteen explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -526,6 +526,14 @@ the editor preserves that behavior without a new conflict warning. It also
 does not validate possibly dynamic codes. Its matrix behavior stays outside
 the catalog: `DataEntry` computes a per-field hide list, while the matrix
 header path has no corresponding `@SHOWCHOICE` application.
+`@NONEOFTHEABOVE` is distinct: `DataEntry` uses
+`Form::getValueInActionTag()` to accept a nonempty equals-assignment value,
+whether unquoted or quote-delimited, then trims and splits it against the
+target Checkbox field's existing codes before registering its browser behavior. It
+does not Pipe that parameter. The editor therefore requires a nonempty equals
+assignment and a known Checkbox target, but intentionally leaves code
+membership to runtime; the parser's existing unquoted-parameter compatibility
+advisory remains separate from this catalog contract.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no

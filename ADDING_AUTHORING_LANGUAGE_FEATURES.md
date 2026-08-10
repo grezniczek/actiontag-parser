@@ -150,6 +150,12 @@ replaces the `@HIDECHOICE` result with all unlisted choice codes, so retain the
 documented precedence without emitting a synthetic conflict warning. Do not
 add a matrix restriction: the runtime computes a per-field hide list, but its
 matrix-header path has no matching `@SHOWCHOICE` support.
+`@NONEOFTHEABOVE` instead uses `Form::getValueInActionTag()`: it accepts a
+nonempty unquoted or quote-delimited comma-separated value, then filters
+those codes against the current Checkbox field's choices before adding browser
+behavior. It does not Pipe the parameter. Require its assignment and Checkbox
+target, but leave choice membership to the runtime; retain the parser's
+separate compatibility advisory for unquoted parameters.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
