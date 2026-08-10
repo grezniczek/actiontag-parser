@@ -132,6 +132,10 @@ Data Entry rendering. The Survey variant is meaningful only for an instrument
 configured as a survey, so its catalog declares `requires_survey_form`; emit a
 warning only when the current form is known to be non-survey, never when the
 form context or a stale catalog cannot prove that fact.
+`@HIDDEN`, `@HIDDEN-FORM`, and `@HIDDEN-SURVEY` follow the same exact-token,
+no-parameter and form/survey contracts. Retain the runtime's `@IF` resolution
+as separate behavior: the catalog validates only the active tag's explicitly
+proven parameter and target-form properties.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

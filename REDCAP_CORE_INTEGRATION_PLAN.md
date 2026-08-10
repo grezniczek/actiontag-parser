@@ -703,6 +703,10 @@ spellings. `@READONLY-FORM` and `@READONLY-SURVEY` share that no-parameter
 contract. The Form variant may apply to any instrument in Data Entry; the
 Survey variant has an additional advisory when the selected form is known not
 to be configured as a survey. Missing form context remains non-diagnostic.
+`@HIDDEN`, `@HIDDEN-FORM`, and `@HIDDEN-SURVEY` use the same no-parameter
+shape and form/survey split. The Survey variant receives the same
+known-non-survey advisory; the runtime's conditional `@IF` resolution remains
+unchanged and outside the structural contract.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -783,7 +787,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@PREFILL` quoted-value and File Upload/Signature contracts (with a
    name-only replacement advisory for `@PREFILL`), an explicit no-parameter
    contract for the `@READONLY` family and a known-non-survey warning for
-   `@READONLY-SURVEY`, plus
+   `@READONLY-SURVEY`, matching no-parameter contracts and a known-non-survey
+   warning for the `@HIDDEN` family, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.
