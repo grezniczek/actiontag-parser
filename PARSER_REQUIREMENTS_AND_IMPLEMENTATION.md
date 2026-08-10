@@ -51,6 +51,18 @@ the `filter_tags()`-compatible one-line path: existing `<br>` tags are
 preserved, and any new line break is explicitly serialized as either a space
 or `<br>`. Do not infer this permission for other piping-capable text.
 
+The pure Field Embedding parser remains syntax-only. Its separate PHP/browser
+semantic analyzer mirrors `doFieldEmbedding()` using the draft-aware authoring
+catalog: a named field must exist, cannot be the record ID, must be on the
+host instrument and (for a paginated survey) its current page, cannot embed
+itself or a field that already contains an embedding, and can appear only once
+on the rendered form or survey page. The catalog records existing occurrences
+by host metadata attribute; Choice Label occurrences also carry their choice
+code, so updating one choice does not incorrectly free an embed in another.
+The edited source replaces its own stored occurrence, while completion and
+diagnostics reject every other existing occurrence. The server fallback uses
+the same analyzer and scans only ordinary HTML text nodes.
+
 ## Decisions Made So Far
 
 - Use a hand-written deterministic state machine, not a collection of extraction regular expressions.
@@ -1000,7 +1012,10 @@ parsers recognize only REDCap's current curly-brace grammar (`{field_name}`
 and `{field_name:icons}`), without consulting project metadata or changing
 runtime replacement. In HTML-capable source editing, it is recognized only in
 ordinary text nodes, never in markup, attributes, comments, or raw script/style
-content. Manual authoring completion receives the host form separately and
-lists only fields on that instrument. Contextual rules such as record-ID,
-self/nested, and same-survey-page restrictions remain a future metadata-aware
-semantic layer.
+content. The accompanying PHP/browser semantic layer receives the host form,
+field, and metadata attribute separately, and uses draft-aware catalog data
+to flag unknown fields, record IDs, other-form and other-page targets,
+self/nested embeddings, and a second use of the same embedded field on the
+rendered page. Completion applies the same availability decision and suppresses
+the record ID and already-used fields. The server fallback applies those checks
+only to the same HTML text-node ranges as the browser path.

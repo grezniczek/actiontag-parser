@@ -381,9 +381,15 @@ project event and the public route for the project's `firstForm`, but no record 
   the standard Field Embedding help dialog.
   As with piping, recognition is limited to ordinary HTML text nodes, so a
   candidate in markup or split across markup is deliberately unrecognized.
-  This is syntax feedback only: it does not determine whether the named field
-  exists, is the record ID, is on the host instrument/page, is self/nested, or
-  otherwise satisfies runtime field-embedding rules.
+  A separate, draft-aware PHP/browser semantic layer mirrors
+  `doFieldEmbedding()` without changing runtime replacement: it flags an
+  unknown field, record ID, other-form or other-page target, self/nested
+  embed, and a second use of one field on the rendered form/survey page.
+  The catalog records existing occurrences by metadata host and Choice Label
+  code, so an update replaces its own stored occurrence but cannot silently
+  reuse a field embedded by another host or another choice. Completion uses
+  that same availability decision, and the server fallback scans the same
+  ordinary HTML text-node scope.
 - The authoring workspace opts into `rcDialog`'s `fullscreenToggle` control,
   whose native click and F2 handlers use bundled Font Awesome expand/compress
   icons. Fullscreen records the existing inline position and dimensions, pins
@@ -533,9 +539,12 @@ project event and the public route for the project's `firstForm`, but no record 
   handoff. Choice Labels use the restricted `filter_tags` HTML mode and retain
   their established one-line `<br>` handling. Do not enable field embedding
   for generic piping-only surfaces such as survey instructions or exit text.
-- Add a later metadata-aware field-embedding diagnostic layer for record-ID,
-  self/nested, form, and survey-page rules. It must remain separate from the
-  pure parser and must use current draft-aware project metadata.
+- Field Embedding now has a metadata-aware diagnostic and completion layer,
+  separate from its pure parser. Its draft-aware catalog mirrors the runtime
+  form/page, record-ID, self/nested, and one-use-per-rendered-page checks;
+  the Field Label, Field Note, Matrix Section Header, and Choice Label editors
+  pass their exact host metadata context. Choice Labels identify their choice
+  code so an embed in one choice remains reserved while another is edited.
 
 ## Core Objective
 

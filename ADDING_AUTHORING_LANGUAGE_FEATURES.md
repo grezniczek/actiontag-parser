@@ -77,6 +77,7 @@ deliberate compatibility decision.
 | Piping project-field modifier | `Classes/Piping.php`: field replacement implementation | `Classes/AuthoringSyntax/Catalog/PipingFieldParameterCatalog.php` for evidence-backed field-type, validation, and metadata contracts | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` | Piping replacement; catalog, PHP/browser semantic, and completion tests |
 | Piping source capability | The concrete runtime path for the named source | `Classes/AuthoringSyntax/Catalog/PipingSourcePolicyCatalog.php` for evidence-backed record/event/form/user/public-survey/repeating-event context, recipient-dependent context, and delivery-mode support | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime context behavior; PHP/browser semantic and completion tests |
 | Piping system capability | The concrete replacement guard for a named runtime-availability capability, including a current-project gate where applicable | `PipingSmartVariableCatalog` definitions plus each affected variable's `required_system_capabilities` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` transports only the named capability's enabled state and author-facing label | Runtime enabled/disabled behavior; PHP/browser semantic and completion tests; stale-catalog compatibility |
+| Field Embedding | `Classes/Piping.php`: `replaceEmbedVariablesInLabel()` plus `Resources/js/DataEntrySurveyCommon.js`: `doFieldEmbedding()` | Pure PHP/browser `FieldEmbeddingSyntaxParser` plus `FieldEmbeddingSemanticAnalyzer`; draft-aware host occurrences, dependencies, and paginated-survey pages in the authoring catalog | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime replacement and relocation behavior; PHP/browser semantic parity; completion and HTML text-node fallback tests |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
 | Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
@@ -426,6 +427,34 @@ moving migration target.
    a public-survey route, cover the supported public form and a different known
    survey form. The resulting context findings must be warning-only unless a
    runtime validator itself rejects the syntax.
+
+## Add or change Field Embedding support
+
+1. Trace both `Piping::replaceEmbedVariablesInLabel()` and
+   `doFieldEmbedding()` before changing authoring behavior. Keep the pure
+   parser limited to the runtime curly-brace grammar; do not encode field,
+   host, or page policy in it.
+2. Enable a host only when that exact stored value is passed to the runtime
+   replacement method. Give its workspace policy the metadata attribute it
+   replaces (`element_label`, `element_note`, `element_preceding_header`, or
+   `element_enum`). A per-choice editor must additionally pass the choice
+   code; replacing one choice does not replace another choice's embedding.
+3. Extend the catalog builder only with runtime-proven metadata: valid project
+   fields, the record ID, stored embedding occurrences, direct embedded-field
+   dependencies, and survey-page placement when the form has question-by-
+   section pagination. It must use the selected active/draft metadata scope.
+   The current source is the only stored occurrence that may be excluded from
+   the one-use check.
+4. Mirror every new rule in `FieldEmbeddingSemanticAnalyzer` PHP and browser
+   code, in field completion, and in the server fallback. HTML-capable sources
+   must scan ordinary text nodes only; attributes, comments, raw script/style
+   content, and syntax split by markup are not field-embedding hosts.
+5. Add PHP/browser fixtures for valid same-page use and for each proven
+   rejection: unknown field, record ID, other form, other survey page,
+   self/nested embedding, a duplicate in the current source, and an existing
+   use elsewhere. Include a Choice Label case proving that a different choice
+   still reserves the field. Run the field-embedding parser/semantic tests and
+   the authoring-workspace test before handoff.
 
 ## Add or change a Piping system capability
 
