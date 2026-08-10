@@ -26,6 +26,20 @@ documented `REDCap` facade remain separate future decisions.
   documented `REDCap::parseActionTags()` wrapper is the public stability
   commitment; it is not required for internal experimentation.
 
+### Current Piping semantic evidence
+
+Piping authoring diagnostics remain a semantic layer above the pure parser and
+must be grounded in the precise `Piping::pipeSpecialTags()` runtime branch.
+For recipient-aware bulk Survey Invitations, every selected recipient supplies
+a survey participant ID, while record, event, and form context can be
+guaranteed, partial, or unavailable. The catalog therefore permits bare,
+unqualified `[instrument-name]`, `[instrument-label]`, and `[survey-title]`
+when that participant context is present: the runtime derives the current form
+from the participant before returning those values. This is not a general
+recordless-form rule. Event or instance qualifiers remain unsupported, and an
+explicit `survey-title` instrument parameter remains its independently
+cataloged metadata-target route rather than a participant fallback.
+
 ## Decisions Made So Far
 
 - Use a hand-written deterministic state machine, not a collection of extraction regular expressions.

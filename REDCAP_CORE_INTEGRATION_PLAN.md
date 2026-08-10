@@ -420,6 +420,16 @@ project event and the public route for the project's `firstForm`, but no record 
   and the condition is a readonly logic workspace that retains the existing
   trimming, activation, and server-side validation behavior after save. Field
   embedding remains disabled for all ASI sources.
+- Bulk Survey Invitation subject and content use the
+  `survey_invitation_bulk_email` source policy. Record, event, and form
+  availability is calculated from the selected recipients as guaranteed,
+  partial, or unavailable, while a survey-participant context is guaranteed.
+  In a recordless or mixed selection, bare `[instrument-name]`,
+  `[instrument-label]`, and `[survey-title]` remain available because
+  `Piping::pipeSpecialTags()` derives their current form from the participant
+  ID. This is intentionally limited to bare, unqualified forms; it does not
+  allow event/instance qualifiers, and an explicit `survey-title` instrument
+  parameter uses its separately cataloged target route.
 - Survey Queue's condition logic uses the same readonly logic workspace. On
   save it retains the existing trimming, automatic condition activation, and
   validation behavior. Its rich-text custom text has an explicit TinyMCE

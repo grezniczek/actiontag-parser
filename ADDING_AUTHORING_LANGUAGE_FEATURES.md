@@ -189,13 +189,17 @@ moving migration target.
    target.
    A distinct bare-variable participant route is likewise explicit:
    `supports_survey_participant_context` is appropriate only where the
-   replacement can derive its target from the supplied participant and only
-   with no first instrument parameter or event/instance qualifier. The three
-   survey variables above are the reference cases. The semantic layer must
-   suppress their record/event/form findings in a source that explicitly declares
+   replacement can derive the exact target from the supplied participant. For
+   `[survey-url]`, `[survey-link]`, and `[survey-access-code]`, that requires
+   no first instrument parameter or event/instance qualifier. The separate
+   form values `[instrument-name]`, `[instrument-label]`, and `[survey-title]`
+   derive the current form from the participant; the first two accept no
+   parameter, while a `survey-title` instrument parameter is its independent
+   metadata-target route. The semantic layer must suppress only the applicable
+   record/event/form findings in a source that explicitly declares
    `has_survey_participant_context: true`, while retaining those findings for
-   `[survey-url:some_survey]`, whose target no longer matches the supplied
-   participant.
+   an expression such as `[survey-url:some_survey]`, whose target no longer
+   matches the supplied participant.
    Do not use this fallback for a record-bound response lookup merely because
    it takes the same instrument parameter: `[survey-return-code]` still
    requires a record. Add public-route, record, event, target-form, and
