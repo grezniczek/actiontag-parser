@@ -524,10 +524,15 @@ project event and the public route for the project's `firstForm`, but no record 
   helper remain on their legacy editor path. They are framework hooks rather
   than concrete source contracts, so assigning them a single workspace policy
   would incorrectly assert a common runtime grammar.
-- Extend field-embedding-aware source editing only to the remaining
-  runtime-supported host surfaces (Section Header and Choice Label) as their
-  explicit authoring actions are introduced. Do not enable it for generic
-  piping-only surfaces such as survey instructions or exit text.
+- Field embedding is now available from the explicit authoring actions for all
+  currently supported Online Designer label hosts. Ordinary Section Header
+  fields use the Field Label action; the Add/Edit Matrix dialog has a matching
+  action for its shared Section Header. The Choice Editor has an action for
+  the selected row's Choice Label and returns the saved text through its
+  existing spreadsheet/update flow. Matrix headers retain their rich-text
+  handoff. Choice Labels use the restricted `filter_tags` HTML mode and retain
+  their established one-line `<br>` handling. Do not enable field embedding
+  for generic piping-only surfaces such as survey instructions or exit text.
 - Add a later metadata-aware field-embedding diagnostic layer for record-ID,
   self/nested, form, and survey-page rules. It must remain separate from the
   pure parser and must use current draft-aware project metadata.

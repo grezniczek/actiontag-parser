@@ -24,6 +24,18 @@ source-specific title-bar control. That toggle stores and restores its prior
 geometry and disables drag/resize while fullscreen. An authoring source field
 must remain `readonly` and return focus to a safe control when closing; never
 leave a direct-edit fallback or focus loop behind the workspace.
+
+When introducing an explicit field-embedding editor action, first confirm the
+runtime invokes `Piping::replaceEmbedVariablesInLabel()` for that exact
+metadata value. Current Online Designer hosts are Field Labels (including
+ordinary Section Header fields), matrix Section Headers, Field Notes, and
+individual Choice Labels. Keep the matrix Section Header on the rich-text
+handoff. Choice Labels are `filter_tags()`-compatible one-line sources, so
+preserve stored `<br>` tags and use the workspace's `space_or_br` line-break
+policy rather than treating them as unrestricted rich text. Pass the current
+instrument name for field-embedding completion; for a matrix header, obtain it
+from the enclosing Add/Edit Field form because the matrix dialog is not inside
+that form.
 The shared expand/compress glyph is deliberately compact and vertically aligned
 with rcDialog's close control; do not add workspace-specific styling to change
 that title-bar geometry.

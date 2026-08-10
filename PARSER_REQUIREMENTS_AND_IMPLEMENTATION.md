@@ -40,6 +40,17 @@ recordless-form rule. Event or instance qualifiers remain unsupported, and an
 explicit `survey-title` instrument parameter remains its independently
 cataloged metadata-target route rather than a participant fallback.
 
+### Field-embedding host evidence
+
+Field embedding is available only from explicit editor actions on host
+surfaces that the runtime processes with
+`Piping::replaceEmbedVariablesInLabel()`: field labels (including ordinary
+Section Header fields), matrix Section Headers, Field Notes, and individual
+Choice Labels. Matrix headers use the rich-text source path. Choice Labels use
+the `filter_tags()`-compatible one-line path: existing `<br>` tags are
+preserved, and any new line break is explicitly serialized as either a space
+or `<br>`. Do not infer this permission for other piping-capable text.
+
 ## Decisions Made So Far
 
 - Use a hand-written deterministic state machine, not a collection of extraction regular expressions.
