@@ -79,12 +79,22 @@ deliberate compatibility decision.
 | Piping system capability | The concrete replacement guard for a named runtime-availability capability, including a current-project gate where applicable | `PipingSmartVariableCatalog` definitions plus each affected variable's `required_system_capabilities` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` transports only the named capability's enabled state and author-facing label | Runtime enabled/disabled behavior; PHP/browser semantic and completion tests; stale-catalog compatibility |
 | Field Embedding | `Classes/Piping.php`: `replaceEmbedVariablesInLabel()` plus `Resources/js/DataEntrySurveyCommon.js`: `doFieldEmbedding()` | Pure PHP/browser `FieldEmbeddingSyntaxParser` plus `FieldEmbeddingSemanticAnalyzer`; draft-aware host occurrences, dependencies, and paginated-survey pages in the authoring catalog | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime replacement and relocation behavior; PHP/browser semantic parity; completion and HTML text-node fallback tests |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
-| Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php` and the catalog assembled from `Form::getActionTags()` | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
+| Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php`, the `action_tags` catalog, and the advisory `ActionTagSemanticAnalyzer` registration check | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` and `ActionTagSemanticAnalyzer` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
 External Module action tags are a separate case. Their manifests feed
 `ExternalModules::getActionTags()` and are exposed by the project catalog and
 Action Tags help automatically. The core must not add an EM-specific runtime
 implementation or treat a module tag as a built-in tag.
+
+The current Action Tag semantic scope is deliberately only a project
+registration advisory. `ActionTagSemanticAnalyzer` compares structurally valid,
+enabled tags with the shared `action_tags` catalog, which merges
+`Form::getActionTags()` and tags from External Modules enabled for that project.
+It warns when a name is absent, without blocking the annotation or attempting
+to interpret parameters, field-type restrictions, or module-specific runtime
+semantics. A missing catalog must remain structural-only for stale clients;
+an explicitly empty catalog means no names are registered. Disabled tags do
+not warn because they do not apply at runtime.
 
 ## Planned catalog ownership and External Module schemas
 
@@ -545,8 +555,10 @@ moving migration target.
    must not claim the tag is valid for every field type or runtime surface.
 4. Confirm the project catalog includes the tag (it is derived from
    `Form::getActionTags()`), that completion/hover describe it, and that
-   `Design/action_tag_explain.php` presents correct help. Include a
-   feature-specific runtime test for field-type/context restrictions.
+   `Design/action_tag_explain.php` presents correct help. The matching
+   PHP/browser registration analyzer fixtures must recognize the new name;
+   an unknown-name finding is advisory only. Include a feature-specific runtime
+   test for field-type/context restrictions.
 5. For an External Module tag, update the module manifest and module tests
    instead. Confirm collision behavior with a built-in tag and its appearance
    in the project-specific help/catalog; do not edit `Form::getActionTags()`.
@@ -564,6 +576,9 @@ php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Logic/LogicSemanticAn
 node UnitTests/AuthoringSyntax/Logic/LogicSemanticAnalyzerJsTest.js
 php UnitTests/vendor/bin/phpunit UnitTests/ActionTags/ActionTagParserTest.php
 node UnitTests/ActionTags/ActionTagSyntaxParserJsTest.js
+php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/ActionTag/ActionTagSemanticAnalyzerTest.php
+node UnitTests/AuthoringSyntax/ActionTag/ActionTagSemanticAnalyzerJsTest.js
+node UnitTests/AuthoringSyntax/Logic/LogicAuthoringWorkspaceSemanticTest.js
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Piping/PipingSyntaxParserTest.php
 node UnitTests/AuthoringSyntax/Piping/PipingSyntaxParserJsTest.js
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Catalog/PipingSmartVariableCatalogTest.php

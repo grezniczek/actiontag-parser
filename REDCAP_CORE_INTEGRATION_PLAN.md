@@ -673,6 +673,17 @@ Parser output is structural and applies equally to built-in and custom tags. Sem
 
 Native tag descriptions are currently available through facilities such as `Form::getActionTags()` and `ExternalModules::getActionTags()`, but descriptions alone do not define parameter schemas, field constraints, or contextual rules. Custom-tag manifests likewise generally provide names/descriptions rather than machine-readable parameter schemas.
 
+**Implemented initial scope:** `ActionTagSemanticAnalyzer` now supplies a
+matching PHP/browser advisory only for an enabled, structurally valid tag name
+that is absent from the project `action_tags` catalog. That catalog already
+merges `Form::getActionTags()` with tags returned by
+`ExternalModules::getActionTags($project_id)`, so it proves only core or
+enabled-module registration for the current project. It does not reject the
+annotation, inspect parameters, infer field applicability, or evaluate `@IF`.
+Disabled tags are omitted from this advisory because they do not apply. If the
+catalog is missing, the analyzer preserves structural-only behavior for stale
+clients; an explicitly empty catalog is a meaningful no-registered-tags state.
+
 The eventual validator therefore needs an extensible definition/schema mechanism. Until that exists, the EM may provide rich module-specific feedback on top of the shared parser. The parser API should not wait for this standardization.
 
 ## Current and Future Core Touchpoints
@@ -733,19 +744,25 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    It intentionally leaves unknown parameters and broader source-specific
    smart-variable availability to runtime behavior until their contracts are
    cataloged.
-8. **Required before PR:** Follow and update the Manual,
+8. **Completed (initial Action Tag semantic scope):** Add matching PHP/browser
+   advisory diagnostics for a structurally valid, enabled Action Tag name that
+   is not registered by REDCap or an enabled External Module in the current
+   project. This consults the existing project catalog only and intentionally
+   leaves parameter, field-type, context, and module-specific semantics to a
+   future schema-backed validator.
+9. **Required before PR:** Follow and update the Manual,
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
    for every new Smart Variable, Piping project-field modifier, Special
    Function, or Action Tag. It records the distinct runtime, parser, catalog,
    help, completion, diagnostic, and test responsibilities so authoring
    completion is not mistaken for runtime support.
-9. Use the EM benchmark across representative projects to establish parser,
+10. Use the EM benchmark across representative projects to establish parser,
    resolver, preload, and evaluation costs before considering runtime use.
-10. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
+11. Publish `REDCap::parseActionTags()` only when its contract, PHPDoc, and
    compatibility policy are ready to be stable for developers.
-11. Evaluate selective compatibility delegation in `ActionTags`, then migrate
+12. Evaluate selective compatibility delegation in `ActionTags`, then migrate
    `Form`/runtime consumers one family at a time with regression coverage.
-12. Introduce semantic tag definitions and a validator as a distinct
+13. Introduce semantic tag definitions and a validator as a distinct
    standardization project.
 
 ### Server-side calculation-cycle warnings
