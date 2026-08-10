@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes nineteen explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes twenty explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -564,6 +564,16 @@ Yes-No, and True-False renderers, including the supported matrix renderers,
 consume reached choices. `Form` also repeats the check before save, so the
 editor intentionally does not attempt to predict dynamic event-specific counts
 or replace the save-time contention protection.
+`@MAXCHOICE-SURVEY-COMPLETE` shares that exact static map and choice-field
+contract, but `Form::getMaxChoiceReached()` returns no reached choices unless
+the target instrument has a survey ID. Its tally joins the survey participant
+and response records and includes only responses with a completion time, so
+partial survey responses and Data Entry values are deliberately outside the
+limit. Where both MAXCHOICE variants are active, the renderer uses the
+survey-completion variant. Field Annotation therefore declares
+`requires_survey_form` and warns only for a known non-survey form; it does not
+predict response counts, add choice-membership validation, or invent a
+collision diagnostic for the runtime precedence.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no

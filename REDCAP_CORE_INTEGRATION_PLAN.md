@@ -749,6 +749,15 @@ metadata code membership, or predict mutable project-wide counts. Checkbox,
 Radio, Drop-down/SQL, Yes-No, and True-False renderers—including their supported
 matrix variants—consume reached choices, and the server repeats the check on
 save to protect against concurrent submissions.
+`@MAXCHOICE-SURVEY-COMPLETE` reuses the same static map and target types, but
+its runtime returns no limits for a form without a survey ID and counts only
+completed survey responses through its participant/response join. Partial
+survey responses and Data Entry entries do not count. When both variants are
+active, rendering favors the survey-completion form. The catalog consequently
+adds `requires_survey_form` while retaining the shared map checks; Field
+Annotation warns only when the current form is known not to be a survey and
+does not attempt count prediction, metadata choice validation, or a synthetic
+tag-conflict warning.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -836,7 +845,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@NONEOFTHEABOVE`, and the choice-field/non-matrix, ignored-parameter
    contract for `@RANDOMORDER`, plus the Checkbox-only positive-integer
    assignment contract for `@MAXCHECKED`, plus the parenthesized choice-limit
-   map and choice-field contract for `@MAXCHOICE`, plus
+   map and choice-field contract for `@MAXCHOICE`, plus its survey-only,
+   completed-response variant `@MAXCHOICE-SURVEY-COMPLETE`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

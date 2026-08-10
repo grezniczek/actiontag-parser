@@ -184,6 +184,15 @@ Preserve runtime support for zero and fractional limits; do not Pipe the map or
 infer choice-code membership. Its count is dynamic and event-specific, and
 save-time code rechecks it for concurrent requests, so authoring diagnostics
 must validate only static shape and traced target field types.
+`@MAXCHOICE-SURVEY-COMPLETE` is not merely a display alias: it shares the
+choice-limit-map and target-field contract, but its runtime does nothing unless
+the target instrument is a survey and counts only completed survey responses.
+Give the catalog the same parameter and choice-field properties plus
+`requires_survey_form`. Field Annotation can warn when its current form is
+known not to be a survey, but must not predict completed-response counts,
+validate map codes against metadata, or warn when both MAXCHOICE variants are
+present: runtime rendering deliberately gives the survey-completion variant
+precedence.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
