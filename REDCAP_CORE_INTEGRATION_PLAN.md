@@ -685,7 +685,11 @@ nonempty single- or double-quoted value under `Form::getValueInQuotesActionTag()
 fields. The catalog preserves a whitespace-only quoted value and quoted
 JSON-looking text as runtime-accepted shapes, but warns for escaped delimiter
 quotes that the simple runtime extractor cannot use. It does not infer other
-field restrictions or inspect the quoted Piping content. `@CALCTEXT`/`@CALCDATE`
+field restrictions or inspect the quoted Piping content. `@PLACEHOLDER` shares
+the quoted-value and escaped-delimiter contract, and `DataEntry` renders it
+only for Text Box/Notes fields or the visible Auto Complete input of a
+Drop-down/SQL field. A known non-Auto-Complete Drop-down or SQL field is
+warned; absent validation context remains unrestrictive. `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
 workspace sends its unsaved type and validation to the fallback endpoint,
@@ -760,7 +764,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    is not registered by REDCap or an enabled External Module in the current
    project. This consults the existing project catalog and, only for the
    runtime-traced built-in entries, cataloged `@DEFAULT` quoted-assignment and
-   File Upload/Signature exclusion plus `@CALCTEXT`/`@CALCDATE` Logic and
+   File Upload/Signature exclusion, `@PLACEHOLDER` quoted-value and
+   field-type/Auto Complete contract, plus `@CALCTEXT`/`@CALCDATE` Logic and
    Text Box/date-validation contracts. It remains warning-only and leaves all
    other parameter, field-type, context, and module-specific semantics to a
    future schema-backed validator.

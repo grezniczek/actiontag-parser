@@ -106,6 +106,14 @@ quoted value because the extractor does. Its simple quote-delimited extractor
 does not support escaped delimiter quotes, so those receive an advisory
 warning. It does not infer restrictions for other target field types or
 separately parse the quoted Piping contents.
+`@PLACEHOLDER` uses the same quoted-value extractor and escaped-delimiter
+constraint. `DataEntry` attaches its resulting HTML placeholder only to a Text
+Box or Notes field, or to the visible input of an Auto Complete Drop-down or
+SQL field. A normal Drop-down has no such input, so the editor warns only when
+its current validation explicitly proves that Auto Complete is not enabled;
+absent validation context remains advisory-free. `DataEntry` pipes placeholder
+text only when it has a record context. The Action Tag catalog does not infer
+that transport context or add any separate semantics to the quoted Piping.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
@@ -581,12 +589,12 @@ moving migration target.
    test for field-type/context restrictions.
 5. Add an `ActionTagCatalog` property only after tracing the precise runtime
    consumer. A required parenthesized expression, quoted assignment, target
-   field type, or validation prefix must be represented per tag and verified
-   in matching PHP/browser semantic fixtures. Retain any runtime-observable
-   distinction such as a whitespace-only quoted `@DEFAULT` value. Treat
-   compatibility with a legacy form that saves but does not calculate as an
-   advisory warning. Do not copy a built-in property onto a module tag without
-   manifest metadata that proves it.
+   field type, validation prefix, or allowed field-type/validation combination
+   must be represented per tag and verified in matching PHP/browser semantic
+   fixtures. Retain any runtime-observable distinction such as a
+   whitespace-only quoted `@DEFAULT` value. Treat compatibility with a legacy
+   form that saves but does not calculate as an advisory warning. Do not copy a
+   built-in property onto a module tag without manifest metadata that proves it.
 6. For an External Module tag, update the module manifest and module tests
    instead. Confirm collision behavior with a built-in tag and its appearance
    in the project-specific help/catalog; do not edit `Form::getActionTags()`.
