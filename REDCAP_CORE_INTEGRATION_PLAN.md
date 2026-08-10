@@ -689,7 +689,14 @@ field restrictions or inspect the quoted Piping content. `@PLACEHOLDER` shares
 the quoted-value and escaped-delimiter contract, and `DataEntry` renders it
 only for Text Box/Notes fields or the visible Auto Complete input of a
 Drop-down/SQL field. A known non-Auto-Complete Drop-down or SQL field is
-warned; absent validation context remains unrestrictive. `@CALCTEXT`/`@CALCDATE`
+warned; absent validation context remains unrestrictive. `@SETVALUE` and its
+deprecated legacy synonym `@PREFILL` use the same quoted-assignment extractor
+and are likewise not applied to File Upload/Signature fields. The catalog gives
+`@PREFILL` a name-only, warning-level deprecation advisory directing authors to
+`@SETVALUE`, without changing its accepted syntax or applicability. When both
+are present, the existing `DataEntry` runtime chooses `@SETVALUE`'s value; the
+authoring layer preserves that collision precedence without creating a new
+restriction. `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
 workspace sends its unsaved type and validation to the fallback endpoint,
@@ -765,10 +772,12 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    project. This consults the existing project catalog and, only for the
    runtime-traced built-in entries, cataloged `@DEFAULT` quoted-assignment and
    File Upload/Signature exclusion, `@PLACEHOLDER` quoted-value and
-   field-type/Auto Complete contract, plus `@CALCTEXT`/`@CALCDATE` Logic and
-   Text Box/date-validation contracts. It remains warning-only and leaves all
-   other parameter, field-type, context, and module-specific semantics to a
-   future schema-backed validator.
+   field-type/Auto Complete contract, matching `@SETVALUE`/deprecated
+   `@PREFILL` quoted-value and File Upload/Signature contracts (with a
+   name-only replacement advisory for `@PREFILL`), plus
+   `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
+   remains warning-only and leaves all other parameter, field-type, context,
+   and module-specific semantics to a future schema-backed validator.
 9. **Required before PR:** Follow and update the Manual,
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
    for every new Smart Variable, Piping project-field modifier, Special

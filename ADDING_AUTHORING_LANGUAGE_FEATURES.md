@@ -114,6 +114,14 @@ its current validation explicitly proves that Auto Complete is not enabled;
 absent validation context remains advisory-free. `DataEntry` pipes placeholder
 text only when it has a record context. The Action Tag catalog does not infer
 that transport context or add any separate semantics to the quoted Piping.
+`@SETVALUE` and legacy `@PREFILL` use the same runtime extractor and share the
+File Upload/Signature exclusion. The catalog therefore gives them matching
+quoted-value properties, while `@PREFILL` alone declares
+`deprecated_replacement: '@SETVALUE'`. PHP and browser analyzers emit an
+advisory `deprecated_action_tag` at the authored `@PREFILL` name but continue
+to report the shared syntax and field-applicability diagnostics. The runtime
+selects `@SETVALUE`'s value if both tags appear together; retain that collision
+behavior rather than inventing an authoring restriction.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
@@ -593,8 +601,11 @@ moving migration target.
    must be represented per tag and verified in matching PHP/browser semantic
    fixtures. Retain any runtime-observable distinction such as a
    whitespace-only quoted `@DEFAULT` value. Treat compatibility with a legacy
-   form that saves but does not calculate as an advisory warning. Do not copy a
-   built-in property onto a module tag without manifest metadata that proves it.
+   form that saves but does not calculate as an advisory warning. For a
+   runtime-compatible legacy synonym, give the old name the same proven
+   properties and a name-only `deprecated_replacement` advisory; preserve any
+   runtime collision precedence when both names appear. Do not copy a built-in
+   property onto a module tag without manifest metadata that proves it.
 6. For an External Module tag, update the module manifest and module tests
    instead. Confirm collision behavior with a built-in tag and its appearance
    in the project-specific help/catalog; do not edit `Form::getActionTags()`.

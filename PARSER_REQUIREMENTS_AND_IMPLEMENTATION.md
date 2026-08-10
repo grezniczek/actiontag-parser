@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes four explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes six explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -485,6 +485,14 @@ Drop-down/SQL field when its validation context is absent, but warns when an
 explicit validation proves that it is not `autocomplete`. Placeholder Piping is
 performed only when DataEntry has a record context, which the Action Tag
 contract intentionally does not infer.
+`@SETVALUE` and legacy `@PREFILL` share that extractor and the same File
+Upload/Signature exclusion in `DataEntry`. `Design/action_tag_explain.php`
+intentionally hides `@PREFILL` as no longer used, so the editor gives its name
+an advisory `deprecated_action_tag` warning that recommends `@SETVALUE` while
+retaining all of the shared syntax and applicability diagnostics. If both tags
+are present on a field, the existing runtime selects `@SETVALUE`'s value; that
+collision precedence is preserved rather than inferred as a separate editor
+restriction.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no
