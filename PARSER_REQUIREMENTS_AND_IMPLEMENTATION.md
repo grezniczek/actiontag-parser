@@ -935,6 +935,13 @@ intentionally not collapsible through that API. The compact title-bar glyph is
 optically aligned with the close control by rcDialog itself, rather than by
 workspace-specific CSS.
 
+Every field-level workspace title includes the current variable name as a
+code-styled ` - [field_name]` token with muted gray brackets. The common
+`field.*` presentation rule leaves the base title in place only until a new
+field has a name; its callers pass the current `targetField`, including Field
+Label, Field Note, and Branching Logic, so the identifier remains visible in
+both ordinary and fullscreen editing.
+
 SQL keeps its deliberately limited authoring contract: ACE highlights the
 supported SQL surface and supplies manual scoped completion, but does not
 claim SQL parsing or validation. Its Help tab lazily retrieves the existing

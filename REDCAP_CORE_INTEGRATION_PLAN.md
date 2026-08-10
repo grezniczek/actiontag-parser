@@ -35,6 +35,11 @@ when that is warranted.
   Action Tags workspace on focus or click and identifies itself with
   `quick_edit.action_tags`. Syntax feedback is diagnostic only; the established
   server-side validators remain authoritative when metadata is saved.
+- Every `field.*` workspace title adds its current variable name as a
+  code-styled ` - [field_name]` token with muted gray brackets, including Field
+  Label, Field Note, and Branching Logic. A new field without a name retains
+  the base title; multi-field and non-field editors deliberately do not receive
+  a synthetic field suffix.
 - The logic and action-tag browser parsers are mirrors for responsive editor
   feedback. They must remain behaviorally aligned with their PHP counterparts,
   even though UI offsets use UTF-16 and server offsets use UTF-8 bytes.

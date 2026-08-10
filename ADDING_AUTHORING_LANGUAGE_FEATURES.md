@@ -31,6 +31,13 @@ Consumers that need scripted control must use `ctx.setFullscreen(boolean)`
 after `dialog:shown`, with `ctx.isFullscreen()` for state, rather than reaching
 into `ctx._dialog`; this works even when the visible toggle is omitted.
 
+Every `field.*` authoring-source call must provide its current raw
+`targetField`. The workspace adds that variable name, and only that name, to
+the title as a code-styled ` - [field_name]` token; the brackets alone use the
+muted secondary color. It keeps the base title while a new field has not yet
+received a variable name. Do not add the suffix to multi-field or non-field
+sources.
+
 When a source already has substantial runtime-owned reference material, keep
 that endpoint as the authority. For SQL fields, load the project-scoped
 `Design/sql_field_explanation.php` JSON response only when the workspace Help
