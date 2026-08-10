@@ -376,10 +376,16 @@ project event and the public route for the project's `firstForm`, but no record 
   This is syntax feedback only: it does not determine whether the named field
   exists, is the record ID, is on the host instrument/page, is self/nested, or
   otherwise satisfies runtime field-embedding rules.
-- The authoring workspace's title-bar fullscreen control uses native click and
-  F2 handlers with bundled Font Awesome expand/compress icons. It toggles only
-  the `rcDialog` workspace class and no longer relies on jQuery UI icon CSS or
-  widget behavior.
+- The authoring workspace opts into `rcDialog`'s `fullscreenToggle` control,
+  whose native click and F2 handlers use bundled Font Awesome expand/compress
+  icons. Fullscreen records the existing inline position and dimensions, pins
+  the dialog at a 10-pixel viewport inset, and disables drag/resize; collapse
+  restores the recorded geometry and controls. It no longer relies on jQuery
+  UI icon CSS, widget behavior, or workspace-specific geometry CSS.
+- The Field Annotation source textarea is read-only and click-only. Closing
+  its editor restores focus to `#field_name`, rather than the source's old
+  focus opener, so it cannot immediately reopen or become a direct text-entry
+  surface while the workspace is visible.
 
 ### Deferred authoring UI/UX refinements
 

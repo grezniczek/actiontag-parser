@@ -18,7 +18,12 @@ side field cache without an equally complete add/rename/delete refresh plan.
 
 Authoring-workspace controls are `rcDialog` components. Use native DOM events
 and the bundled Font Awesome icons for their behavior and presentation; do not
-introduce a jQuery UI dependency for a new control or icon state.
+introduce a jQuery UI dependency for a new control or icon state. Opt into the
+shared fullscreen button with `fullscreenToggle: true`, rather than adding a
+source-specific title-bar control. That toggle stores and restores its prior
+geometry and disables drag/resize while fullscreen. An authoring source field
+must remain `readonly` and return focus to a safe control when closing; never
+leave a direct-edit fallback or focus loop behind the workspace.
 
 ## First establish the contract
 

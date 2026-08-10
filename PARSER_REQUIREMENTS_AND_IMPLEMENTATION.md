@@ -920,9 +920,14 @@ and use the same capped full-path warning body. Every warning is advisory; a
 reporting failure is logged without changing the completed import result.
 
 The workspace's title-bar fullscreen control is likewise framework-independent:
-native click and F2 handlers toggle its dialog class, while bundled Font
-Awesome expand/compress icons describe the current action. It does not depend
-on jQuery UI's icon CSS or widget behavior.
+it opts into `rcDialog`'s `fullscreenToggle` configuration, whose native click
+and F2 handlers use bundled Font Awesome expand/compress icons. Entering
+fullscreen saves the dialog's exact inline geometry, pins it at a 10-pixel
+viewport inset, and disables dragging and resizing; collapsing restores the
+saved position, dimensions, and resize controls. The Field Annotation source
+textarea is read-only and opens only on click, with closure focus explicitly
+returned to the field-name control so it cannot reopen itself or accept direct
+text while an editor is active.
 
 Database-backed regression coverage creates temporary Development and Draft
 Mode projects, then exercises that same pre-commit review helper against real
