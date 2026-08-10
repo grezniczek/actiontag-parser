@@ -443,8 +443,21 @@ moving migration target.
    fields, the record ID, stored embedding occurrences, direct embedded-field
    dependencies, and survey-page placement when the form has question-by-
    section pagination. It must use the selected active/draft metadata scope.
-   The current source is the only stored occurrence that may be excluded from
-   the one-use check.
+   Each editor invocation must name its actual persisted host field and
+   metadata attribute. Do not assume a reused UI input has one identity: the
+   Online Designer's Field Label input edits a stand-alone section header as
+   `element_preceding_header` on `sq_id`, because that mode clears
+   `field_name`. The current source is the only stored occurrence that may be
+   excluded from the one-use check. Invalidate or refresh the browser catalog
+   after every metadata persistence path, including incremental row rendering;
+   all later editor instances must receive the new page layout and occurrence
+   inventory. For Field Embedding, also obtain fresh catalog metadata when an
+   editor opens so a missed UI refresh cannot silently weaken availability
+   diagnostics; prevent the browser from satisfying that metadata request from
+   its HTTP cache. When combining languages in an HTML source, suppress Field
+   Embedding semantics only for its own malformed curly-brace candidates; do
+   not let an unrelated Piping parse error in another text node hide a valid
+   embedding violation.
 4. Mirror every new rule in `FieldEmbeddingSemanticAnalyzer` PHP and browser
    code, in field completion, and in the server fallback. HTML-capable sources
    must scan ordinary text nodes only; attributes, comments, raw script/style
@@ -452,9 +465,10 @@ moving migration target.
 5. Add PHP/browser fixtures for valid same-page use and for each proven
    rejection: unknown field, record ID, other form, other survey page,
    self/nested embedding, a duplicate in the current source, and an existing
-   use elsewhere. Include a Choice Label case proving that a different choice
-   still reserves the field. Run the field-embedding parser/semantic tests and
-   the authoring-workspace test before handoff.
+   use elsewhere. Include a same-host Label/Section Header case, a Choice
+   Label case proving that a different choice still reserves the field, and a
+   paginated-survey cross-section case. Run the field-embedding
+   parser/semantic tests and the authoring-workspace test before handoff.
 
 ## Add or change a Piping system capability
 

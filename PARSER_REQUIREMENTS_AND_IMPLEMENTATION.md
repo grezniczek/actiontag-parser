@@ -59,9 +59,22 @@ itself or a field that already contains an embedding, and can appear only once
 on the rendered form or survey page. The catalog records existing occurrences
 by host metadata attribute; Choice Label occurrences also carry their choice
 code, so updating one choice does not incorrectly free an embed in another.
-The edited source replaces its own stored occurrence, while completion and
-diagnostics reject every other existing occurrence. The server fallback uses
-the same analyzer and scans only ordinary HTML text nodes.
+The Online Designer's shared Field Label control must identify a stand-alone
+section-header edit as that field's `element_preceding_header` and use `sq_id`
+as its host, because the legacy UI deliberately clears `field_name` in that
+mode. Thus the edited source alone replaces its own stored occurrence, while a
+same-field label/header occurrence, or every other occurrence, still blocks
+completion and receives a diagnostic. The catalog cache must be refreshed
+after both full and incremental Online Designer metadata saves; otherwise a
+newly saved section header can leave later Field Label checks with stale page
+placement or occurrence data. Each Field Embedding editor open also obtains a
+fresh catalog, protecting the ordinary Field Label path if another metadata
+change did not trigger a Designer refresh; its request must bypass browser
+HTTP caching. In an HTML source, a malformed Piping candidate in one text node
+(such as a reference split by formatting markup) must not suppress Field
+Embedding diagnostics for a complete curly-brace reference in another text
+node. The server fallback uses the same analyzer and scans only ordinary HTML
+text nodes.
 
 ## Decisions Made So Far
 

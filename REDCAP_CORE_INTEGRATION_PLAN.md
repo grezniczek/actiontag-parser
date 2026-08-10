@@ -543,8 +543,19 @@ project event and the public route for the project's `firstForm`, but no record 
   separate from its pure parser. Its draft-aware catalog mirrors the runtime
   form/page, record-ID, self/nested, and one-use-per-rendered-page checks;
   the Field Label, Field Note, Matrix Section Header, and Choice Label editors
-  pass their exact host metadata context. Choice Labels identify their choice
-  code so an embed in one choice remains reserved while another is edited.
+  pass their exact host metadata context. In particular, the shared Field
+  Label control uses `sq_id` and `element_preceding_header` for a stand-alone
+  section-header edit, since that legacy edit mode clears `field_name`; this
+  preserves both cross-section placement checks and same-field label/header
+  one-use diagnostics. The Online Designer refreshes the catalog after its
+  incremental field-save render path as well as full-table reloads, so each
+  later editor instance sees the current page boundaries and stored embeds;
+  Field Embedding workspaces also request uncached catalog metadata when
+  opened. Choice Labels identify their choice code so an embed in one choice
+  remains reserved while another is edited.
+  In rich-text sources, only malformed curly-brace syntax suppresses a Field
+  Embedding semantic cascade; an unrelated Piping candidate split by markup
+  cannot hide a duplicate embedding in a separate text node.
 
 ## Core Objective
 
