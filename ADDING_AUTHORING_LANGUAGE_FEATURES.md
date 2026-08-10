@@ -126,6 +126,12 @@ behavior rather than inventing an authoring restriction.
 exact whitespace-delimited token, not a value; warn for assignments and
 parenthesized arguments instead of treating a whitespace-dependent legacy
 spelling as supported syntax.
+`@READONLY-FORM` and `@READONLY-SURVEY` share that exact-token,
+no-parameter shape. The Form variant is meaningful for every instrument's
+Data Entry rendering. The Survey variant is meaningful only for an instrument
+configured as a survey, so its catalog declares `requires_survey_form`; emit a
+warning only when the current form is known to be non-survey, never when the
+form context or a stale catalog cannot prove that fact.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

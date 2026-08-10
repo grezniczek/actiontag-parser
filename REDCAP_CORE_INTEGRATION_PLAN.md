@@ -699,7 +699,11 @@ authoring layer preserves that collision precedence without creating a new
 restriction. `@READONLY` explicitly accepts no parameter: its runtime checks
 for the exact whitespace-delimited tag token, so assignments and parenthesized
 arguments receive a warning rather than allowing whitespace-dependent legacy
-spellings. `@CALCTEXT`/`@CALCDATE`
+spellings. `@READONLY-FORM` and `@READONLY-SURVEY` share that no-parameter
+contract. The Form variant may apply to any instrument in Data Entry; the
+Survey variant has an additional advisory when the selected form is known not
+to be configured as a survey. Missing form context remains non-diagnostic.
+`@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
 workspace sends its unsaved type and validation to the fallback endpoint,
@@ -778,7 +782,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    field-type/Auto Complete contract, matching `@SETVALUE`/deprecated
    `@PREFILL` quoted-value and File Upload/Signature contracts (with a
    name-only replacement advisory for `@PREFILL`), an explicit no-parameter
-   contract for `@READONLY`, plus
+   contract for the `@READONLY` family and a known-non-survey warning for
+   `@READONLY-SURVEY`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.
