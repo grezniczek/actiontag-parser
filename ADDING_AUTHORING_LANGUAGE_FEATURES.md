@@ -156,6 +156,16 @@ those codes against the current Checkbox field's choices before adding browser
 behavior. It does not Pipe the parameter. Require its assignment and Checkbox
 target, but leave choice membership to the runtime; retain the parser's
 separate compatibility advisory for unquoted parameters.
+`@RANDOMORDER` is a name-presence check in `DataEntry`, not an exact-token
+extractor: assignments and parenthesized arguments continue to activate it,
+but their contents are ignored. Model this with `parameter.kind: none` and
+`ignores_parameter: true`, so the authoring warning is accurate without
+claiming runtime rejects the tag. Its Checkbox, Radio, Drop-down/SQL, Yes-No,
+and True-False renderers shuffle only when the target is not a matrix. A
+cataloged `excluded_matrix_field` contract needs the Field Annotation launcher
+to supply the current unsaved Matrix Group state to both local and server
+semantic analysis; warn only when that state is known. Do not infer a
+record-page availability restriction from the editor.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

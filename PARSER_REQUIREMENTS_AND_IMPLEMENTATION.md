@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes sixteen explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes seventeen explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -534,6 +534,17 @@ does not Pipe that parameter. The editor therefore requires a nonempty equals
 assignment and a known Checkbox target, but intentionally leaves code
 membership to runtime; the parser's existing unquoted-parameter compatibility
 advisory remains separate from this catalog contract.
+`@RANDOMORDER` is different from the exact-token tags: `DataEntry` tests only
+whether its parsed name is present, so an assignment or parenthesized arguments
+still enable randomization and are ignored rather than rejected. The editor
+therefore names the ignored parameter while still evaluating applicability.
+The Checkbox, Radio, Drop-down/SQL, Yes-No, and True-False renderers shuffle
+their choices only outside a matrix. Field Annotation sends its current
+unsaved Matrix Group state to browser and server analysis, which warns only
+when that state proves the field is a matrix; an absent context remains
+compatible. The source remains unqualified because the editor does not know
+whether a specific authoring session will render on a record-bearing Data Entry
+or Survey page.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no

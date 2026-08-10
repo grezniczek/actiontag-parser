@@ -725,6 +725,14 @@ Its runtime accepts an unquoted or quote-delimited comma-separated value,
 filters the resulting codes against the field's choices, and does not Pipe the value.
 The catalog does not add code-membership diagnostics; the existing structural
 unquoted-parameter compatibility advisory remains independent.
+`@RANDOMORDER` is recognized from its parsed tag name, so attached assignments
+or parenthesized arguments leave randomization enabled and are ignored rather
+than invalidating the tag. Its catalog gives that a warning-only ignored-value
+diagnostic, then applies its concrete Checkbox, Radio, Drop-down/SQL, Yes-No,
+and True-False target contract. All three applicable renderers skip shuffling
+matrix fields. Field Annotation passes its live Matrix Group state to the
+browser and fallback endpoint, which warns only for a known matrix field; a
+missing context is deliberately non-restrictive.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -808,8 +816,9 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@READONLY-SURVEY`, matching no-parameter contracts and a known-non-survey
    warning for the `@HIDDEN` family, a no-parameter-only contract for
    `@HIDDEN-PDF`, and the quoted choice-list/choice-field contract for
-   `@HIDECHOICE` and `@SHOWCHOICE`, plus the Checkbox-only assignment contract
-   for `@NONEOFTHEABOVE`, plus
+   `@HIDECHOICE` and `@SHOWCHOICE`, the Checkbox-only assignment contract for
+   `@NONEOFTHEABOVE`, and the choice-field/non-matrix, ignored-parameter
+   contract for `@RANDOMORDER`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.
