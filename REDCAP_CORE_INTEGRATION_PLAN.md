@@ -673,16 +673,20 @@ Parser output is structural and applies equally to built-in and custom tags. Sem
 
 Native tag descriptions are currently available through facilities such as `Form::getActionTags()` and `ExternalModules::getActionTags()`, but descriptions alone do not define parameter schemas, field constraints, or contextual rules. Custom-tag manifests likewise generally provide names/descriptions rather than machine-readable parameter schemas.
 
-**Implemented initial scope:** `ActionTagSemanticAnalyzer` now supplies a
-matching PHP/browser advisory only for an enabled, structurally valid tag name
-that is absent from the project `action_tags` catalog. That catalog already
-merges `Form::getActionTags()` with tags returned by
+**Implemented initial scope:** `ActionTagSemanticAnalyzer` supplies a matching
+PHP/browser advisory for an enabled, structurally valid tag name that is absent
+from the project `action_tags` catalog. That catalog already merges
+`Form::getActionTags()` with tags returned by
 `ExternalModules::getActionTags($project_id)`, so it proves only core or
-enabled-module registration for the current project. It does not reject the
-annotation, inspect parameters, infer field applicability, or evaluate `@IF`.
-Disabled tags are omitted from this advisory because they do not apply. If the
-catalog is missing, the analyzer preserves structural-only behavior for stale
-clients; an explicitly empty catalog is a meaningful no-registered-tags state.
+enabled-module registration for the current project. `ActionTagCatalog` adds
+only the separately traced `@CALCTEXT` and `@CALCDATE` contracts: a nonempty
+parenthesized Logic expression on a Text Box field, with a date/datetime
+validation also required for `@CALCDATE`. The Field Annotation workspace sends
+its unsaved type and validation to the fallback endpoint, preserving
+browser/server parity while a field is edited. These are warning-only because
+legacy metadata can save a nonfunctional form. No other parameter, field
+applicability, context, or module-specific semantic is inferred; disabled tags
+are omitted, and a missing catalog remains structural-only for stale clients.
 
 The eventual validator therefore needs an extensible definition/schema mechanism. Until that exists, the EM may provide rich module-specific feedback on top of the shared parser. The parser API should not wait for this standardization.
 
@@ -690,7 +694,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
 
 - `/home/gr/redcap/codebase/Classes/ActionTagParser.php` — implemented pure parser class.
 - `/home/gr/redcap/codebase/Classes/AuthoringSyntax/` — implemented shared
-  primitives, logic/piping syntax products, and the public logic catalog.
+  primitives, logic/piping syntax products, public Logic/Piping catalogs, and
+  the deliberately narrow `ActionTagCatalog`.
 - `/home/gr/redcap/codebase/Controllers/DesignController.php` and
   `/home/gr/redcap/codebase/Resources/js/AuthoringSyntax/` — implemented
   authoring catalog, browser diagnostics, and reusable workspace.
@@ -747,9 +752,12 @@ The eventual validator therefore needs an extensible definition/schema mechanism
 8. **Completed (initial Action Tag semantic scope):** Add matching PHP/browser
    advisory diagnostics for a structurally valid, enabled Action Tag name that
    is not registered by REDCap or an enabled External Module in the current
-   project. This consults the existing project catalog only and intentionally
-   leaves parameter, field-type, context, and module-specific semantics to a
-   future schema-backed validator.
+   project. This consults the existing project catalog and, only for the
+   runtime-traced built-in `@CALCTEXT`/`@CALCDATE` entries, a cataloged
+   parenthesized nonempty Logic expression plus Text Box/date-validation
+   contract. It remains warning-only and leaves all other parameter,
+   field-type, context, and module-specific semantics to a future
+   schema-backed validator.
 9. **Required before PR:** Follow and update the Manual,
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
    for every new Smart Variable, Piping project-field modifier, Special

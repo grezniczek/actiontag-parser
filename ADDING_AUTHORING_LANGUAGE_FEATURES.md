@@ -79,22 +79,33 @@ deliberate compatibility decision.
 | Piping system capability | The concrete replacement guard for a named runtime-availability capability, including a current-project gate where applicable | `PipingSmartVariableCatalog` definitions plus each affected variable's `required_system_capabilities` | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` transports only the named capability's enabled state and author-facing label | Runtime enabled/disabled behavior; PHP/browser semantic and completion tests; stale-catalog compatibility |
 | Field Embedding | `Classes/Piping.php`: `replaceEmbedVariablesInLabel()` plus `Resources/js/DataEntrySurveyCommon.js`: `doFieldEmbedding()` | Pure PHP/browser `FieldEmbeddingSyntaxParser` plus `FieldEmbeddingSemanticAnalyzer`; draft-aware host occurrences, dependencies, and paginated-survey pages in the authoring catalog | `Controllers/DesignController.php`: `buildAuthoringSyntaxEditorCatalog()` and `diagnoseAuthoringSyntax()` | Runtime replacement and relocation behavior; PHP/browser semantic parity; completion and HTML text-node fallback tests |
 | Special Function | `Classes/LogicParser.php`: public runtime allowlist and implementation/translation | `Classes/AuthoringSyntax/Catalog/LogicFunctionCatalog.php`; `Design::renderSpecialFunctionInstructions()` renders its reference from that catalog | `Controllers/DesignController.php`: `functions` catalog | Runtime evaluation/translation; catalog completeness; PHP/JS semantic parity |
-| Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php`, the `action_tags` catalog, and the advisory `ActionTagSemanticAnalyzer` registration check | `Controllers/DesignController.php`: `action_tags` catalog | `ActionTagParser` and `ActionTagSemanticAnalyzer` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
+| Built-in Action Tag | `Classes/Form.php`: `Form::getActionTags()` plus every runtime consumer that implements the tag | `Design/action_tag_explain.php`, name/description entries in `action_tags`, and `ActionTagCatalog` only for runtime-proven authoring properties | `Controllers/DesignController.php`: `action_tags` catalog, then `ActionTagSemanticAnalyzer` | `ActionTagParser`, `ActionTagCatalog`, and `ActionTagSemanticAnalyzer` PHP/JS fixtures; feature-specific runtime tests; Online Designer applicability |
 
 External Module action tags are a separate case. Their manifests feed
 `ExternalModules::getActionTags()` and are exposed by the project catalog and
 Action Tags help automatically. The core must not add an EM-specific runtime
 implementation or treat a module tag as a built-in tag.
 
-The current Action Tag semantic scope is deliberately only a project
-registration advisory. `ActionTagSemanticAnalyzer` compares structurally valid,
-enabled tags with the shared `action_tags` catalog, which merges
+The baseline Action Tag semantic scope is a project registration advisory.
+`ActionTagSemanticAnalyzer` compares structurally valid, enabled tags with the
+shared `action_tags` catalog, which merges
 `Form::getActionTags()` and tags from External Modules enabled for that project.
 It warns when a name is absent, without blocking the annotation or attempting
-to interpret parameters, field-type restrictions, or module-specific runtime
-semantics. A missing catalog must remain structural-only for stale clients;
-an explicitly empty catalog means no names are registered. Disabled tags do
-not warn because they do not apply at runtime.
+to infer any parameter, field-type restriction, or module-specific runtime
+semantic. A missing catalog must remain structural-only for stale clients; an
+explicitly empty catalog means no names are registered. Disabled tags do not
+warn because they do not apply at runtime.
+
+`ActionTagCatalog` adds the first deliberately narrow built-in exception.
+`Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
+nonempty parenthesized Logic expression only for a Text Box field.
+`Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
+and additionally requires a date or datetime validation. The Field Annotation
+workspace sends its current unsaved field type and validation to both browser
+and server analysis, so those rules remain correct while a field is being
+edited. Each finding is a warning because legacy metadata may save a form that
+does not become a working calculation. Do not extend either property to an
+unreviewed Action Tag, and do not infer the same rules for an External Module.
 
 ## Planned catalog ownership and External Module schemas
 
@@ -559,7 +570,13 @@ moving migration target.
    PHP/browser registration analyzer fixtures must recognize the new name;
    an unknown-name finding is advisory only. Include a feature-specific runtime
    test for field-type/context restrictions.
-5. For an External Module tag, update the module manifest and module tests
+5. Add an `ActionTagCatalog` property only after tracing the precise runtime
+   consumer. A required parenthesized expression, target field type, or
+   validation prefix must be represented per tag and verified in matching
+   PHP/browser semantic fixtures. Treat compatibility with a legacy form that
+   saves but does not calculate as an advisory warning. Do not copy a built-in
+   property onto a module tag without manifest metadata that proves it.
+6. For an External Module tag, update the module manifest and module tests
    instead. Confirm collision behavior with a built-in tag and its appearance
    in the project-specific help/catalog; do not edit `Form::getActionTags()`.
 
@@ -576,6 +593,7 @@ php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Logic/LogicSemanticAn
 node UnitTests/AuthoringSyntax/Logic/LogicSemanticAnalyzerJsTest.js
 php UnitTests/vendor/bin/phpunit UnitTests/ActionTags/ActionTagParserTest.php
 node UnitTests/ActionTags/ActionTagSyntaxParserJsTest.js
+php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/Catalog/ActionTagCatalogTest.php
 php UnitTests/vendor/bin/phpunit UnitTests/AuthoringSyntax/ActionTag/ActionTagSemanticAnalyzerTest.php
 node UnitTests/AuthoringSyntax/ActionTag/ActionTagSemanticAnalyzerJsTest.js
 node UnitTests/AuthoringSyntax/Logic/LogicAuthoringWorkspaceSemanticTest.js

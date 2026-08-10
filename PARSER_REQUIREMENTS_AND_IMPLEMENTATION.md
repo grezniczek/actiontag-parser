@@ -452,7 +452,7 @@ Before runtime migration, fixtures must also record any intentional behavioral d
 
 Those responsibilities remain with core runtime code and the future semantic action-tag validator. The parser supplies the source-faithful structure those layers need.
 
-## Current Editor Registration Advisory
+## Current Editor Semantic Advisories
 
 The parser remains structural-only, but the enhanced authoring editor now adds
 a separate, advisory registration check after diagnostic parsing. The matching
@@ -463,14 +463,27 @@ from `Form::getActionTags()` and `ExternalModules::getActionTags($project_id)`,
 so an `unknown_action_tag` warning means only that the name is not registered by
 core or an enabled External Module for the current project.
 
-The warning highlights the source name only, never its parameter, and does not
-prevent editing or saving. Deactivated tags, including content in a disabled
-`@IF`, receive no registration warning. An absent catalog preserves
+The registration warning highlights the source name only, never its parameter,
+and does not prevent editing or saving. Deactivated tags, including content in
+a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
-empty collection intentionally declares that no names are registered. This
-layer does not validate a parameter, field type, source surface, module
-configuration, or `@IF` condition; those require an independently
-machine-readable semantic schema.
+empty collection intentionally declares that no names are registered.
+
+The same analyzer now consumes two explicit `ActionTagCatalog` properties.
+`Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
+parenthesized, nonempty Logic expression from their respective tags only while
+calculating a Text Box field; `buildCalcDateEquation()` additionally returns no
+equation unless the target validation begins with `date` or `datetime`. The
+Field Annotation editor supplies its current unsaved field type and validation
+to the browser analyzer and fallback endpoint. An unsupported form produces an
+advisory warning rather than a save blocker, because legacy metadata can still
+contain a tag that does not become a calculation. No other built-in tag and no
+External Module tag receives parameter or field-context inference until its
+runtime behavior is independently cataloged.
+
+This layer does not evaluate `@IF`, validate a condition, resolve piping or
+record values, or derive any module configuration; those remain future
+schema-backed semantic work.
 
 ## Implementation Transition
 
