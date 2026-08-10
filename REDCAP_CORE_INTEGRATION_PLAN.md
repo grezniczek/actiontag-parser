@@ -741,6 +741,14 @@ requires a nonempty canonical positive integer and warns about permissive
 legacy values that truncate or yield no cap, while preserving quoted and
 unquoted extractor forms. It deliberately does not infer record-page/survey
 availability or data-import enforcement from Field Annotation.
+`@MAXCHOICE` uses a parenthesized comma-delimited choice-code/limit map. Its
+runtime retains only nonempty codes with nonnegative numeric limits, including
+zero and fractional limits, then counts distinct saved values in the current
+event. The catalog validates that exact map shape but does not Pipe it, validate
+metadata code membership, or predict mutable project-wide counts. Checkbox,
+Radio, Drop-down/SQL, Yes-No, and True-False renderers—including their supported
+matrix variants—consume reached choices, and the server repeats the check on
+save to protect against concurrent submissions.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -827,7 +835,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@HIDECHOICE` and `@SHOWCHOICE`, the Checkbox-only assignment contract for
    `@NONEOFTHEABOVE`, and the choice-field/non-matrix, ignored-parameter
    contract for `@RANDOMORDER`, plus the Checkbox-only positive-integer
-   assignment contract for `@MAXCHECKED`, plus
+   assignment contract for `@MAXCHECKED`, plus the parenthesized choice-limit
+   map and choice-field contract for `@MAXCHOICE`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

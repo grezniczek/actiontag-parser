@@ -175,6 +175,15 @@ requires a canonical positive integer, while accepting either quoted or
 unquoted values that the extractor can read. The warning must remain advisory:
 legacy fractions and text are coerced by runtime rather than rejected. Do not
 add a matrix or import-context restriction where the renderer has neither.
+`@MAXCHOICE` is a parenthesized map, not an assignment: use
+`requires_parentheses`, `requires_nonempty_value`, and
+`requires_choice_limit_map` with a `choice_limit_map` parameter. The latter
+must mirror `Form::parseMaxChoiceActionTag()`: comma-delimited entries, each
+with a nonempty code, one equals sign split, and a nonnegative numeric limit.
+Preserve runtime support for zero and fractional limits; do not Pipe the map or
+infer choice-code membership. Its count is dynamic and event-specific, and
+save-time code rechecks it for concurrent requests, so authoring diagnostics
+must validate only static shape and traced target field types.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
