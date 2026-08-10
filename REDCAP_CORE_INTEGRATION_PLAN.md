@@ -376,11 +376,13 @@ project event and the public route for the project's `firstForm`, but no record 
   This is syntax feedback only: it does not determine whether the named field
   exists, is the record ID, is on the host instrument/page, is self/nested, or
   otherwise satisfies runtime field-embedding rules.
+- The authoring workspace's title-bar fullscreen control uses native click and
+  F2 handlers with bundled Font Awesome expand/compress icons. It toggles only
+  the `rcDialog` workspace class and no longer relies on jQuery UI icon CSS or
+  widget behavior.
 
 ### Deferred authoring UI/UX refinements
 
-- Revise the workspace expand/collapse control in `rcDialog` so its icon and
-  behavior do not depend on jQuery UI.
 - Add SQL-specific help based on `Design/sql_field_explanation.php`, either as
   a dedicated workspace tab or through an adjacent help button. Decide the
   presentation before duplicating the explanatory content.

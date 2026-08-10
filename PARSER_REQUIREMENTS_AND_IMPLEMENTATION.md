@@ -919,6 +919,11 @@ imports compare the pre-import graph with a freshly reloaded post-commit graph
 and use the same capped full-path warning body. Every warning is advisory; a
 reporting failure is logged without changing the completed import result.
 
+The workspace's title-bar fullscreen control is likewise framework-independent:
+native click and F2 handlers toggle its dialog class, while bundled Font
+Awesome expand/compress icons describe the current action. It does not depend
+on jQuery UI's icon CSS or widget behavior.
+
 Database-backed regression coverage creates temporary Development and Draft
 Mode projects, then exercises that same pre-commit review helper against real
 project metadata. It verifies that a pre-existing active-scope cycle is not

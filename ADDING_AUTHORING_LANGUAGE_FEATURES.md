@@ -16,6 +16,10 @@ also identify its invalidation boundary. Online Designer metadata changes
 reload the affected form and refetch that catalog; do not add a second client
 side field cache without an equally complete add/rename/delete refresh plan.
 
+Authoring-workspace controls are `rcDialog` components. Use native DOM events
+and the bundled Font Awesome icons for their behavior and presentation; do not
+introduce a jQuery UI dependency for a new control or icon state.
+
 ## First establish the contract
 
 Before changing a list or parser, write down the public spelling, parameters,
