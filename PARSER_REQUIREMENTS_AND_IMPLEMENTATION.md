@@ -469,7 +469,15 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes two explicit `ActionTagCatalog` properties.
+The same analyzer now consumes three explicit `ActionTagCatalog` contracts.
+`Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
+equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
+that value but deliberately skips the tag for File Upload/Signature fields, so
+the editor warns for those exact cases while retaining whitespace-only values,
+quoted JSON-looking text, and unconstrained other field types. The simple
+runtime extractor does not support escaped delimiter quotes, which receive an
+advisory warning. The quoted Piping contents remain the normal Piping
+analyzer's responsibility.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no

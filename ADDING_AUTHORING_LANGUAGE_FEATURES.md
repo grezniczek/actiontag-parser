@@ -96,7 +96,16 @@ semantic. A missing catalog must remain structural-only for stale clients; an
 explicitly empty catalog means no names are registered. Disabled tags do not
 warn because they do not apply at runtime.
 
-`ActionTagCatalog` adds the first deliberately narrow built-in exception.
+`ActionTagCatalog` adds deliberately narrow built-in exceptions. The shared
+`Form::getValueInQuotesActionTag()` extractor proves that `@DEFAULT` needs an
+equals sign and a nonempty single- or double-quoted value; `DataEntry` pipes
+that value and deliberately does not apply the tag to a File Upload or
+Signature field. The analyzer preserves a whitespace-only quoted value because
+the runtime treats it as nonempty, and treats quoted JSON-looking text as a
+quoted value because the extractor does. Its simple quote-delimited extractor
+does not support escaped delimiter quotes, so those receive an advisory
+warning. It does not infer restrictions for other target field types or
+separately parse the quoted Piping contents.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
@@ -104,7 +113,7 @@ and additionally requires a date or datetime validation. The Field Annotation
 workspace sends its current unsaved field type and validation to both browser
 and server analysis, so those rules remain correct while a field is being
 edited. Each finding is a warning because legacy metadata may save a form that
-does not become a working calculation. Do not extend either property to an
+does not become a working calculation. Do not extend these properties to an
 unreviewed Action Tag, and do not infer the same rules for an External Module.
 
 ## Planned catalog ownership and External Module schemas
@@ -571,11 +580,13 @@ moving migration target.
    an unknown-name finding is advisory only. Include a feature-specific runtime
    test for field-type/context restrictions.
 5. Add an `ActionTagCatalog` property only after tracing the precise runtime
-   consumer. A required parenthesized expression, target field type, or
-   validation prefix must be represented per tag and verified in matching
-   PHP/browser semantic fixtures. Treat compatibility with a legacy form that
-   saves but does not calculate as an advisory warning. Do not copy a built-in
-   property onto a module tag without manifest metadata that proves it.
+   consumer. A required parenthesized expression, quoted assignment, target
+   field type, or validation prefix must be represented per tag and verified
+   in matching PHP/browser semantic fixtures. Retain any runtime-observable
+   distinction such as a whitespace-only quoted `@DEFAULT` value. Treat
+   compatibility with a legacy form that saves but does not calculate as an
+   advisory warning. Do not copy a built-in property onto a module tag without
+   manifest metadata that proves it.
 6. For an External Module tag, update the module manifest and module tests
    instead. Confirm collision behavior with a built-in tag and its appearance
    in the project-specific help/catalog; do not edit `Form::getActionTags()`.

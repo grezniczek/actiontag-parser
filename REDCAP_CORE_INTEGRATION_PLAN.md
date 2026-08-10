@@ -679,14 +679,20 @@ from the project `action_tags` catalog. That catalog already merges
 `Form::getActionTags()` with tags returned by
 `ExternalModules::getActionTags($project_id)`, so it proves only core or
 enabled-module registration for the current project. `ActionTagCatalog` adds
-only the separately traced `@CALCTEXT` and `@CALCDATE` contracts: a nonempty
-parenthesized Logic expression on a Text Box field, with a date/datetime
-validation also required for `@CALCDATE`. The Field Annotation workspace sends
-its unsaved type and validation to the fallback endpoint, preserving
-browser/server parity while a field is edited. These are warning-only because
-legacy metadata can save a nonfunctional form. No other parameter, field
-applicability, context, or module-specific semantic is inferred; disabled tags
-are omitted, and a missing catalog remains structural-only for stale clients.
+only separately traced built-in contracts. `@DEFAULT` has an equals sign and
+nonempty single- or double-quoted value under `Form::getValueInQuotesActionTag()`;
+`DataEntry` pipes that value and does not apply it to File Upload/Signature
+fields. The catalog preserves a whitespace-only quoted value and quoted
+JSON-looking text as runtime-accepted shapes, but warns for escaped delimiter
+quotes that the simple runtime extractor cannot use. It does not infer other
+field restrictions or inspect the quoted Piping content. `@CALCTEXT`/`@CALCDATE`
+require a nonempty parenthesized Logic expression on a Text Box field, with a
+date/datetime validation also required for `@CALCDATE`. The Field Annotation
+workspace sends its unsaved type and validation to the fallback endpoint,
+preserving browser/server parity while a field is edited. These are warning-only
+because legacy metadata can save a nonfunctional form. No other parameter,
+field applicability, context, or module-specific semantic is inferred; disabled
+tags are omitted, and a missing catalog remains structural-only for stale clients.
 
 The eventual validator therefore needs an extensible definition/schema mechanism. Until that exists, the EM may provide rich module-specific feedback on top of the shared parser. The parser API should not wait for this standardization.
 
@@ -753,11 +759,11 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    advisory diagnostics for a structurally valid, enabled Action Tag name that
    is not registered by REDCap or an enabled External Module in the current
    project. This consults the existing project catalog and, only for the
-   runtime-traced built-in `@CALCTEXT`/`@CALCDATE` entries, a cataloged
-   parenthesized nonempty Logic expression plus Text Box/date-validation
-   contract. It remains warning-only and leaves all other parameter,
-   field-type, context, and module-specific semantics to a future
-   schema-backed validator.
+   runtime-traced built-in entries, cataloged `@DEFAULT` quoted-assignment and
+   File Upload/Signature exclusion plus `@CALCTEXT`/`@CALCDATE` Logic and
+   Text Box/date-validation contracts. It remains warning-only and leaves all
+   other parameter, field-type, context, and module-specific semantics to a
+   future schema-backed validator.
 9. **Required before PR:** Follow and update the Manual,
    [`ADDING_AUTHORING_LANGUAGE_FEATURES.md`](ADDING_AUTHORING_LANGUAGE_FEATURES.md)
    for every new Smart Variable, Piping project-field modifier, Special
