@@ -256,6 +256,17 @@ analysis. Warn only when a known target is not a Text Box or Calculated Field,
 or when that live range state is explicitly false. Do not require a particular
 validation type, infer a record-ID rule, or turn the tag's help prose into any
 broader page, participant, or import-context restriction.
+`@HIDEBUTTON` shows why the exact renderer branch, rather than its help text,
+must define the catalog. `DataEntry` detects its name and ignores an attached
+assignment or argument, then replaces the generated Now/Today control only in
+the Text Box branches for explicit date, time, and datetime validations. Model
+that with `parameter.kind: none`, `ignores_parameter: true`, and one allowed
+Text Box field context containing the complete runtime validation list,
+including legacy date/datetime names normalized during rendering. The Field
+Annotation workspace already provides live type and validation to browser and
+fallback analysis. Warn only when that known context cannot generate a
+control; do not infer the project-wide button setting, page mode, or an
+unknown/stale target restriction.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

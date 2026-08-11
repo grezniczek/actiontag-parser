@@ -817,6 +817,14 @@ minimum or maximum range to both browser and fallback analysis. The catalog
 therefore warns only for a known non-Text-Box/non-Calculated-Field target or a
 known absent range, and does not infer a validation subtype, record-ID,
 page-lifecycle, participant, or broader import-context rule.
+`@HIDEBUTTON` is a name-presence renderer behavior: an assignment or argument
+is ignored, and `DataEntry` replaces the generated Now/Today control only for
+a Text Box with an explicit date, time, or datetime validation. The catalog
+lists those concrete validation names, including the legacy values normalized
+during rendering, and warns only when the current unsaved field context proves
+that no such control is generated. It deliberately does not infer the
+project-wide control setting, page mode, or behavior from missing/stale field
+metadata.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -926,6 +934,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@WORDLIMIT` and `@CHARLIMIT`, plus
    the ignored-parameter, Text Box/Calculated Field, and configured-range
    contract for `@FORCE-MINMAX`, plus
+   the ignored-parameter, Text Box/date-time-validation contract for
+   `@HIDEBUTTON`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

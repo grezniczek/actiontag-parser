@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes twenty-three explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes thirty-three explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -643,6 +643,15 @@ range to both browser and fallback analysis. The catalog warns only for a known
 non-Text-Box/non-Calculated-Field target or a known absent range, and preserves
 compatibility when that target context is unavailable. It deliberately does
 not require a particular validation type or infer broader page or import rules.
+`@HIDEBUTTON` also recognizes its tag name while ignoring an attached
+assignment or argument. In the form/survey renderer, it replaces the generated
+Now/Today control only in the Text Box branches for the explicit date, time,
+and datetime validation types (including seconds and the legacy date/datetime
+names normalized during rendering). The Field Annotation workspace already
+supplies the live unsaved type and validation to browser and fallback analysis,
+so the catalog warns only when that known context cannot produce such a
+control. It does not infer the project-wide Today/Now-button setting, a
+page-mode distinction, or any effect for an unknown/stale target context.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one
