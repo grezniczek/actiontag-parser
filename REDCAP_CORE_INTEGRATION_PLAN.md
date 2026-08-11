@@ -807,6 +807,16 @@ Both tags share the record-ID exclusion. The `if`/`elseif` ordering gives
 `@WORDLIMIT`. Do not infer a Text Box/Notes restriction: the helper selects
 named inputs and textareas without field-metadata checks. Import and page
 lifecycle are not statically knowable.
+`@FORCE-MINMAX` is range enforcement, not a generic stricter validation mode.
+The runtime recognizes its name and ignores an attached value or argument;
+`DataEntry` uses it only while building a Text Box or Calculated Field's range
+validation, where `redcap_validate()` blocks out-of-range values. `Records`
+uses the same name-presence check to turn a configured minimum or maximum into
+an import error. Field Annotation now supplies the live unsaved presence of a
+minimum or maximum range to both browser and fallback analysis. The catalog
+therefore warns only for a known non-Text-Box/non-Calculated-Field target or a
+known absent range, and does not infer a validation subtype, record-ID,
+page-lifecycle, participant, or broader import-context rule.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -904,6 +914,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the record-ID-aware, ignored-parameter contract for `@USERNAME`, plus
    the record-ID-aware, positive-numeric and precedence-aware contracts for
    `@WORDLIMIT` and `@CHARLIMIT`, plus
+   the ignored-parameter, Text Box/Calculated Field, and configured-range
+   contract for `@FORCE-MINMAX`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

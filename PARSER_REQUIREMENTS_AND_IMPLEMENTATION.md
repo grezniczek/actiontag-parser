@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes twenty-one explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes twenty-two explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -630,6 +630,19 @@ conflicts. The browser helper selects named `input` and `textarea` elements
 without inspecting metadata, so the documented Text Box/Notes intent is not a
 safe static target-type restriction. Data import and page lifecycle remain
 outside Field Annotation analysis.
+`@FORCE-MINMAX` does not consume a parameter: the rendered-field matcher and
+range-enforcement paths recognize the tag name while ignoring an attached
+assignment or argument, so such syntax receives an advisory-only ignored-value
+warning. For form/survey rendering, `DataEntry` changes the range check from
+soft to hard only as it builds validation for a Text Box or Calculated Field.
+`redcap_validate()` then blocks only values outside a configured minimum or
+maximum; it does not strengthen an ordinary format failure. `Records` applies
+the same tag to make an existing configured minimum or maximum an import error.
+The Field Annotation launcher forwards the live unsaved presence of either
+range to both browser and fallback analysis. The catalog warns only for a known
+non-Text-Box/non-Calculated-Field target or a known absent range, and preserves
+compatibility when that target context is unavailable. It deliberately does
+not require a particular validation type or infer broader page or import rules.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no

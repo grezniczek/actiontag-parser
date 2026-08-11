@@ -244,6 +244,18 @@ precedence branch, model the loser with `suppressed_by_action_tags`: here,
 conflict rule. Finally, do not infer a Text Box/Notes field type simply from
 help text: the runtime helper selects named inputs and textareas without using
 metadata.
+`@FORCE-MINMAX` is a separate range-enforcement contract. The rendered-field
+matcher recognizes its name and the range-validation paths ignore an attached
+assignment or argument, so model a supplied parameter as advisory-only with
+`parameter.kind: none` and `ignores_parameter: true`. `DataEntry` changes the
+range check from soft to hard only while building validation for a Text Box or
+Calculated Field; `Records` makes the same field's configured minimum or
+maximum an import error. The Field Annotation launcher must therefore pass its
+live unsaved minimum/maximum presence as a boolean to browser and fallback
+analysis. Warn only when a known target is not a Text Box or Calculated Field,
+or when that live range state is explicitly false. Do not require a particular
+validation type, infer a record-ID rule, or turn the tag's help prose into any
+broader page, participant, or import-context restriction.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
