@@ -357,6 +357,9 @@ survey page. Build boolean per-form `has_multilanguage_data_entry` and
 `has_multilanguage_survey` catalog properties from active MLM languages and
 their `form-active`/`survey-active` settings, then use the named
 `requires_multilanguage_context` property to warn only for known-false state.
+In `DesignController`, call the actual
+`MultiLanguageManagement\\MultiLanguage` class (or import it); there is no
+global `MultiLanguage` controller class.
 The Survey variant also needs `requires_survey_form`. Do not resolve the
 current user's language, validate a dynamic Radio/Drop-down choice code, or
 infer paginated-survey placement or survey-response-review behavior.

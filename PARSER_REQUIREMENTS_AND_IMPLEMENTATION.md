@@ -761,6 +761,10 @@ unqualified tag, only when every applicable surface is known inactive. Runtime
 scans all fields on a Data Entry form but only the current survey page, with
 the last matching tag winning; the editor deliberately does not resolve piped
 language IDs or infer cross-field/page precedence.
+The global `DesignController` reaches that project metadata through the
+namespaced `MultiLanguageManagement\\MultiLanguage` class. This transport
+detail does not alter Multi-Language Management runtime or diagnostic
+semantics.
 `@LANGUAGE-SET`, `@LANGUAGE-SET-FORM`, and
 `@LANGUAGE-SET-SURVEY` are name-only controls: `DataEntry` removes them unless
 the target is a Radio Button or Drop-down, and the browser uses that field's

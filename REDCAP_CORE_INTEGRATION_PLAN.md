@@ -966,6 +966,9 @@ Data Entry or Survey surface, so the editor warns only when that state is
 known false; the Survey tag additionally warns on a known non-survey form.
 It deliberately does not predict a user's language, matching choice code, or
 paginated-survey placement.
+`DesignController` reads this metadata through the namespaced
+`MultiLanguageManagement\\MultiLanguage` class; this catalog transport does
+not modify Multi-Language Management runtime behavior.
 `@LANGUAGE-FORCE`, `@LANGUAGE-FORCE-FORM`, and
 `@LANGUAGE-FORCE-SURVEY` require the documented nonempty quoted language-ID
 assignment, which may be piped before the runtime checks whether it is active.
