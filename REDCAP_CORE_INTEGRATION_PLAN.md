@@ -876,6 +876,16 @@ to a blank field, including the server and browser auto-value paths; later
 changes track normally. Neither tag consumes a parameter or has a field-type
 restriction. Do not require an accompanying auto-set tag in static analysis,
 because the runtime result depends on dynamic Piping and page/value state.
+`@LANGUAGE-CURRENT-FORM` and `@LANGUAGE-CURRENT-SURVEY` ignore attached
+parameters but are target-local Multi-Language Management controls. `DataEntry`
+removes them unless the target is an unvalidated Text Box, Radio Button, or
+Drop-down field. The browser applies the Form tag on Data Entry and the Survey
+tag on survey pages, never on survey-response review pages. The project
+catalog now exposes whether any active MLM language is enabled for each form's
+Data Entry or Survey surface, so the editor warns only when that state is
+known false; the Survey tag additionally warns on a known non-survey form.
+It deliberately does not predict a user's language, matching choice code, or
+paginated-survey placement.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -1000,6 +1010,10 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@LONGITUDE`, plus
    the ignored-parameter, field-local change-tracking contracts for
    `@SAVE-PROMPT-EXEMPT` and `@SAVE-PROMPT-EXEMPT-WHEN-AUTOSET`, plus
+   the ignored-parameter, unvalidated-Text-Box/Radio/Drop-down, and
+   active-Multi-Language-Management-surface contracts for
+   `@LANGUAGE-CURRENT-FORM` and `@LANGUAGE-CURRENT-SURVEY` (with the latter's
+   survey-only gate), plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

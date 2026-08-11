@@ -343,6 +343,23 @@ latter skips only an initial automatic assignment to a blank field. Do not
 claim that either tag disables saving or another field's prompt, and do not
 require a companion auto-set tag: the runtime assignment can depend on Piping,
 browser behavior, current page state, and the stored value.
+`@LANGUAGE-CURRENT-FORM` and `@LANGUAGE-CURRENT-SURVEY` demonstrate a
+surface-specific project capability. The `DataEntry` renderer recognizes their
+names but does not consume an assignment or argument, then removes each unless
+the target is an unvalidated Text Box, Radio Button, or Drop-down. Represent
+that with `parameter.kind: none`, `ignores_parameter: true`, and two allowed
+field contexts: `radio`/`select`, plus `text` with
+`requires_no_validation: true`. As with other validation-dependent contexts,
+an absent validation must remain non-restrictive while an explicit empty value
+proves an unvalidated Text Box. Trace the browser consumer separately: it
+applies the Form variant only on Data Entry and the Survey variant only on a
+survey page. Build boolean per-form `has_multilanguage_data_entry` and
+`has_multilanguage_survey` catalog properties from active MLM languages and
+their `form-active`/`survey-active` settings, then use the named
+`requires_multilanguage_context` property to warn only for known-false state.
+The Survey variant also needs `requires_survey_form`. Do not resolve the
+current user's language, validate a dynamic Radio/Drop-down choice code, or
+infer paginated-survey placement or survey-response-review behavior.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
@@ -830,7 +847,8 @@ moving migration target.
    test for field-type/context restrictions.
 5. Add an `ActionTagCatalog` property only after tracing the precise runtime
    consumer. A required parenthesized expression, quoted assignment, explicit
-   no-parameter form, target field type, validation prefix, or allowed
+   no-parameter form, target field type, validation prefix, named project
+   capability, or allowed
    field-type/validation combination must be represented per tag and verified
    in matching PHP/browser semantic fixtures. Retain any runtime-observable
    distinction such as a
