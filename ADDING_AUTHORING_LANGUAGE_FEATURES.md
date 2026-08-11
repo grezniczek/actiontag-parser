@@ -427,6 +427,22 @@ but current `ProjectHandler::processAnnotation()` attaches barcode settings to
 every non-skipped converted field. Do not introduce a Text/Notes diagnostic
 until that runtime adds the corresponding guard; document intended native use
 separately from a restriction the actual metadata converter does not enforce.
+For the required MyCap task-result family, inspect both the task repair helper
+and the result save path. `@MC-TASK-UUID`, `@MC-TASK-STARTDATE`,
+`@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`, `@MC-TASK-STATUS`,
+`@MC-TASK-SUPPLEMENTALDATA`, and `@MC-TASK-SERIALIZEDRESULT` are exact bare
+annotations. `ProjectMapper::save()` proves an enabled task-form requirement:
+it rejects a task row unless `enabled_for_mycap` is `1`, so expose that
+read-only fact as a per-form catalog property and warn only when it is known
+false. `Task::getFormFields()` offers canonical Text Box defaults for UUID and
+dates, a Drop-down for status, Notes for supplemental JSON, and File Upload
+for the serialized result, but it is a repair/default helper—not proof that
+the generic annotation mapper rejects alternative types. Do not add field-type
+rules for the first six without such a guard. The separate `ResultHandler`
+file-upload loop does prove that `@MC-TASK-SERIALIZEDRESULT` needs a File
+Upload field to receive the serialized result, so that one diagnostic is
+appropriate. Do not model schedules, result values, a participant, or a
+successful transfer as authoring facts.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

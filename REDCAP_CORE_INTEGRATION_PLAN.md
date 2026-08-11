@@ -937,6 +937,20 @@ is likewise bare, but has no static field-type diagnostic: despite help's
 Text Box/Notes guidance, the current generic MyCap annotation pass attaches
 barcode settings after converting every non-skipped field. Do not model native
 support, task/form enablement, capture output, or device permission state.
+The seven required MyCap task-result tags—`@MC-TASK-UUID`,
+`@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
+`@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
+`@MC-TASK-SERIALIZEDRESULT`—are bare, exact annotations. The editor catalog
+adds the read-only per-form `is_mycap_task` flag from the enabled MyCap task
+rows because `ProjectMapper::save()` rejects a task whose `enabled_for_mycap`
+flag is not `1`; diagnostics remain advisory and preserve compatibility when
+that state is absent. `Task::getFormFields()` supplies canonical Text Box,
+Drop-down, Notes, and File Upload fields, but `ProjectMapper::fieldMap()` does
+not enforce types for the first six annotations, so no static type rule is
+invented. `ResultHandler` uploads a serialized result only through a File
+Upload field carrying `@MC-TASK-SERIALIZEDRESULT`; that tag alone receives the
+File Upload diagnostic. Scheduling, result contents, participant state, and
+transfer success remain runtime concerns.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -1081,6 +1095,10 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the MyCap-enabled registration and field-capture contracts for
    `@MC-FIELD-FILE-IMAGECAPTURE`, `@MC-FIELD-FILE-VIDEOCAPTURE`,
    `@MC-FIELD-HIDDEN`, and `@MC-FIELD-TEXT-BARCODE`, plus
+   the MyCap task-result, enabled-task-form contracts for `@MC-TASK-UUID`,
+   `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
+   `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
+   `@MC-TASK-SERIALIZEDRESULT` (the latter File Upload-only), plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

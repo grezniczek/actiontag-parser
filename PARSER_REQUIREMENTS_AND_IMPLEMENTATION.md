@@ -792,6 +792,21 @@ non-skipped field and attaches its barcode settings without checking the field
 type. The catalog therefore models its exact no-parameter form but deliberately
 does not issue a field-type warning. It does not predict enabled MyCap forms,
 native capture support, device permissions, or the resulting scan/upload.
+The required MyCap task-result annotations—`@MC-TASK-UUID`,
+`@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
+`@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
+`@MC-TASK-SERIALIZEDRESULT`—are likewise exact no-parameter tags.
+`ProjectMapper::save()` rejects a task unless its persisted
+`enabled_for_mycap` flag is `1`, so the catalog exposes only that read-only,
+per-form `is_mycap_task` fact and warns when a known instrument is not an
+enabled task. `Task::getFormFields()` supplies Text Box defaults for UUID and
+the three dates, a Drop-down default for status, Notes for supplemental JSON,
+and File Upload for the serialized result; however, the generic annotation
+mapper has no target-type guard for the first six, so authoring does not invent
+one. `ResultHandler` processes a serialized result upload only while iterating
+a File Upload field with `@MC-TASK-SERIALIZEDRESULT`, making that one File
+Upload restriction safe. The analyzer does not predict a task schedule,
+participant, result values, or file-transfer outcome.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one
