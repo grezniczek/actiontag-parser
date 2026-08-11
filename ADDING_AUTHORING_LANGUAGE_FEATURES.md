@@ -335,6 +335,14 @@ on the same target context, use a structured `suppressed_by_action_tags` item:
 win over `@LONGITUDE` on a Text Box. Scope that suppression to Text Boxes, and
 do not infer browser permission, geolocation success, initial emptiness, or
 save behavior from authoring context.
+`@SAVE-PROMPT-EXEMPT` and `@SAVE-PROMPT-EXEMPT-WHEN-AUTOSET` demonstrate
+name-only behavior with no static target restriction. Give each
+`parameter.kind: none` and `ignores_parameter: true`: the former's row class
+stops only that field from setting the page-wide unsaved-change flag, while the
+latter skips only an initial automatic assignment to a blank field. Do not
+claim that either tag disables saving or another field's prompt, and do not
+require a companion auto-set tag: the runtime assignment can depend on Piping,
+browser behavior, current page state, and the stored value.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

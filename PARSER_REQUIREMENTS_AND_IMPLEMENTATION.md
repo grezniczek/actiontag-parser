@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes forty explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes forty-two explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -709,6 +709,15 @@ arguments are ignored. If both occur on one Text Box, the PHP renderer's
 editor warns that `@LONGITUDE` is suppressed in that specific context. The
 contract does not predict browser permission, position availability, an empty
 field, or an eventual saved coordinate.
+`@SAVE-PROMPT-EXEMPT` is also a name-only, field-local browser behavior: its
+row class prevents that field from setting the page's unsaved-change flag. It
+does not suppress the prompt after another field changes, or alter saving.
+`@SAVE-PROMPT-EXEMPT-WHEN-AUTOSET` is the narrower companion: `DataEntry` and
+the automatic-value browser paths suppress change tracking only while initially
+setting a blank field. Later changes still trigger the normal prompt. Neither
+tag has a field-type gate or consumes an attached parameter. The editor does
+not require a companion auto-set tag because the actual assignment may depend
+on runtime Piping, page state, browser geolocation, and a blank saved value.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one
