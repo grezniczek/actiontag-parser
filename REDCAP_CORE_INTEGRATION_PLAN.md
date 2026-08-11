@@ -886,6 +886,16 @@ Data Entry or Survey surface, so the editor warns only when that state is
 known false; the Survey tag additionally warns on a known non-survey form.
 It deliberately does not predict a user's language, matching choice code, or
 paginated-survey placement.
+`@LANGUAGE-FORCE`, `@LANGUAGE-FORCE-FORM`, and
+`@LANGUAGE-FORCE-SURVEY` require the documented nonempty quoted language-ID
+assignment, which may be piped before the runtime checks whether it is active.
+The unqualified variant can apply on either form surface, `-FORM` is limited to
+Data Entry even for a survey-enabled instrument, and `-SURVEY` requires a
+survey with an active Survey MLM language. The catalog's
+`requires_any_multilanguage_contexts` property warns for the unqualified tag
+only when every applicable surface is known inactive. It does not evaluate
+Piping, determine the resulting language, or infer the last-tag-wins order
+across all Data Entry fields/current survey-page fields.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -1014,6 +1024,10 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    active-Multi-Language-Management-surface contracts for
    `@LANGUAGE-CURRENT-FORM` and `@LANGUAGE-CURRENT-SURVEY` (with the latter's
    survey-only gate), plus
+   the quoted-language-ID, active-Multi-Language-Management-surface contracts
+   for `@LANGUAGE-FORCE`, `@LANGUAGE-FORCE-FORM`, and
+   `@LANGUAGE-FORCE-SURVEY` (including their either-surface, Data-Entry-only,
+   and survey-only variants), plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

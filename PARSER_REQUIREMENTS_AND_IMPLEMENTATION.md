@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes forty-four explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes forty-seven explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -729,6 +729,18 @@ also requires a survey instrument. Missing/stale MLM state remains
 non-restrictive. The current language and whether it matches a Radio or
 Drop-down choice are dynamic, so the editor does not attempt a static
 choice-code or paginated-survey-page diagnostic.
+`@LANGUAGE-FORCE`, `@LANGUAGE-FORCE-FORM`, and
+`@LANGUAGE-FORCE-SURVEY` require a nonempty single- or double-quoted language
+ID assignment; that value may contain Piping and is only applied when it
+resolves to an active language. The unqualified variant may work on either
+Data Entry or Survey, the Form variant only on Data Entry (including the Data
+Entry view of a survey-enabled instrument), and the Survey variant only on an
+active survey surface. The catalog therefore uses the existing per-form MLM
+surface state, warning for a known-inactive required surface and, for the
+unqualified tag, only when every applicable surface is known inactive. Runtime
+scans all fields on a Data Entry form but only the current survey page, with
+the last matching tag winning; the editor deliberately does not resolve piped
+language IDs or infer cross-field/page precedence.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

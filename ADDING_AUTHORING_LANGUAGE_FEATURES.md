@@ -360,6 +360,21 @@ their `form-active`/`survey-active` settings, then use the named
 The Survey variant also needs `requires_survey_form`. Do not resolve the
 current user's language, validate a dynamic Radio/Drop-down choice code, or
 infer paginated-survey placement or survey-response-review behavior.
+`@LANGUAGE-FORCE`, `@LANGUAGE-FORCE-FORM`, and
+`@LANGUAGE-FORCE-SURVEY` show how one parameter contract can have different
+runtime surfaces. `MultiLanguage::getLanguageForceActionTags()` extracts the
+last matching quoted assignment, `Piping::replaceVariablesInLabel()` resolves
+it, and MLM applies the result only if it is active. Use the documented,
+nonempty quoted `language ID` assignment properties; do not statically resolve
+a piped value or claim that a literal value is active. The unqualified variant
+may apply on either Data Entry or Survey, so declare
+`requires_any_multilanguage_contexts: ['data_entry', 'survey']` and warn only
+when every applicable surface is known false. The Form variant needs the
+existing Data Entry property even when the instrument is also a survey. The
+Survey variant needs both `requires_survey_form` and the Survey MLM property.
+Runtime scans every instrument field on Data Entry but only the current survey
+page, then lets the last matching tag win; do not infer that cross-field/page
+order without a dedicated, draft-aware page model.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
