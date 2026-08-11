@@ -412,6 +412,21 @@ the consumer is outside the PHP/web Core tree, document that boundary and
 derive only the field and parameter constraints the maintained runtime
 contract proves; do not use a client-specific behavior to invent server-side
 context rules.
+MyCap has a separate setting guard in `Form::getActionTags()` (project setting
+with a system fallback), which likewise belongs to the existing action-tag
+registration catalog rather than a new per-field capability. Trace the
+MyCap API's metadata conversion, not only its help text: that runtime proves
+that `@MC-FIELD-FILE-IMAGECAPTURE` is a bare File Upload-only marker and that
+`@MC-FIELD-FILE-VIDEOCAPTURE` is a File Upload-only marker with a bare default
+form or optional unquoted `duration:audio-mute:flash-mode:device-position`
+settings. Preserve its case-insensitive named values and optional slots, but
+warn where an authored option list cannot produce those settings rather than
+endorsing a silent default fallback. `@MC-FIELD-HIDDEN` is a bare
+any-field marker. The `@MC-FIELD-TEXT-BARCODE` help entry says Text Box/Notes,
+but current `ProjectHandler::processAnnotation()` attaches barcode settings to
+every non-skipped converted field. Do not introduce a Text/Notes diagnostic
+until that runtime adds the corresponding guard; document intended native use
+separately from a restriction the actual metadata converter does not enforce.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

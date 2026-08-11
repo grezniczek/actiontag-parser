@@ -922,6 +922,21 @@ Text Box/Notes fields, `@HIDDEN-APP` has no target restriction,
 Descriptive fields, and `@SYNC-APP` applies to File Upload/Signature fields.
 The diagnostic remains advisory and does not attempt to model device state,
 app identity, scanning, uploads, or rendering.
+The first MyCap field-capture family is separately gated by MyCap's project
+setting (or its system fallback) in `Form::getActionTags()`, so the existing
+project action-tag registry again owns availability. `@MC-FIELD-FILE-IMAGECAPTURE`
+is a bare File Upload-only tag. `@MC-FIELD-FILE-VIDEOCAPTURE` is File
+Upload-only and accepts its bare default form or the runtime's optional,
+unquoted `duration:audio-mute:flash-mode:device-position` settings; each
+colon-delimited setting may be omitted, named settings are case-insensitive,
+and omitted/invalid runtime settings fall back to defaults. The authoring
+contract permits the supported partial forms but warns for syntax that cannot
+produce the documented setting sequence. `@MC-FIELD-HIDDEN` is a bare,
+any-field marker that excludes the field from MyCap. `@MC-FIELD-TEXT-BARCODE`
+is likewise bare, but has no static field-type diagnostic: despite help's
+Text Box/Notes guidance, the current generic MyCap annotation pass attaches
+barcode settings after converting every non-skipped field. Do not model native
+support, task/form enablement, capture output, or device permission state.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -1063,6 +1078,9 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the Mobile-App-enabled registration and no-parameter field contracts for
    `@APPUSERNAME-APP`, `@BARCODE-APP`, `@HIDDEN-APP`, `@READONLY-APP`, and
    `@SYNC-APP`, plus
+   the MyCap-enabled registration and field-capture contracts for
+   `@MC-FIELD-FILE-IMAGECAPTURE`, `@MC-FIELD-FILE-VIDEOCAPTURE`,
+   `@MC-FIELD-HIDDEN`, and `@MC-FIELD-TEXT-BARCODE`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

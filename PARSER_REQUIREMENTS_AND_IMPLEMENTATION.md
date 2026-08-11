@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes fifty-six explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes sixty explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -771,6 +771,27 @@ Upload or Signature fields. The catalog warns for an attached parameter or a
 known incompatible target, but does not predict app initialization, user
 identity, camera permission, scan result, actual uploaded image, or mobile
 rendering state.
+MyCap uses a distinct registration guard: `Form::getActionTags()` exposes its
+tags when the project setting, or its system fallback, enables MyCap. The same
+registration advisory therefore handles availability without a parallel
+capability. `@MC-FIELD-FILE-IMAGECAPTURE` is an exact no-parameter File Upload
+marker. `@MC-FIELD-FILE-VIDEOCAPTURE` is also File Upload-only and accepts its
+bare default form or an unquoted, colon-delimited
+`duration:audio-mute:flash-mode:device-position` list. The current
+`Annotation::pattern()` permits omitted slots, and `ProjectHandler` accepts
+case-insensitive `YES`/`NO`, `AUTO`/`ON`/`OFF`, and
+`BACK`/`FRONT`/`UNSPECIFIED` values; omitted slots retain the runtime defaults.
+The authoring contract preserves those forms but warns for a quoted,
+parenthesized, malformed, or unsupported list rather than treating the
+runtime's silent fallback to defaults as intentional syntax.
+`@MC-FIELD-HIDDEN` is an exact no-parameter marker that excludes a field from
+MyCap before field conversion and has no target-type gate. Although MyCap help
+describes `@MC-FIELD-TEXT-BARCODE` for Text Box and Notes fields, the current
+`ProjectHandler::processAnnotation()` runs after conversion for every
+non-skipped field and attaches its barcode settings without checking the field
+type. The catalog therefore models its exact no-parameter form but deliberately
+does not issue a field-type warning. It does not predict enabled MyCap forms,
+native capture support, device permissions, or the resulting scan/upload.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one
