@@ -487,6 +487,11 @@ file-upload loop does prove that `@MC-TASK-SERIALIZEDRESULT` needs a File
 Upload field to receive the serialized result, so that one diagnostic is
 appropriate. Do not model schedules, result values, a participant, or a
 successful transfer as authoring facts.
+The same task setup and repair process writes all seven annotations onto the
+form automatically, so mark each `suggest_in_editor: false` while retaining
+its diagnostics contract. Do not rely on the repair helper's attempted “MyCap
+App Fields - Do Not Modify” header as an authoring fact: the UUID it creates
+also carries `@HIDDEN-SURVEY`, which fails that helper's exact UUID comparison.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

@@ -1133,7 +1133,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the MyCap task-result, enabled-task-form contracts for `@MC-TASK-UUID`,
    `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
    `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
-   `@MC-TASK-SERIALIZEDRESULT` (the latter File Upload-only), plus
+   `@MC-TASK-SERIALIZEDRESULT` (the latter File Upload-only), including their
+   task-maintained non-suggestible completion policy, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
