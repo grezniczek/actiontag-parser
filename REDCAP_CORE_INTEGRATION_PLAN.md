@@ -976,9 +976,10 @@ Upload field carrying `@MC-TASK-SERIALIZEDRESULT`; that tag alone receives the
 File Upload diagnostic. Scheduling, result contents, participant state, and
 transfer success remain runtime concerns.
 The task-repair regression test uses a temporary project to verify that repair
-adds the UUID field's combined annotation and its attached “MyCap App Fields -
-Do Not Modify” `element_preceding_header`; that header is stored on the UUID
-metadata row rather than as a standalone field.
+restores all seven fields with their combined annotations and attaches “MyCap
+App Fields - Do Not Modify” only to the UUID field. That
+`element_preceding_header` is stored on the UUID metadata row rather than as a
+standalone field.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and

@@ -493,9 +493,10 @@ its diagnostics contract. Its UUID includes `@HIDDEN-SURVEY`, so the repair
 helper must use `Annotation::matchExists()` (not exact string equality) to
 attach the “MyCap App Fields - Do Not Modify” section header above it.
 Protect this repair behavior with a database-backed temporary-project test. It
-must assert the UUID field's combined annotation and its
-`element_preceding_header`, because REDCap attaches a section header to the
-following field rather than creating separate metadata for the header.
+must assert every required field's combined annotation and verify that only the
+UUID field has the `element_preceding_header`, because REDCap attaches a
+section header to the following field rather than creating separate metadata
+for the header.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
