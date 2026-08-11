@@ -1113,6 +1113,14 @@ delete-response setting can remove the record before the web Piping call, the
 participant, user, public-survey, and repeating context unclaimed. Existing
 field completion therefore remains available without claiming it will resolve
 after a deleting stop action.
+Survey Instructions are intentionally not assigned a source policy. The web
+renderer calls Piping from `Surveys/index.php` with event and form arguments,
+but a new public response has no record. The Twilio renderer either leaves the
+text unpiped until a record exists or pipes it without a form argument. Since
+the Survey Settings editor cannot identify that delivery/record state, even a
+fixed page-state warning could incorrectly describe literal, unpiped Twilio
+text. The absent policy preserves existing completion and diagnostics until a
+future authoring context can represent those alternatives precisely.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and

@@ -369,6 +369,13 @@ project event and the public route for the project's `firstForm`, but no record 
   alternative is piped, so its policy intentionally leaves record,
   participant, user, public-survey, and repeating context unclaimed rather
   than presenting a universal field-reference warning.
+  Survey Instructions deliberately have no source policy. The web renderer
+  passes event/form but can start a new public response without a record;
+  Twilio either leaves the instructions unpiped until a record exists or pipes
+  without a form argument. Survey Settings cannot expose that runtime choice,
+  and even a nominal fixed-page diagnostic would misdescribe the literal
+  unpiped branch. The absent policy therefore preserves compatibility pending
+  a context model that can faithfully distinguish those alternatives.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

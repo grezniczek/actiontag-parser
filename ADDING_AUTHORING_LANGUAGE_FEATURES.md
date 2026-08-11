@@ -875,6 +875,13 @@ moving migration target.
    remove the record first. Declare the invariant event/form/page state and
    leave record context absent unless the authoring opener can safely expose
    that configuration-specific choice to the analyzer.
+   Do not add a policy solely because one runtime branch is well understood.
+   Survey Instructions illustrate the limit: web rendering supplies event and
+   form but may have no public-response record, while Twilio either does not
+   run Piping yet or runs it without a form. With no editor-side indication of
+   that branch, a source policy would mislabel valid or literal output. Record
+   the audit and leave the policy absent until the transport can distinguish
+   the alternatives.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,
