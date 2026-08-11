@@ -460,6 +460,10 @@ not invent one. Do not infer the active-task setup, client/provider behavior,
 multi-annotation precedence, data, or uploads. Document this as a controlled
 registration exception until catalogs become the primary legacy Action Tag
 source.
+These annotations are generated into result-field metadata by MyCap task setup,
+not selected through a user-facing task-configuration control. Keep their
+editor hover description explicit: “Auto-generated MyCap active-task result
+annotation. Do not modify manually.”
 For the required MyCap task-result family, inspect both the task repair helper
 and the result save path. `@MC-TASK-UUID`, `@MC-TASK-STARTDATE`,
 `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`, `@MC-TASK-STATUS`,

@@ -825,6 +825,10 @@ only for an enabled MyCap task form. Neither path checks task format or target
 type, so the catalog adds no such restriction. It does not predict an
 active-task configuration, client processing, provider selection when several
 annotations coexist, captured values, or uploads.
+These annotations are written automatically when MyCap task setup creates its
+result fields; they are not a manual task-configuration interface. The
+supplemental editor catalog therefore labels their hover information
+“Auto-generated MyCap active-task result annotation. Do not modify manually.”
 The required MyCap task-result annotations—`@MC-TASK-UUID`,
 `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
 `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and

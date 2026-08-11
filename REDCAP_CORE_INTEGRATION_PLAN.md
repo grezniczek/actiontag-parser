@@ -1127,7 +1127,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `RMO`, `SEL`, `SHO`, `SPR-AUDIO`, `TIM`, and `TWO` tags, plus the 12
    current form-generator/result-mapper `HOL`, `PSA`, `SPA`,
    `SPR-TRANSCRIPTION`, `SPR-EDITED-TRANSCRIPTION`, `STR`, `TON`, `TOW`, and
-   `TRA` tags, plus
+   `TRA` tags, including their auto-generated/do-not-modify hover description,
+   plus
    the MyCap task-result, enabled-task-form contracts for `@MC-TASK-UUID`,
    `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
    `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
