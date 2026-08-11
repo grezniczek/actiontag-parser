@@ -857,6 +857,10 @@ field. The UUID field also contains `@HIDDEN-SURVEY`, so repair uses
 adding the “MyCap App Fields - Do Not Modify” header above it. Their definitions
 therefore set `suggest_in_editor: false`; diagnostics still recognize existing
 fields, but autocomplete does not offer new instances.
+A database-backed MyCap repair regression test creates a temporary project and
+asserts that the generated UUID field retains both its combined annotation and
+the attached `element_preceding_header`; a section header is metadata on that
+field, not a separate metadata row.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one
