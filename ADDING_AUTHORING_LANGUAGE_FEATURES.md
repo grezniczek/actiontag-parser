@@ -849,6 +849,12 @@ moving migration target.
    a `USERID` fallback or repeating state into fixed policy properties. The
    same caution applies to a shared renderer used from multiple routes, such
    as `DataEntry::getRecordCustomEventLabel()` for custom event labels.
+   A source may have a public entry route without being recordless at the
+   point Piping runs. For example, `Surveys/index.php` evaluates a configured
+   end-of-survey redirect only after a response record exists and passes its
+   record, event, and current form in both redirect branches. Model those
+   guaranteed contexts and the fixed `surveys/index.php` page, but do not
+   infer a participant, user, or repeating context from the public route.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,

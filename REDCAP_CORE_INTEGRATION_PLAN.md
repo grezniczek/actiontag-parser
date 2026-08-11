@@ -338,6 +338,13 @@ project event and the public route for the project's `firstForm`, but no record 
   passes record, event, and instance without a form or participant; because it
   is called from multiple Data Entry routes, the policy deliberately omits
   fixed page, user, and repeating claims.
+  The custom end-of-survey redirect runs through `Surveys/index.php` only
+  after a response record exists. Both its public and participant branches
+  pass the record, event, and current survey form to Piping, so its
+  `survey_redirect_url` policy keeps field and record/event/form completion
+  active, keeps `[is-survey]` active, and warns/mutes `[is-form]` as fixed
+  `0`. The public branch has no participant ID; the policy consequently makes
+  no participant, user, or repeating-context assertion.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

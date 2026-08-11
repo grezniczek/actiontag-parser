@@ -1077,6 +1077,14 @@ policy declares `piping_runtime_page` only where its route is fixed: Survey
 Queue custom text is rendered on `surveys/index.php`, so `[is-survey]` remains
 active there while `[is-form]` is muted and warned as a fixed `0`. Sources
 whose route can vary retain normal runtime compatibility.
+The configured end-of-survey redirect URL has the same fixed survey endpoint,
+but a stronger replacement context: every redirect branch reaches Piping only
+after it has a response record and passes that record, event, and current
+survey form. Its `survey_redirect_url` policy therefore keeps field and
+record/event/form Smart Variable completion active, keeps `[is-survey]`
+active, and mutes/warns `[is-form]` as a fixed `0`. The public completion path
+does not pass a participant ID, so the policy deliberately makes no
+survey-participant, user, or repeating-context claim.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and
