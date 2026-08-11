@@ -984,6 +984,10 @@ Its production-draft counterpart verifies that this repair path writes only to
 `redcap_metadata_temp` and leaves the active `redcap_metadata` table unchanged.
 The corresponding non-draft production test confirms the early guard makes no
 change to either metadata table.
+A partial-repair regression uses `Task::getMissingAnnotationList()` to repair
+only the remaining annotations, preserves existing UUID/status metadata, and
+confirms every required annotation occurs once. It does not prescribe field
+order because inserting missing fields can shift the former final field.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and

@@ -502,6 +502,11 @@ preloaded: the repair belongs in `redcap_metadata_temp` and must not alter live
 metadata.
 Also cover production outside draft mode: snapshot both tables and confirm the
 repair guard makes no change until a draft is opened.
+For a partially repaired task, use `Task::getMissingAnnotationList()` as the
+repair input rather than blindly passing every required annotation. Test that
+existing fields remain unchanged and every required annotation occurs once;
+field order is not contractual because the field inserter can shift the prior
+final field.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

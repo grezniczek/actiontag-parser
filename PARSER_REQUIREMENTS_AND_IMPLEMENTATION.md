@@ -867,6 +867,11 @@ that repair writes the seven fields and UUID header only to
 `redcap_metadata_temp`, leaving live metadata unchanged.
 The production non-draft regression test snapshots both metadata tables and
 verifies that the repair guard leaves them unchanged until draft mode opens.
+A partial-repair test first uses `Task::getMissingAnnotationList()` and passes
+only those results to repair. It verifies that existing UUID and status fields
+retain their annotations and header, while the other five fields are added once
+each. Do not make field order part of this contract: `ProjectDesigner` inserts
+the missing fields before the prior final field and may shift its order.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one
