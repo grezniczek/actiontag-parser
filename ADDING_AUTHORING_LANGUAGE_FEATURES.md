@@ -889,6 +889,13 @@ moving migration target.
    page state; preserve field completion and leave record, participant, user,
    public-survey, and repeating state absent rather than imposing the public
    branch's limitation globally.
+   A shared template pair should also share its source kind when one runtime
+   method pipes both at the same point. Automated Survey Invitation subject
+   and content are prepared by `SurveyScheduler::scheduleParticipantInvitation()`
+   with record, event, instance, form, and generated participant ID. Declare
+   those invariant contexts once; do not infer a sender user or runtime page
+   from a scheduler that may run during an interactive save or background
+   processing.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,

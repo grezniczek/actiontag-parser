@@ -1128,6 +1128,15 @@ form, so `[is-survey]` remains active and `[is-form]` is muted/warned as fixed
 participant may have one; `survey_offline_instructions` therefore leaves
 record, participant, user, public-survey, and repeating context unclaimed and
 preserves field completion rather than applying a public-only restriction.
+Automated Survey Invitation subject and rich-text content share the
+`survey_invitation_automated_email` policy. Before queueing an invitation,
+`SurveyScheduler::scheduleParticipantInvitation()` pipes both with the target
+record, event, instance, selected survey form, and a generated follow-up
+participant ID. They therefore receive normal field and context-aware
+completion, including participant-backed Smart Variables, and have no
+public-survey route. Scheduling can originate from interactive save paths or
+background work, so user, repeating, and PAGE-state context deliberately
+remain unclaimed; `[is-survey]` and `[is-form]` retain normal completion.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and

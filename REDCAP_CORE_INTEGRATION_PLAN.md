@@ -383,6 +383,14 @@ project event and the public route for the project's `firstForm`, but no record 
   consequently leaves record, participant, user, public-survey, and repeating
   context variable, preserving field completion instead of imposing a
   public-only restriction.
+  Automated Survey Invitation subject and content share the scheduler-time
+  `survey_invitation_automated_email` policy. Before their queued invitation
+  is persisted, `SurveyScheduler::scheduleParticipantInvitation()` pipes both
+  with the target record, event, instance, selected form, and generated
+  follow-up participant ID. Field and participant-aware completion is thus
+  available and the route is not public; user, repeating, and PAGE-state
+  context remain variable because scheduling can run interactively or in the
+  background, so page-state Smart Variables remain unlabelled.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;
