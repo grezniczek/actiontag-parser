@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes fifty-one explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes fifty-six explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -758,6 +758,19 @@ least two active survey languages. The catalog therefore ignores attached
 parameters, requires a survey form, and warns only when the per-form
 multiple-active-survey-language state is known false. It does not infer the
 current survey page, `@IF` outcome, PDF output, or switcher rendering state.
+The REDCap Mobile App family is registered by `Form::getActionTags()` only
+when the system Mobile App feature is enabled. Thus, the existing
+project-specific registration check already reports these names as unknown
+when that feature is unavailable; no duplicate project capability is needed.
+`@APPUSERNAME-APP` and `@BARCODE-APP` are bare markers applied to Text Box or
+Notes fields. `@HIDDEN-APP` is a bare mobile-only visibility marker with no
+field-type restriction. `@READONLY-APP` is a bare marker for editable mobile
+controls (Checkbox, File Upload, Radio, Drop-down/SQL, Slider, Text Box,
+Notes, Yes-No, and True-False), and `@SYNC-APP` is a bare marker only for File
+Upload or Signature fields. The catalog warns for an attached parameter or a
+known incompatible target, but does not predict app initialization, user
+identity, camera permission, scan result, actual uploaded image, or mobile
+rendering state.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

@@ -398,6 +398,20 @@ has at least two active MLM languages. Model only the proven name-only form,
 `has_multiple_multilanguage_survey_languages` capability. Warn only when that
 capability is known false. Do not add a target-field restriction, or infer a
 current page, conditional `@IF` result, PDF context, or rendered-menu state.
+The Mobile App `-APP` family is an example of a feature guarded by the runtime
+registry rather than a per-field project capability. `Form::getActionTags()`
+adds these names only when the system Mobile App feature is enabled, so the
+existing project `action_tags` registration check already governs whether the
+editor recognizes them. Do not add a second availability flag just to repeat
+that guard. Their catalog contracts are all bare tags: `@APPUSERNAME-APP` and
+`@BARCODE-APP` are Text Box/Notes-only, `@HIDDEN-APP` is unrestricted,
+`@READONLY-APP` applies only to editable mobile controls, and `@SYNC-APP` is
+File Upload/Signature-only. Native-client outcomes—identity, camera access,
+scan result, upload state, and rendering—remain outside static analysis. When
+the consumer is outside the PHP/web Core tree, document that boundary and
+derive only the field and parameter constraints the maintained runtime
+contract proves; do not use a client-specific behavior to invent server-side
+context rules.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

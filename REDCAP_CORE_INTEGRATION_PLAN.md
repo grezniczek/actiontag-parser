@@ -912,6 +912,16 @@ languages for the switcher to exist. The catalog adds a per-form
 multiple-active-survey-language capability and warns only when it is known
 false, after the existing survey-form gate. Page placement, conditional
 outcome, PDF state, and rendered switcher state remain runtime-dependent.
+The five `-APP` tags are REDCap Mobile App tags, not MyCap tags. Core registers
+them through `Form::getActionTags()` only while the system Mobile App feature
+is enabled, which means the existing project action-tag registry correctly
+handles their availability without another catalog capability. The authoring
+contracts require no parameter: `@APPUSERNAME-APP` and `@BARCODE-APP` apply to
+Text Box/Notes fields, `@HIDDEN-APP` has no target restriction,
+`@READONLY-APP` applies to editable mobile controls rather than Calculated or
+Descriptive fields, and `@SYNC-APP` applies to File Upload/Signature fields.
+The diagnostic remains advisory and does not attempt to model device state,
+app identity, scanning, uploads, or rendering.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -1050,6 +1060,9 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    and survey-only variants), plus
    the ignored-parameter, survey-only, multiple-active-Survey-MLM-language
    contract for `@LANGUAGE-MENU-STATIC`, plus
+   the Mobile-App-enabled registration and no-parameter field contracts for
+   `@APPUSERNAME-APP`, `@BARCODE-APP`, `@HIDDEN-APP`, `@READONLY-APP`, and
+   `@SYNC-APP`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
