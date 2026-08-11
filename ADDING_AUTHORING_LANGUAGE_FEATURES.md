@@ -375,6 +375,20 @@ Survey variant needs both `requires_survey_form` and the Survey MLM property.
 Runtime scans every instrument field on Data Entry but only the current survey
 page, then lets the last matching tag win; do not infer that cross-field/page
 order without a dedicated, draft-aware page model.
+`@LANGUAGE-SET`, `@LANGUAGE-SET-FORM`, and
+`@LANGUAGE-SET-SURVEY` use a field value rather than a tag parameter. The
+`DataEntry` renderer recognizes the names (and ignores any attached parameter)
+but removes them unless the target is `radio` or `select`; the browser then
+binds change handling and uses the selected code as a candidate language ID.
+Model the family with `parameter.kind: none`, `ignores_parameter: true`, and a
+Radio/Drop-down `allowed_field_contexts` entry. The unqualified tag uses
+`requires_any_multilanguage_contexts`; the Form and Survey variants use the
+matching single-surface property, and the Survey variant additionally requires
+a survey form. Do not validate static choice-code membership or language
+activeness: initialization and change handling depend on the current value and
+MLM's runtime configuration. Likewise, do not infer cookie changes or
+precedence among multiple tagged fields without a draft-aware rendered-page
+model.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

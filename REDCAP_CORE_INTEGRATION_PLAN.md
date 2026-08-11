@@ -896,6 +896,15 @@ survey with an active Survey MLM language. The catalog's
 only when every applicable surface is known inactive. It does not evaluate
 Piping, determine the resulting language, or infer the last-tag-wins order
 across all Data Entry fields/current survey-page fields.
+`@LANGUAGE-SET`, `@LANGUAGE-SET-FORM`, and
+`@LANGUAGE-SET-SURVEY` are no-parameter browser controls whose target field
+value selects the displayed language. The renderer permits only Radio Button
+and Drop-down fields. The base tag can apply on either MLM surface, `-FORM`
+uses Data Entry even for a survey-enabled instrument, and `-SURVEY` needs a
+survey with an active Survey language. The editor reuses the named MLM context
+properties and warns only for known false state. It does not predict a current
+choice value, its active-language status, cookie behavior, or ordering among
+multiple tagged fields.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -1027,6 +1036,10 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the quoted-language-ID, active-Multi-Language-Management-surface contracts
    for `@LANGUAGE-FORCE`, `@LANGUAGE-FORCE-FORM`, and
    `@LANGUAGE-FORCE-SURVEY` (including their either-surface, Data-Entry-only,
+   and survey-only variants), plus
+   the ignored-parameter, Radio/Drop-down, and active-Multi-Language-
+   Management-surface contracts for `@LANGUAGE-SET`, `@LANGUAGE-SET-FORM`, and
+   `@LANGUAGE-SET-SURVEY` (including their either-surface, Data-Entry-only,
    and survey-only variants), plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
