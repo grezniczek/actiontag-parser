@@ -988,6 +988,9 @@ A partial-repair regression uses `Task::getMissingAnnotationList()` to repair
 only the remaining annotations, preserves existing UUID/status metadata, and
 confirms every required annotation occurs once. It does not prescribe field
 order because inserting missing fields can shift the former final field.
+Draft partial-repair coverage uses intentionally different active and draft
+annotations to verify that missing detection reads the draft data dictionary;
+repair completes that draft metadata without changing active metadata.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and

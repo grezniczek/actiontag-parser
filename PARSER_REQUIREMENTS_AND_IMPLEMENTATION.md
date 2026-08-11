@@ -872,6 +872,10 @@ only those results to repair. It verifies that existing UUID and status fields
 retain their annotations and header, while the other five fields are added once
 each. Do not make field order part of this contract: `ProjectDesigner` inserts
 the missing fields before the prior final field and may shift its order.
+Draft-mode partial coverage deliberately gives live metadata a UUID annotation
+and draft metadata a status annotation. It proves
+`Task::getMissingAnnotationList()` reads the draft data dictionary, restores
+the draft's missing six fields, and leaves the different live metadata intact.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

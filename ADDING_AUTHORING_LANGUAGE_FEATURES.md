@@ -507,6 +507,10 @@ repair input rather than blindly passing every required annotation. Test that
 existing fields remain unchanged and every required annotation occurs once;
 field order is not contractual because the field inserter can shift the prior
 final field.
+In draft mode, test the detection source separately by placing different
+required annotations in live and draft metadata. `Task::getMissingAnnotationList()`
+must use the draft data dictionary, and repair must leave the live metadata
+unchanged.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
