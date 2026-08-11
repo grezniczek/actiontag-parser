@@ -825,6 +825,12 @@ during rendering, and warns only when the current unsaved field context proves
 that no such control is generated. It deliberately does not infer the
 project-wide control setting, page mode, or behavior from missing/stale field
 metadata.
+`@PASSWORDMASK` likewise ignores an attached assignment or argument, but the
+runtime changes the input type only in the Text Box renderer. The renderer
+skips or converts the record-ID field to hidden before that code runs. The
+catalog therefore warns only for a known non-Text-Box target or known record
+ID; validation type, browser autofill, and untraced action-tag interactions
+remain outside the advisory contract.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -936,6 +942,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    contract for `@FORCE-MINMAX`, plus
    the ignored-parameter, Text Box/date-time-validation contract for
    `@HIDEBUTTON`, plus
+   the ignored-parameter, Text Box, and record-ID contract for
+   `@PASSWORDMASK`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

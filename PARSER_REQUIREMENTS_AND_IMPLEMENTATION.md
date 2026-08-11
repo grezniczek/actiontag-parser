@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes thirty-three explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes thirty-four explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -652,6 +652,14 @@ supplies the live unsaved type and validation to browser and fallback analysis,
 so the catalog warns only when that known context cannot produce such a
 control. It does not infer the project-wide Today/Now-button setting, a
 page-mode distinction, or any effect for an unknown/stale target context.
+`@PASSWORDMASK` has the same name-presence, ignored-parameter behavior, but
+`DataEntry` applies it only in the Text Box renderer by changing the input to
+password type and showing the existing disclaimer link. The record-ID field is
+skipped or converted to a hidden form element before that renderer runs. The
+catalog therefore warns only for a known non-Text-Box target or the known
+record-ID field. It deliberately does not require or exclude a validation
+type, infer browser-autofill behavior, or model interactions with other action
+tags that have not been independently traced.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

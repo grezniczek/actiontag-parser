@@ -267,6 +267,16 @@ Annotation workspace already provides live type and validation to browser and
 fallback analysis. Warn only when that known context cannot generate a
 control; do not infer the project-wide button setting, page mode, or an
 unknown/stale target restriction.
+`@PASSWORDMASK` follows the name-presence pattern, not a value extractor: the
+form-element matcher recognizes an attached assignment or argument but the
+Text Box renderer uses only the tag name to select password input type. Model
+that with `parameter.kind: none` and `ignores_parameter: true`. That renderer
+does not run for any other field type, and the record-ID field is skipped or
+converted to hidden first, so add the exact Text Box allowed context and
+`excluded_record_id_field`. Warn only when the shared catalog and current
+Field Annotation context prove either condition. Do not infer a validation
+constraint, browser-autofill behavior, or a collision rule from an unreviewed
+combination with another Action Tag.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
