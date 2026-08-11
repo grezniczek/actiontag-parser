@@ -786,6 +786,16 @@ branches, documentation calling them date-only does not establish a valid
 metadata restriction. Give them the same ignored-parameter-only definitions;
 do not add target, validation, page-context, or synthetic `@NOW`/`@TODAY`
 collision diagnostics.
+`@USERNAME` is a server-rendered blank-value default. It uses the active user
+(or impersonated user), with the survey session identity on a survey. Its
+renderer identifies the tag name and ignores an attached value or argument, but
+the enclosing form/survey path skips the project record-ID field exactly. Add
+the ignored-parameter definition and `excluded_record_id_field`; the shared
+catalog already provides `record_id_field`, while the workspace now forwards
+the known target field to both browser and fallback analysis. Warn only for a
+known record-ID target. Do not infer field type, validation, survey-user,
+blank-value, pagination, or page-lifecycle restrictions, and do not state that
+the tag makes the field read-only.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -880,6 +890,7 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    plus
    the matching ignored-parameter contracts for `@TODAY`, `@TODAY-SERVER`, and
    `@TODAY-UTC`, plus
+   the record-ID-aware, ignored-parameter contract for `@USERNAME`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

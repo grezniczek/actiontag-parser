@@ -222,6 +222,16 @@ help's date-only wording into a field or validation restriction: the shared
 runtime handles time validations before it reaches the `@TODAY` date branches.
 Likewise, do not invent an `@NOW`/`@TODAY` collision warning without a traced
 runtime conflict contract.
+`@USERNAME` shows how a target identity can be a valid catalog property without
+inventing a field-type rule. Its server-side renderer populates blank values
+and skips the project record-ID field. Add `excluded_record_id_field: true`
+only after exposing the existing `record_id_field` catalog value to both
+analyzers' target-field context. Diagnose the exclusion only when both names
+are known; batch editors and stale clients must remain non-restrictive. The
+same renderer ignores attached values and parenthesized arguments, so pair that
+property with `parameter.kind: none` and `ignores_parameter: true`. Do not
+infer a Text Box, validation, respondent identity, pagination, blank-value, or
+read-only rule: `@READONLY` is a separate runtime feature.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

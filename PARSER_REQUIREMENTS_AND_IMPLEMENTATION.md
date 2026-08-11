@@ -606,6 +606,17 @@ also precedes the date branches, so help's date-only description is not a safe
 metadata applicability rule. The catalog gives all three the same narrow,
 ignored-parameter contract and intentionally adds neither a target restriction
 nor a collision diagnostic when a `@NOW` tag also appears.
+`@USERNAME` is rendered server-side: on a blank value, it uses the active
+REDCap user (including the impersonated username), while surveys receive their
+survey-session identity. The renderer recognizes the tag name and ignores an
+attached value or parenthesized argument. It performs that work only for a
+form/survey field whose name differs from the project's record-ID field. The
+catalog thus uses the ignored-parameter property plus
+`excluded_record_id_field`; Field Annotation can issue an advisory only when
+its known target name equals the catalog's `record_id_field`. It intentionally
+does not infer a field type, validation, survey identity, blank-value,
+page-pagination, or read-only rule. In particular, `@USERNAME` does not make a
+field uneditable; users may combine it with `@READONLY` when that is desired.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no
