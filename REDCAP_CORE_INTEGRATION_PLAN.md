@@ -391,6 +391,12 @@ project event and the public route for the project's `firstForm`, but no record 
   available and the route is not public; user, repeating, and PAGE-state
   context remain variable because scheduling can run interactively or in the
   background, so page-state Smart Variables remain unlabelled.
+  Project Setup's Custom Record Label has the `custom_record_label` policy.
+  `getCustomRecordLabels()` renders every displayed record with the first
+  event in its arm, so it has record/event context and no participant or
+  public-survey route. Data Entry and header paths can pre-resolve additional
+  form, user, or repeat data while generic record lists do not; these and PAGE
+  state consequently remain unclaimed, preserving compatible completion.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

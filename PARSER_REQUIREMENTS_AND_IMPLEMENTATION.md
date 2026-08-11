@@ -1137,6 +1137,14 @@ completion, including participant-backed Smart Variables, and have no
 public-survey route. Scheduling can originate from interactive save paths or
 background work, so user, repeating, and PAGE-state context deliberately
 remain unclaimed; `[is-survey]` and `[is-form]` retain normal completion.
+Custom Record Label uses the shared `custom_record_label` policy. Its general
+`getCustomRecordLabels()` renderer pipes every displayed record with the first
+event in that record's arm, making field, record, and event references
+available. It has no survey participant or public-survey route. Some Data
+Entry and header callers first resolve extra form, user, or repeat-instance
+state, while generic record-list callers do not; the policy intentionally
+leaves those contexts and PAGE state unclaimed so completion remains
+advisory-compatible across all display locations.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and

@@ -896,6 +896,13 @@ moving migration target.
    those invariant contexts once; do not infer a sender user or runtime page
    from a scheduler that may run during an interactive save or background
    processing.
+   A shared project setting may likewise have a core-wide renderer with
+   caller-specific pre-processing. `getCustomRecordLabels()` always pipes
+   each displayed record with an event (the first in that record's arm), but
+   Data Entry callers can first provide form, user, and repeat details that
+   generic record lists do not. Its policy should declare only the invariant
+   record/event facts and the absence of participant/public-survey routes;
+   leave the caller-dependent contexts unclaimed.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,
