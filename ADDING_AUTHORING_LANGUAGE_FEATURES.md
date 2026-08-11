@@ -325,6 +325,16 @@ image renderer reads only width and height. The File Upload selector also
 includes Signature fields, so do not carry `@INLINE-PREVIEW`'s Signature
 exclusion over. Do not make the current uploaded type/value, embedded-field
 placement, or PDF sizing a static restriction.
+`@LATITUDE` and `@LONGITUDE` demonstrate a paired name-only browser feature.
+Their renderer and geolocation helper use the recognized name and a Text Box
+only; neither consumes an assignment/argument nor requires numeric validation.
+Give both tags `parameter.kind: none` with `ignores_parameter: true` and a
+Text-Box-only `allowed_field_contexts` entry. When runtime precedence depends
+on the same target context, use a structured `suppressed_by_action_tags` item:
+`DataEntry`'s first branch and the browser's latitude test make `@LATITUDE`
+win over `@LONGITUDE` on a Text Box. Scope that suppression to Text Boxes, and
+do not infer browser permission, geolocation success, initial emptiness, or
+save behavior from authoring context.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

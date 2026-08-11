@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes thirty-eight explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes forty explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -700,6 +700,15 @@ than two accepted values, but the browser image renderer reads only the first
 width and height values, so the editor warns that later values are ignored.
 The current file type/value and the PDF renderer's dynamic sizing behavior are
 not static authoring facts.
+`@LATITUDE` and `@LONGITUDE` are name-only browser geolocation tags. The
+Text Box renderer adds their buttons and the browser helper writes only to a
+text input; neither path requires or checks a particular validation, so the
+catalog warns only for a known non-Text-Box target. Attached assignments and
+arguments are ignored. If both occur on one Text Box, the PHP renderer's
+`@LATITUDE` branch and the browser initializer both select latitude, so the
+editor warns that `@LONGITUDE` is suppressed in that specific context. The
+contract does not predict browser permission, position availability, an empty
+field, or an eventual saved coordinate.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

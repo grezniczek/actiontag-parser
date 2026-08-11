@@ -860,6 +860,14 @@ or a percentage in the range `(0, 100]`; one invalid value discards the whole
 dimension list. The image renderer reads only width and height, so later valid
 values receive an advisory. The catalog deliberately does not infer a current
 file type/value or whether the PDF rendering path can use dimensions.
+`@LATITUDE` and `@LONGITUDE` are name-only geolocation renderers. `DataEntry`
+creates their button only in its Text Box path, and the browser helper writes
+only to a text input, without requiring a numeric validation. The catalog
+therefore warns only for a known non-Text-Box target and treats attached
+assignments or arguments as ignored. If both names appear on a Text Box, the
+PHP branch and browser startup logic choose latitude; `@LONGITUDE` receives a
+scoped precedence advisory. Permission, position, blank-value, and save
+outcomes remain runtime-dependent.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -979,7 +987,9 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the ignored-parameter, non-Signature-File-Upload/attached-Descriptive, and
    File-Upload-only `@INLINE` precedence contract for `@INLINE-PREVIEW`, plus
    the File-Upload-only, optional parenthesized-dimension contract for
-   `@INLINE`, plus
+   `@INLINE`, plus the ignored-parameter, Text-Box-only geolocation and
+   Text-Box-scoped `@LATITUDE` precedence contract for `@LATITUDE` and
+   `@LONGITUDE`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
