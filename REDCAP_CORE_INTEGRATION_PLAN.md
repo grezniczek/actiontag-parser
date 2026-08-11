@@ -361,6 +361,14 @@ project event and the public route for the project's `firstForm`, but no record 
   acknowledgement call omits it. The policy deliberately leaves form,
   participant, user, public-survey, and repeating context variable instead of
   treating the Twilio-specific omission as a blanket restriction.
+  The stop-action alternative acknowledgement is web-only: it receives the
+  current event and form from `Surveys/index.php`, keeping form-dependent
+  completion active, `[is-survey]` active, and `[is-form]` fixed at `0`.
+  Twilio's stop-action flow sends the ordinary acknowledgement instead. The
+  optional delete-response setting can remove the record before this
+  alternative is piped, so its policy intentionally leaves record,
+  participant, user, public-survey, and repeating context unclaimed rather
+  than presenting a universal field-reference warning.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

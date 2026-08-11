@@ -869,6 +869,12 @@ moving migration target.
    completion. Its policy declares the invariant record/event/page facts and
    leaves form context absent, preserving normal completion without promising
    that every delivery mode produces the same value.
+   Also trace source settings that alter the Piping call's useful data, not
+   just its formal arguments. The web-only stop-action acknowledgement always
+   supplies event and form, but its optional delete-response setting can
+   remove the record first. Declare the invariant event/form/page state and
+   leave record context absent unless the authoring opener can safely expose
+   that configuration-specific choice to the analyzer.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,

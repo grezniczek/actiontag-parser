@@ -1103,6 +1103,16 @@ also provide the current form, but the Twilio acknowledgement call omits that
 argument. Its `survey_acknowledgement` policy intentionally leaves form,
 participant, user, public-survey, and repeating context unclaimed rather than
 warning for a variable that remains valid on normal web completion.
+The stop-action alternative acknowledgement has a different contract. Its
+text is rendered only by the web completion branch, which passes the current
+event and form from `Surveys/index.php`; `[is-survey]` is active and
+`[is-form]` is fixed `0`. Twilio detects stop actions but sends the ordinary
+acknowledgement, never this alternative text. Because the optional
+delete-response setting can remove the record before the web Piping call, the
+`survey_stop_action_acknowledgement` policy deliberately leaves record,
+participant, user, public-survey, and repeating context unclaimed. Existing
+field completion therefore remains available without claiming it will resolve
+after a deleting stop action.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and
