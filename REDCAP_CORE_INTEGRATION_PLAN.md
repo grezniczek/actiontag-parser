@@ -905,6 +905,13 @@ survey with an active Survey language. The editor reuses the named MLM context
 properties and warns only for known false state. It does not predict a current
 choice value, its active-language status, cookie behavior, or ordering among
 multiple tagged fields.
+`@LANGUAGE-MENU-STATIC` is a no-parameter survey-page control that keeps the
+language switcher visible. `MultiLanguage` checks its name only after applying
+`@IF`, never applies it to PDFs, and needs at least two active Survey MLM
+languages for the switcher to exist. The catalog adds a per-form
+multiple-active-survey-language capability and warns only when it is known
+false, after the existing survey-form gate. Page placement, conditional
+outcome, PDF state, and rendered switcher state remain runtime-dependent.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -1041,6 +1048,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    Management-surface contracts for `@LANGUAGE-SET`, `@LANGUAGE-SET-FORM`, and
    `@LANGUAGE-SET-SURVEY` (including their either-surface, Data-Entry-only,
    and survey-only variants), plus
+   the ignored-parameter, survey-only, multiple-active-Survey-MLM-language
+   contract for `@LANGUAGE-MENU-STATIC`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

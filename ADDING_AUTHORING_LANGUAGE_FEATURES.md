@@ -389,6 +389,15 @@ activeness: initialization and change handling depend on the current value and
 MLM's runtime configuration. Likewise, do not infer cookie changes or
 precedence among multiple tagged fields without a draft-aware rendered-page
 model.
+`@LANGUAGE-MENU-STATIC` demonstrates a feature whose field annotation is
+page-level rather than field-level. `MultiLanguage::getTranslationSettings()`
+looks for its name after `Form::replaceIfActionTag()` on the current survey
+page, ignores PDFs, and sets a browser flag that matters only when the survey
+has at least two active MLM languages. Model only the proven name-only form,
+`requires_survey_form`, and a boolean per-form
+`has_multiple_multilanguage_survey_languages` capability. Warn only when that
+capability is known false. Do not add a target-field restriction, or infer a
+current page, conditional `@IF` result, PDF context, or rendered-menu state.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
