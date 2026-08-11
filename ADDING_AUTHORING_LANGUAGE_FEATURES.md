@@ -215,6 +215,13 @@ Do not turn help's Text Box, import, page-lifecycle, or read-only descriptions
 into an unproven catalog restriction. Preserve the distinct runtime timestamp
 sources in documentation: browser-local for `@NOW`, page-render server time for
 `@NOW-SERVER`, and browser time converted to UTC for `@NOW-UTC`.
+The `@TODAY`, `@TODAY-SERVER`, and `@TODAY-UTC` family shares that exact
+ignored-parameter contract. Its regular date branches use browser-local,
+page-render server, and browser-to-UTC dates, respectively. Do not promote the
+help's date-only wording into a field or validation restriction: the shared
+runtime handles time validations before it reaches the `@TODAY` date branches.
+Likewise, do not invent an `@NOW`/`@TODAY` collision warning without a traced
+runtime conflict contract.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

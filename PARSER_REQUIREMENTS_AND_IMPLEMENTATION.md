@@ -598,6 +598,14 @@ or validation. Field Annotation therefore deliberately does not infer a Text
 Box-only, validation, branching, or page-mode contract from help prose. It
 also does not promise auto-population during data import or make the target
 field read-only; those behaviors are outside this static annotation contract.
+`@TODAY`, `@TODAY-SERVER`, and `@TODAY-UTC` travel through the same selector,
+blank-input check, and ignored-parameter path. Their date branches use the
+browser-local date, the date rendered with the page by the server, and the
+browser date converted to UTC, respectively. The shared time-validation branch
+also precedes the date branches, so help's date-only description is not a safe
+metadata applicability rule. The catalog gives all three the same narrow,
+ignored-parameter contract and intentionally adds neither a target restriction
+nor a collision diagnostic when a `@NOW` tag also appears.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no

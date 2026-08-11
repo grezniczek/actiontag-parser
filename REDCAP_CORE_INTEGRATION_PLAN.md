@@ -778,6 +778,14 @@ validation, branching, import, or page-mode restriction: this consumer does
 not examine metadata before it selects the input, while Field Annotation cannot
 establish page lifecycle or import context. The contract also does not claim
 that the tag makes a field read-only.
+`@TODAY`, `@TODAY-SERVER`, and `@TODAY-UTC` follow that exact same browser-side
+selection and parameter behavior. Their regular date branches use the local
+browser date, page-render server date, and browser date converted to UTC,
+respectively. Since the common time-validation path runs before those date
+branches, documentation calling them date-only does not establish a valid
+metadata restriction. Give them the same ignored-parameter-only definitions;
+do not add target, validation, page-context, or synthetic `@NOW`/`@TODAY`
+collision diagnostics.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -870,6 +878,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the bare, Missing-Data-Code-aware contract for `@NOMISSING`, plus
    the ignored-parameter contracts for `@NOW`, `@NOW-SERVER`, and `@NOW-UTC`,
    plus
+   the matching ignored-parameter contracts for `@TODAY`, `@TODAY-SERVER`, and
+   `@TODAY-UTC`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.
