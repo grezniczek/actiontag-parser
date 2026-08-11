@@ -464,6 +464,9 @@ These annotations are generated into result-field metadata by MyCap task setup,
 not selected through a user-facing task-configuration control. Keep their
 editor hover description explicit: “Auto-generated MyCap active-task result
 annotation. Do not modify manually.”
+When a catalog description carries an authoring warning, cover its normal
+parsed-token-to-hover rendering path in the browser workspace test; testing the
+semantic analyzer alone does not verify the user-facing notice.
 For the required MyCap task-result family, inspect both the task repair helper
 and the result save path. `@MC-TASK-UUID`, `@MC-TASK-STARTDATE`,
 `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`, `@MC-TASK-STATUS`,

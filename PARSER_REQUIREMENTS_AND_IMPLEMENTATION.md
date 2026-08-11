@@ -829,6 +829,9 @@ These annotations are written automatically when MyCap task setup creates its
 result fields; they are not a manual task-configuration interface. The
 supplemental editor catalog therefore labels their hover information
 “Auto-generated MyCap active-task result annotation. Do not modify manually.”
+The browser workspace integration test exercises the parsed annotation through
+the normal hover-routing path and asserts that this catalog-provided warning is
+rendered.
 The required MyCap task-result annotations—`@MC-TASK-UUID`,
 `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
 `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
