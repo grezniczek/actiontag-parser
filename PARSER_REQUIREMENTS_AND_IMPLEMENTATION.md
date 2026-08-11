@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes thirty-seven explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes thirty-eight explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -690,6 +690,16 @@ tag renders the file directly and suppresses this tag's preview toggle. It does
 not suppress an attached Descriptive preview. The contract does not predict
 whether a file has been uploaded, whether its extension supports preview, or
 the dynamic rendered page state.
+`@INLINE` is the related File Upload-only renderer, with no Signature-field
+exclusion. Its optional dimensions come only from parentheses: the bare form
+and `@INLINE()` retain default sizing, while an equals assignment is ignored.
+`DataEntry` accepts each comma-separated dimension when it is PHP-numeric,
+without a positivity restriction, or a percentage greater than 0 and at most
+100; one invalid component discards the whole dimension list. It retains more
+than two accepted values, but the browser image renderer reads only the first
+width and height values, so the editor warns that later values are ignored.
+The current file type/value and the PDF renderer's dynamic sizing behavior are
+not static authoring facts.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

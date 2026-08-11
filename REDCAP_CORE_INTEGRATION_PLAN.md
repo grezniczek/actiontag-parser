@@ -852,6 +852,14 @@ missing/stale catalog. The renderer suppresses the preview toggle when
 scoped to File Upload fields because Descriptive fields have no corresponding
 `@INLINE` renderer. Whether a value has been uploaded, its type can be
 previewed, or a current page can show a control remains runtime-dependent.
+`@INLINE` itself is a File Upload-only browser renderer, including Signature
+fields. Its bare and empty-parenthesis forms use default sizing; assignments
+are ignored. The optional comma-separated parenthesized values match
+`DataEntry` exactly: each is PHP-numeric (including zero or negative values)
+or a percentage in the range `(0, 100]`; one invalid value discards the whole
+dimension list. The image renderer reads only width and height, so later valid
+values receive an advisory. The catalog deliberately does not infer a current
+file type/value or whether the PDF rendering path can use dimensions.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -970,6 +978,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    contract for `@CONSENT-VERSION`, plus
    the ignored-parameter, non-Signature-File-Upload/attached-Descriptive, and
    File-Upload-only `@INLINE` precedence contract for `@INLINE-PREVIEW`, plus
+   the File-Upload-only, optional parenthesized-dimension contract for
+   `@INLINE`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

@@ -312,6 +312,19 @@ one tag suppresses another only in one runtime branch, use a structured
 non-Signature File Upload field, not on an attached Descriptive field. Do not
 infer that a file value exists, that its extension is previewable, or that the
 control can currently render.
+`@INLINE` is a different File Upload-only renderer and illustrates a parameter
+that is optional but meaningful only in one delimiter form. A bare tag and
+empty parentheses use default sizing. `DataEntry` reads a nonempty
+parenthesized comma-separated list, accepts PHP-numeric values without a
+positive range or percentages in `(0, 100]`, and discards the whole list when
+one component fails. An equals assignment is not consumed. Model this with a
+tag-specific parameter validator rather than a generic positive-number rule;
+the browser equivalent must mirror PHP's numeric acceptance. Preserve the
+runtime's accepted but ineffective excess values as an advisory: the browser
+image renderer reads only width and height. The File Upload selector also
+includes Signature fields, so do not carry `@INLINE-PREVIEW`'s Signature
+exclusion over. Do not make the current uploaded type/value, embedded-field
+placement, or PDF sizing a static restriction.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
