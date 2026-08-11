@@ -817,6 +817,16 @@ minimum or maximum range to both browser and fallback analysis. The catalog
 therefore warns only for a known non-Text-Box/non-Calculated-Field target or a
 known absent range, and does not infer a validation subtype, record-ID,
 page-lifecycle, participant, or broader import-context rule.
+`@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
+helper, removes brackets and literal spaces, and performs an exact project
+metadata lookup. The authoring contract accepts the runtime's bare and
+bracketed field-name forms and warns for an empty, malformed, unknown, or
+non-downloadable target. The shared field catalog now exposes whether a
+Descriptive field has an attachment, allowing a target to be verified as a
+File Upload field or an attached Descriptive field. Do not infer a counter
+field type restriction from help text: the browser incrementer uses any
+matching named form control. Same-event/repeating-context behavior and whether
+an actual download occurs remain runtime concerns.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -916,6 +926,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@WORDLIMIT` and `@CHARLIMIT`, plus
    the ignored-parameter, Text Box/Calculated Field, and configured-range
    contract for `@FORCE-MINMAX`, plus
+   the parenthesized File Upload/attached-Descriptive target contract for
+   `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

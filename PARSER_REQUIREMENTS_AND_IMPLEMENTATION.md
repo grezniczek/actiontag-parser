@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes twenty-two explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes twenty-three explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -643,6 +643,19 @@ range to both browser and fallback analysis. The catalog warns only for a known
 non-Text-Box/non-Calculated-Field target or a known absent range, and preserves
 compatibility when that target context is unavailable. It deliberately does
 not require a particular validation type or infer broader page or import rules.
+`@DOWNLOAD-COUNT` reads the first parenthesized value through
+`Form::getValueInParenthesesActionTag()`, then removes brackets and literal
+spaces before its exact metadata lookup. The catalog therefore accepts one
+nonempty bare or bracketed lower-case field name, but warns for a quoted,
+qualified, or multi-value expression that cannot resolve at runtime. When the
+current `fields` catalog is available, a missing target is an advisory and the
+target must be either a File Upload field or a Descriptive field with a numeric
+attachment ID; the shared catalog publishes that condition as
+`has_attachment`. Missing/stale field metadata remains non-restrictive. The
+counter field itself does not receive a Text Box/Notes restriction because the
+browser incrementer selects any matching named form control. The runtime's
+same-event/repeating-context rule and actual download lifecycle remain outside
+static authoring analysis.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no

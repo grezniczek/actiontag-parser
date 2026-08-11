@@ -256,6 +256,18 @@ analysis. Warn only when a known target is not a Text Box or Calculated Field,
 or when that live range state is explicitly false. Do not require a particular
 validation type, infer a record-ID rule, or turn the tag's help prose into any
 broader page, participant, or import-context restriction.
+`@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
+target name, then removes brackets and literal spaces before looking up exact
+project metadata. Accept both the documented bare field name and its bracketed
+form inside nonempty parentheses; reject event/instance-qualified expressions,
+lists, and quoted text that cannot become that one runtime lookup. A known
+target must be a File Upload field or a Descriptive field whose metadata has an
+attachment. Expose that attachment state as `has_attachment` on the shared
+field catalog, and warn only when a current catalog proves the name unknown or
+not downloadable. Do not infer a Text Box/Notes restriction for the counter
+field: the browser incrementer selects any matching named form control. The
+same-event/repeating-context requirement and whether a rendered link is
+actually downloaded are dynamic runtime behavior, not static editor rules.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`
