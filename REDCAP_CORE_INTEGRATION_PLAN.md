@@ -843,6 +843,15 @@ marks surveys with an active e-Consent item through a read-only lookup. The
 editor warns only for a known non-survey form, a known survey without active
 e-Consent, the record-ID field, or a non-Text-Box target. It does not predict
 the DAG/MLM-specific selected version, blank-value state, or survey submission.
+`@INLINE-PREVIEW` ignores an attached value and applies only to a non-Signature
+File Upload field or an attached Descriptive field. The field-context matcher
+now supports explicitly excluded validations and a known required attachment,
+using the existing shared `fields[].has_attachment` state without restricting a
+missing/stale catalog. The renderer suppresses the preview toggle when
+`@INLINE` is also active on a File Upload field; that collision is deliberately
+scoped to File Upload fields because Descriptive fields have no corresponding
+`@INLINE` renderer. Whether a value has been uploaded, its type can be
+previewed, or a current page can show a control remains runtime-dependent.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -959,6 +968,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the ignored-parameter-only contract for `@RICHTEXT`, plus
    the ignored-parameter, active-e-Consent-survey, Text Box, and record-ID
    contract for `@CONSENT-VERSION`, plus
+   the ignored-parameter, non-Signature-File-Upload/attached-Descriptive, and
+   File-Upload-only `@INLINE` precedence contract for `@INLINE-PREVIEW`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

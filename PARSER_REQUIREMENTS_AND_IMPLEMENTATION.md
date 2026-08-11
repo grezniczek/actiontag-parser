@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes thirty-six explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes thirty-seven explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -678,6 +678,18 @@ only when a known target is not a survey, has no active e-Consent item, is the
 record-ID field, or is not a Text Box. The boolean deliberately does not claim
 which record/DAG/MLM language version will be selected, whether the field will
 be blank, or whether the survey page will be submitted.
+`@INLINE-PREVIEW` also uses only its recognized name, so attached assignments
+and arguments are advisory-only. `DataEntry` adds a preview control for a File
+Upload field except a Signature/Enhanced Signature field, and
+`Files::getFileDownloadLink()` adds one for an attached Descriptive field.
+The shared field catalog already publishes `has_attachment`; allowed field
+contexts now additionally support a required attachment and excluded validation
+names, while unknown/stale attachment state remains non-restrictive. The
+catalog also records the traced, File-Upload-only `@INLINE` precedence: that
+tag renders the file directly and suppresses this tag's preview toggle. It does
+not suppress an attached Descriptive preview. The contract does not predict
+whether a file has been uploaded, whether its extension supports preview, or
+the dynamic rendered page state.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

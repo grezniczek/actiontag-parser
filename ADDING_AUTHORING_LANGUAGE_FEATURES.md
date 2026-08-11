@@ -296,6 +296,22 @@ do not resolve the record/DAG/MLM-specific version in this catalog. Combine
 exclusion, and an allowed Text Box context. The analyzer must remain
 non-restrictive for missing/stale e-Consent state and must not predict the
 current version, field blankness, or submission outcome.
+`@INLINE-PREVIEW` demonstrates a compound, target-local renderer contract.
+The form-element matcher supplies its name even with an attached assignment or
+argument, but the preview paths consume neither. `DataEntry` marks a File
+Upload field previewable unless its validation is `signature` or
+`enhanced_signature`; for a Descriptive field, the attachment renderer can
+create a preview only when its metadata has an attachment. Represent those
+alternatives with `allowed_field_contexts`: use `excluded_validations` for the
+File Upload branch and `requires_attachment: true` for the Descriptive branch.
+The analyzer may derive the current field's `has_attachment` from the shared
+field catalog, but a missing/stale property must remain non-restrictive. When
+one tag suppresses another only in one runtime branch, use a structured
+`suppressed_by_action_tags` item with `names` and scoped
+`allowed_field_contexts`; here `@INLINE` suppresses `@INLINE-PREVIEW` on a
+non-Signature File Upload field, not on an attached Descriptive field. Do not
+infer that a file value exists, that its extension is previewable, or that the
+control can currently render.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
