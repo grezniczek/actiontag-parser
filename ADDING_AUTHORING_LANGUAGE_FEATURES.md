@@ -464,6 +464,10 @@ These annotations are generated into result-field metadata by MyCap task setup,
 not selected through a user-facing task-configuration control. Keep their
 editor hover description explicit: “Auto-generated MyCap active-task result
 annotation. Do not modify manually.”
+Use `suggest_in_editor: false` for this kind of recognized-but-not-manually-
+authored annotation. The semantic catalog must retain it so existing generated
+metadata does not receive an unknown-tag warning, while generic completion
+must omit it rather than inviting authors to add it.
 When a catalog description carries an authoring warning, cover its normal
 parsed-token-to-hover rendering path in the browser workspace test; testing the
 semantic analyzer alone does not verify the user-facing notice.
