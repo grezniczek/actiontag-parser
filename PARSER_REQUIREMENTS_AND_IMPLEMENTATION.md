@@ -39,6 +39,17 @@ from the participant before returning those values. This is not a general
 recordless-form rule. Event or instance qualifiers remain unsupported, and an
 explicit `survey-title` instrument parameter remains its independently
 cataloged metadata-target route rather than a participant fallback.
+The MyCap participant display label has a distinct invariant path:
+`Participant::getParticipantIdentifier()` passes its record and event to
+`replaceVariablesInLabel()` but no form or survey participant. Its source
+policy therefore keeps record/event Piping active and warns/mutes only
+form-dependent Smart Variables. It deliberately makes no user or repeating
+claim because those values depend on the caller and Piping's `USERID` fallback.
+The same form-less record/event contract applies to editable custom event
+labels. `DataEntry::getRecordCustomEventLabel()` is their shared renderer and
+passes record, event, and instance but neither a form nor participant to
+Piping. Its callers use more than one Data Entry route, so page, user, and
+repeating-state capabilities remain intentionally undeclared.
 
 ### Field-embedding host evidence
 
@@ -468,6 +479,15 @@ and does not prevent editing or saving. Deactivated tags, including content in
 a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
+
+The first intended architecture step after initial built-in completion is
+deliberately deferred: define External Module Action Tag syntax metadata. That
+may be a declarative `config.json` schema, a controlled module callback for
+catalog entries and/or parameter validation, or a constrained combination.
+Decide its responsibilities, safe execution boundary, validation, and
+`ExternalModules::getActionTags()` transport before implementing it. Until
+then, an enabled module contributes only its registered name and description;
+its syntax and semantics remain module-owned.
 
 The same analyzer now consumes sixty explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an

@@ -326,6 +326,18 @@ project event and the public route for the project's `firstForm`, but no record 
   form-or-repeating-event Smart Variables remain available only when that
   exact first event repeats; its language-specific translation path is
   intentionally outside that default-source policy.
+  MyCap's editable participant display label is resolved centrally by
+  `Participant::getParticipantIdentifier()`, which always supplies the
+  participant's record and event but no form or survey participant to Piping.
+  Its policy keeps record/event references available and warns/mutes only
+  form-dependent Smart Variables. It intentionally leaves user and repeating
+  context unclaimed because the resolver depends on its caller and Piping's
+  `USERID` fallback for those values.
+  Editable custom event labels have the same record/event but form-less
+  contract. Their shared `DataEntry::getRecordCustomEventLabel()` renderer
+  passes record, event, and instance without a form or participant; because it
+  is called from multiple Data Entry routes, the policy deliberately omits
+  fixed page, user, and repeating claims.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;
@@ -672,6 +684,15 @@ The existing core autoloader already resolves classes from `Classes/`, so adding
 Parser output is structural and applies equally to built-in and custom tags. Semantic validation remains a separate layer.
 
 Native tag descriptions are currently available through facilities such as `Form::getActionTags()` and `ExternalModules::getActionTags()`, but descriptions alone do not define parameter schemas, field constraints, or contextual rules. Custom-tag manifests likewise generally provide names/descriptions rather than machine-readable parameter schemas.
+
+**Deferred first post-initial-completion step:** settle an External Module
+Action Tag extension contract before implementing it. A declarative
+`config.json` schema may provide syntax/catalog properties, and a controlled
+callback may be needed for module-provided catalog entries and/or parameter
+validation. The contract must define those responsibilities, safe execution,
+validation, and transport through `ExternalModules::getActionTags()` before
+the enhanced editor relies on it. Until then, retain the current name and
+description registration advisory only.
 
 **Implemented initial scope:** `ActionTagSemanticAnalyzer` supplies a matching
 PHP/browser advisory for an enabled, structurally valid tag name that is absent

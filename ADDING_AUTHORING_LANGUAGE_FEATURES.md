@@ -526,15 +526,17 @@ Special Function and Action Tag catalogs. Do not make that inversion until the
 catalog can represent every runtime, availability, documentation, and
 compatibility detail its consumers require.
 
-External Module-provided Action Tags will need a documented `config.json`
-schema for their authoring syntax requirements: at minimum, the tag's syntax
-and parameters, and eventually any machine-readable context or field-type
-constraints that the enhanced tools can safely diagnose. The EM framework must
-validate and expose that metadata through `ExternalModules::getActionTags()`.
-Only then can the shared parser, completion, hover, and diagnostics provide
-meaningful structured support beyond the current name-and-description entries.
-Until then, an EM tag remains structurally recognized and documented, but its
-module-specific syntax and semantics remain the module's responsibility.
+**Putative first post-initial-completion step (deferred):** design structured
+authoring support for External Module-provided Action Tags. It must not start
+until built-in coverage is complete and its extension contract is deliberately
+settled. The design may combine a documented declarative `config.json` schema
+with a controlled hook/callback for module-provided catalog entries and/or
+parameter validation; decide those responsibilities, safety boundaries, and
+transport before exposing either mechanism. The EM framework will then need to
+validate and expose the selected metadata through
+`ExternalModules::getActionTags()`. Until that architecture exists, an EM tag
+remains structurally recognized and documented, but its module-specific syntax
+and semantics remain the module's responsibility.
 
 When either architecture change is implemented, revise this manual before the
 same PR is opened: replace the source-of-truth map and the per-feature steps,
@@ -840,7 +842,13 @@ moving migration target.
    restriction. An absent entry preserves existing behavior. A recordless
    source prohibits project-field completion and affects only smart variables
    with matching cataloged `requires_*_context` properties; it must not imply a
-   broad Smart Variable allow-list.
+   broad Smart Variable allow-list. A shared resolver can establish an
+   invariant policy even when its callers differ: for example, MyCap's
+   participant display-label resolver always supplies record and event but no
+   form or survey participant. Do not convert caller-dependent values such as
+   a `USERID` fallback or repeating state into fixed policy properties. The
+   same caution applies to a shared renderer used from multiple routes, such
+   as `DataEntry::getRecordCustomEventLabel()` for custom event labels.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,
