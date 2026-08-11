@@ -354,6 +354,13 @@ project event and the public route for the project's `firstForm`, but no record 
   participant ID, while deliberately leaving user, repeating, public-survey,
   and PAGE-state context variable; page-state Smart Variables remain
   unlabelled rather than being diagnosed as fixed results.
+  Survey acknowledgement Piping always runs through `Surveys/index.php` with
+  the completed record and event, so its policy keeps those references active,
+  keeps `[is-survey]` active, and warns/mutes `[is-form]` as fixed `0`.
+  Standard web completion also passes the current form, but Twilio's
+  acknowledgement call omits it. The policy deliberately leaves form,
+  participant, user, public-survey, and repeating context variable instead of
+  treating the Twilio-specific omission as a blanket restriction.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

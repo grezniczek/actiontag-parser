@@ -1095,6 +1095,14 @@ completion active and correctly declares no participant ID, but leaves user,
 repeating, public-survey, and PAGE-state context unclaimed: those callers do
 not have one invariant value. In particular, `[is-survey]` and `[is-form]`
 remain normally available rather than being labelled as fixed results.
+Survey acknowledgement Piping has a narrower invariant policy. All rendering
+paths run from `Surveys/index.php` with the completed record and event, so
+field and record/event references remain available, `[is-survey]` remains
+active, and `[is-form]` is muted/warned as fixed `0`. The ordinary web paths
+also provide the current form, but the Twilio acknowledgement call omits that
+argument. Its `survey_acknowledgement` policy intentionally leaves form,
+participant, user, public-survey, and repeating context unclaimed rather than
+warning for a variable that remains valid on normal web completion.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and

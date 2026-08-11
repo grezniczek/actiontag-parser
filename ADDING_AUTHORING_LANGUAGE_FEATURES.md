@@ -862,6 +862,13 @@ moving migration target.
    Give the subject and content one shared source kind for the invariant
    context, and leave user, repeating, public-survey, and runtime-page
    properties absent when they differ by caller.
+   If one caller supplies less context than the rest and the source UI cannot
+   identify that caller, do not turn that path into a global denial. Survey
+   acknowledgement text always has record/event context and a fixed survey
+   endpoint, but its Twilio call omits the form argument used by web
+   completion. Its policy declares the invariant record/event/page facts and
+   leaves form context absent, preserving normal completion without promising
+   that every delivery mode produces the same value.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,
