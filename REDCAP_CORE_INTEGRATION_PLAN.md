@@ -975,22 +975,6 @@ invented. `ResultHandler` uploads a serialized result only through a File
 Upload field carrying `@MC-TASK-SERIALIZEDRESULT`; that tag alone receives the
 File Upload diagnostic. Scheduling, result contents, participant state, and
 transfer success remain runtime concerns.
-The task-repair regression test uses a temporary project to verify that repair
-restores all seven fields with their combined annotations and attaches “MyCap
-App Fields - Do Not Modify” only to the UUID field. That
-`element_preceding_header` is stored on the UUID metadata row rather than as a
-standalone field.
-Its production-draft counterpart verifies that this repair path writes only to
-`redcap_metadata_temp` and leaves the active `redcap_metadata` table unchanged.
-The corresponding non-draft production test confirms the early guard makes no
-change to either metadata table.
-A partial-repair regression uses `Task::getMissingAnnotationList()` to repair
-only the remaining annotations, preserves existing UUID/status metadata, and
-confirms every required annotation occurs once. It does not prescribe field
-order because inserting missing fields can shift the former final field.
-Draft partial-repair coverage uses intentionally different active and draft
-annotations to verify that missing detection reads the draft data dictionary;
-repair completes that draft metadata without changing active metadata.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -1150,8 +1134,7 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
    `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
    `@MC-TASK-SERIALIZEDRESULT` (the latter File Upload-only), including their
-   task-maintained non-suggestible completion policy and repaired “Do Not
-   Modify” header insertion, plus
+   task-maintained non-suggestible completion policy, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

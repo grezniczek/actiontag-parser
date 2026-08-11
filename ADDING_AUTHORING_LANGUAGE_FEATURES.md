@@ -489,28 +489,9 @@ appropriate. Do not model schedules, result values, a participant, or a
 successful transfer as authoring facts.
 The same task setup and repair process writes all seven annotations onto the
 form automatically, so mark each `suggest_in_editor: false` while retaining
-its diagnostics contract. Its UUID includes `@HIDDEN-SURVEY`, so the repair
-helper must use `Annotation::matchExists()` (not exact string equality) to
-attach the “MyCap App Fields - Do Not Modify” section header above it.
-Protect this repair behavior with a database-backed temporary-project test. It
-must assert every required field's combined annotation and verify that only the
-UUID field has the `element_preceding_header`, because REDCap attaches a
-section header to the following field rather than creating separate metadata
-for the header.
-Repeat the assertion in production draft mode with both metadata tables
-preloaded: the repair belongs in `redcap_metadata_temp` and must not alter live
-metadata.
-Also cover production outside draft mode: snapshot both tables and confirm the
-repair guard makes no change until a draft is opened.
-For a partially repaired task, use `Task::getMissingAnnotationList()` as the
-repair input rather than blindly passing every required annotation. Test that
-existing fields remain unchanged and every required annotation occurs once;
-field order is not contractual because the field inserter can shift the prior
-final field.
-In draft mode, test the detection source separately by placing different
-required annotations in live and draft metadata. `Task::getMissingAnnotationList()`
-must use the draft data dictionary, and repair must leave the live metadata
-unchanged.
+its diagnostics contract. Do not rely on the repair helper's attempted “MyCap
+App Fields - Do Not Modify” header as an authoring fact: the UUID it creates
+also carries `@HIDDEN-SURVEY`, which fails that helper's exact UUID comparison.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
