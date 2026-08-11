@@ -792,6 +792,18 @@ non-skipped field and attaches its barcode settings without checking the field
 type. The catalog therefore models its exact no-parameter form but deliberately
 does not issue a field-type warning. It does not predict enabled MyCap forms,
 native capture support, device permissions, or the resulting scan/upload.
+The registered MyCap participant metadata tags—`@MC-PARTICIPANT-CODE`,
+`@MC-PARTICIPANT-JOINDATE`, `@MC-PARTICIPANT-JOINDATE-UTC`, and
+`@MC-PARTICIPANT-TIMEZONE`—are name-only markers: the participant helpers and
+the Data Entry action-tag matcher recognize the name while their update paths
+ignore an attached assignment or argument. Their write helpers explicitly skip
+the record-ID field, so the catalog warns there. Although the MyCap field
+creation helpers and help text use Text Box defaults (with datetime validation
+for the two join dates), the runtime selects annotated fields with no
+target-type check; authoring therefore warns that a supplied parameter is
+ignored but does not invent a Text Box or validation restriction. It does not
+predict participant creation, an app join, the stored values, or a successful
+record update.
 The required MyCap task-result annotations—`@MC-TASK-UUID`,
 `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
 `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and

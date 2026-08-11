@@ -937,6 +937,17 @@ is likewise bare, but has no static field-type diagnostic: despite help's
 Text Box/Notes guidance, the current generic MyCap annotation pass attaches
 barcode settings after converting every non-skipped field. Do not model native
 support, task/form enablement, capture output, or device permission state.
+The four MyCap participant metadata tags—`@MC-PARTICIPANT-CODE`,
+`@MC-PARTICIPANT-JOINDATE`, `@MC-PARTICIPANT-JOINDATE-UTC`, and
+`@MC-PARTICIPANT-TIMEZONE`—are name-only markers. The existing Data Entry
+matcher and the MyCap participant update helpers recognize the name but do not
+consume an assignment or argument, so the catalog issues the existing ignored-
+parameter advisory. The update loops skip a matched record-ID field, which is
+the only static target restriction. The defaults created by the MyCap helpers
+are Text Boxes (the two dates have datetime validation), but the runtime
+selection and write paths have no target-type guard; do not turn help text into
+a Text Box or validation diagnostic. Participant creation, joining, values,
+and save outcomes remain runtime concerns.
 The seven required MyCap task-result tags—`@MC-TASK-UUID`,
 `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
 `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
@@ -1095,6 +1106,9 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the MyCap-enabled registration and field-capture contracts for
    `@MC-FIELD-FILE-IMAGECAPTURE`, `@MC-FIELD-FILE-VIDEOCAPTURE`,
    `@MC-FIELD-HIDDEN`, and `@MC-FIELD-TEXT-BARCODE`, plus
+   the MyCap participant-metadata, ignored-parameter, non-record-ID contracts
+   for `@MC-PARTICIPANT-CODE`, `@MC-PARTICIPANT-JOINDATE`,
+   `@MC-PARTICIPANT-JOINDATE-UTC`, and `@MC-PARTICIPANT-TIMEZONE`, plus
    the MyCap task-result, enabled-task-form contracts for `@MC-TASK-UUID`,
    `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
    `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and

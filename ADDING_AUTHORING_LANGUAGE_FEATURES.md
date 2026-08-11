@@ -427,6 +427,18 @@ but current `ProjectHandler::processAnnotation()` attaches barcode settings to
 every non-skipped converted field. Do not introduce a Text/Notes diagnostic
 until that runtime adds the corresponding guard; document intended native use
 separately from a restriction the actual metadata converter does not enforce.
+The registered MyCap participant metadata tags require a different evidence
+path from the capture tags. `@MC-PARTICIPANT-CODE`,
+`@MC-PARTICIPANT-JOINDATE`, `@MC-PARTICIPANT-JOINDATE-UTC`, and
+`@MC-PARTICIPANT-TIMEZONE` are found by the Data Entry matcher and participant
+helpers by name; their assignment/argument text is not consumed. Model this as
+an ignored-parameter warning, not a malformed-tag error. The participant
+write helpers explicitly skip the record ID, which justifies that one target
+diagnostic. Their Text Box and datetime defaults are created by repair/setup
+helpers, while the runtime lookup and save paths accept annotated fields
+without a type or validation guard. Do not add a Text Box or date-validation
+requirement until a runtime consumer enforces it. Keep participant
+creation, join timing, values, and save success outside static analysis.
 For the required MyCap task-result family, inspect both the task repair helper
 and the result save path. `@MC-TASK-UUID`, `@MC-TASK-STARTDATE`,
 `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`, `@MC-TASK-STATUS`,
