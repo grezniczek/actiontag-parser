@@ -766,6 +766,18 @@ editor catalog carries the project’s parsed Missing Data Code availability and
 warns only when that state is known false. It adds no field-type rule, because
 runtime support is broader than any one renderer and configuration may later
 be enabled.
+`@NOW`, `@NOW-SERVER`, and `@NOW-UTC` are handled in browser-side
+`enableActionTags()`: each recognized row receives a value only when its
+literal `input[name]` is blank, and appended values or parenthesized arguments
+are ignored. Catalog each tag with `parameter.kind: none` and
+`ignores_parameter: true`, producing a warning rather than a rejection when
+an author supplies one. The three sources remain distinct at runtime: local
+browser time, the timestamp rendered with the page by the server, and browser
+time converted to UTC, respectively. Do not infer a target field type,
+validation, branching, import, or page-mode restriction: this consumer does
+not examine metadata before it selects the input, while Field Annotation cannot
+establish page lifecycle or import context. The contract also does not claim
+that the tag makes a field read-only.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -856,6 +868,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    map and choice-field contract for `@MAXCHOICE`, plus its survey-only,
    completed-response variant `@MAXCHOICE-SURVEY-COMPLETE`, plus
    the bare, Missing-Data-Code-aware contract for `@NOMISSING`, plus
+   the ignored-parameter contracts for `@NOW`, `@NOW-SERVER`, and `@NOW-UTC`,
+   plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

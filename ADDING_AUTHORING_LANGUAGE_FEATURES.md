@@ -204,6 +204,17 @@ boolean `has_missing_data_codes` in the editor catalog and use
 `requires_missing_data_codes` to warn when it is known false. Do not add a
 field-type restriction, and retain compatibility when an older catalog does
 not supply the availability state.
+`@NOW`, `@NOW-SERVER`, and `@NOW-UTC` demonstrate the converse. Their
+browser-side consumer recognizes the row class and ignores appended values or
+parenthesized arguments, so use `parameter.kind: none` together with
+`ignores_parameter: true`. The editor should advise that the value has no
+effect, not reject the otherwise recognized tag. Trace the actual consumer
+before adding any target rule: `enableActionTags()` fills a blank literal
+`input[name]` and does not gate on field metadata, validation, or branching.
+Do not turn help's Text Box, import, page-lifecycle, or read-only descriptions
+into an unproven catalog restriction. Preserve the distinct runtime timestamp
+sources in documentation: browser-local for `@NOW`, page-render server time for
+`@NOW-SERVER`, and browser time converted to UTC for `@NOW-UTC`.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

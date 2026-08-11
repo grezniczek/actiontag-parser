@@ -586,6 +586,18 @@ project proves no Missing Data Codes are configured; absent availability data
 remains non-restrictive because an administrator may enable the feature later.
 There is no field-type restriction: the tag's runtime consequences are
 field-specific, but its bare form is valid wherever annotation is accepted.
+`@NOW`, `@NOW-SERVER`, and `@NOW-UTC` are also browser-only, no-parameter
+tags, but with a different parameter result: `enableActionTags()` selects their
+recognized row class and ignores an attached value or parenthesized argument.
+The catalog consequently marks the value as ignored and warns without blocking
+when one is supplied. `@NOW` takes the browser's local timestamp,
+`@NOW-SERVER` uses the timestamp rendered with the page, and `@NOW-UTC` uses
+the browser timestamp converted to UTC. That same runtime only fills a blank
+literal `input[name]`; it does not consult field metadata to guard field type
+or validation. Field Annotation therefore deliberately does not infer a Text
+Box-only, validation, branching, or page-mode contract from help prose. It
+also does not promise auto-population during data import or make the target
+field read-only; those behaviors are outside this static annotation contract.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no
