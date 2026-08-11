@@ -831,6 +831,12 @@ skips or converts the record-ID field to hidden before that code runs. The
 catalog therefore warns only for a known non-Text-Box target or known record
 ID; validation type, browser autofill, and untraced action-tag interactions
 remain outside the advisory contract.
+`@RICHTEXT` also ignores an attached value, but requires a narrower conclusion
+than its Notes-field help text suggests. The browser toolbar is initialized for
+Notes fields only; the Piping and PDF paths additionally inspect raw
+`@RICHTEXT` text while formatting Text Box or Notes values. The catalog thus
+offers only the ignored-parameter advisory, with no Notes-only, record-ID,
+toolbar-configuration, or control-availability diagnostic.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -944,6 +950,7 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@HIDEBUTTON`, plus
    the ignored-parameter, Text Box, and record-ID contract for
    `@PASSWORDMASK`, plus
+   the ignored-parameter-only contract for `@RICHTEXT`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

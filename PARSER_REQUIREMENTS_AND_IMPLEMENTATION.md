@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes thirty-four explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes thirty-five explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -660,6 +660,15 @@ catalog therefore warns only for a known non-Text-Box target or the known
 record-ID field. It deliberately does not require or exclude a validation
 type, infer browser-autofill behavior, or model interactions with other action
 tags that have not been independently traced.
+`@RICHTEXT` likewise consumes only its name: the form-element matcher still
+recognizes an attached assignment or argument, but neither the rich-text
+initializer nor the Piping formatter uses that value. The toolbar itself is
+initialized only for Notes fields, including readonly display handling, while
+the Piping and PDF paths also inspect raw `@RICHTEXT` text when formatting Text
+Box or Notes values. The catalog therefore gives the tag only an
+ignored-parameter advisory; it deliberately does not make a Notes-only or
+record-ID applicability claim, nor does it infer toolbar configuration,
+attachments, images, AI controls, survey access, or untraced tag interactions.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

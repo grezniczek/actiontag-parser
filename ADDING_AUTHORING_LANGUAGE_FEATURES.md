@@ -277,6 +277,15 @@ converted to hidden first, so add the exact Text Box allowed context and
 Field Annotation context prove either condition. Do not infer a validation
 constraint, browser-autofill behavior, or a collision rule from an unreviewed
 combination with another Action Tag.
+`@RICHTEXT` demonstrates why a visible editor feature does not automatically
+justify an applicability restriction. `DataEntrySurveyCommon` initializes the
+toolbar only for Notes fields, but `Piping` and PDF formatting also inspect raw
+`@RICHTEXT` text for Text Box or Notes values. The form-element matcher accepts
+an attached assignment or argument, but neither path consumes it, so model only
+`parameter.kind: none` and `ignores_parameter: true`. Do not add a Notes-only
+or record-ID restriction, or infer enabled toolbar controls, attachment/image
+availability, AI availability, survey access, or collision behavior without
+separate runtime evidence.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
