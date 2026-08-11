@@ -1134,7 +1134,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
    `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
    `@MC-TASK-SERIALIZEDRESULT` (the latter File Upload-only), including their
-   task-maintained non-suggestible completion policy, plus
+   task-maintained non-suggestible completion policy and repaired “Do Not
+   Modify” header insertion, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
