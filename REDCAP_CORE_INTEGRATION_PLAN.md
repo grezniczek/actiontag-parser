@@ -345,6 +345,15 @@ project event and the public route for the project's `firstForm`, but no record 
   active, keeps `[is-survey]` active, and warns/mutes `[is-form]` as fixed
   `0`. The public branch has no participant ID; the policy consequently makes
   no participant, user, or repeating-context assertion.
+  Survey confirmation-email subject and content use the shared
+  `survey_confirmation_email` policy. Their common
+  `Survey::sendSurveyConfirmationEmail()` call always supplies the completed
+  record, event, instance, and configured survey form, but is invoked from
+  regular/Twilio surveys, PROMIS, Data Entry, and the follow-up confirmation
+  endpoint. It therefore declares record/event/form availability and no
+  participant ID, while deliberately leaving user, repeating, public-survey,
+  and PAGE-state context variable; page-state Smart Variables remain
+  unlabelled rather than being diagnosed as fixed results.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

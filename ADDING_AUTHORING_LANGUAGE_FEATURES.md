@@ -855,6 +855,13 @@ moving migration target.
    record, event, and current form in both redirect branches. Model those
    guaranteed contexts and the fixed `surveys/index.php` page, but do not
    infer a participant, user, or repeating context from the public route.
+   Conversely, one shared Piping implementation can have several caller
+   routes. `Survey::sendSurveyConfirmationEmail()` always passes its completed
+   record, event, and configured form for both template parts, but it is
+   called from survey, Twilio, PROMIS, Data Entry, and a follow-up endpoint.
+   Give the subject and content one shared source kind for the invariant
+   context, and leave user, repeating, public-survey, and runtime-page
+   properties absent when they differ by caller.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,

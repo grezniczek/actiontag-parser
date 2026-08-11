@@ -1085,6 +1085,16 @@ record/event/form Smart Variable completion active, keeps `[is-survey]`
 active, and mutes/warns `[is-form]` as a fixed `0`. The public completion path
 does not pass a participant ID, so the policy deliberately makes no
 survey-participant, user, or repeating-context claim.
+The confirmation-email subject and rich-text content share the
+`survey_confirmation_email` policy because
+`Survey::sendSurveyConfirmationEmail()` pipes both with the completed record,
+event, instance, and configured survey form. That method is reached from
+regular and Twilio surveys, PROMIS, Data Entry, and the follow-up confirmation
+endpoint. The policy consequently keeps field and record/event/form
+completion active and correctly declares no participant ID, but leaves user,
+repeating, public-survey, and PAGE-state context unclaimed: those callers do
+not have one invariant value. In particular, `[is-survey]` and `[is-form]`
+remain normally available rather than being labelled as fixed results.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and
