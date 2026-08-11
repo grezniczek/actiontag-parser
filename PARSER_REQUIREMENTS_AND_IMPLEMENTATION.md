@@ -862,6 +862,9 @@ restores all seven required fields, and verifies every combined annotation. It
 also asserts that only the generated UUID field receives the attached
 `element_preceding_header`; a section header is metadata on that field, not a
 separate metadata row.
+A companion production-draft test preloads both metadata tables and verifies
+that repair writes the seven fields and UUID header only to
+`redcap_metadata_temp`, leaving live metadata unchanged.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

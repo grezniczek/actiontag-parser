@@ -980,6 +980,8 @@ restores all seven fields with their combined annotations and attaches “MyCap
 App Fields - Do Not Modify” only to the UUID field. That
 `element_preceding_header` is stored on the UUID metadata row rather than as a
 standalone field.
+Its production-draft counterpart verifies that this repair path writes only to
+`redcap_metadata_temp` and leaves the active `redcap_metadata` table unchanged.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and

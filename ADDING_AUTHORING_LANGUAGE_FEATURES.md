@@ -497,6 +497,9 @@ must assert every required field's combined annotation and verify that only the
 UUID field has the `element_preceding_header`, because REDCap attaches a
 section header to the following field rather than creating separate metadata
 for the header.
+Repeat the assertion in production draft mode with both metadata tables
+preloaded: the repair belongs in `redcap_metadata_temp` and must not alter live
+metadata.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
