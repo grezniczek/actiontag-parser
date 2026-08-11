@@ -882,6 +882,13 @@ moving migration target.
    that branch, a source policy would mislabel valid or literal output. Record
    the audit and leave the policy absent until the transport can distinguish
    the alternatives.
+   A source may still support a useful partial policy when every branch calls
+   Piping with some invariant arguments. Offline Instructions always run on
+   the survey endpoint with event and form, but a public offline page has no
+   record while a private participant may have one. Declare only event/form/
+   page state; preserve field completion and leave record, participant, user,
+   public-survey, and repeating state absent rather than imposing the public
+   branch's limitation globally.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,

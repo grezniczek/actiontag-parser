@@ -1121,6 +1121,13 @@ the Survey Settings editor cannot identify that delivery/record state, even a
 fixed page-state warning could incorrectly describe literal, unpiped Twilio
 text. The absent policy preserves existing completion and diagnostics until a
 future authoring context can represent those alternatives precisely.
+Offline Instructions have a narrower, safe policy. Their unavailable-survey
+renderer always calls Piping on `Surveys/index.php` with the current event and
+form, so `[is-survey]` remains active and `[is-form]` is muted/warned as fixed
+`0`. A public offline page deliberately passes no record, while a private
+participant may have one; `survey_offline_instructions` therefore leaves
+record, participant, user, public-survey, and repeating context unclaimed and
+preserves field completion rather than applying a public-only restriction.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and

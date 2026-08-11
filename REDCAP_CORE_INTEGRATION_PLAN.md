@@ -376,6 +376,13 @@ project event and the public route for the project's `firstForm`, but no record 
   and even a nominal fixed-page diagnostic would misdescribe the literal
   unpiped branch. The absent policy therefore preserves compatibility pending
   a context model that can faithfully distinguish those alternatives.
+  Offline Instructions always call Piping on `Surveys/index.php` with the
+  current event and form, so their policy keeps form-dependent completion
+  active, `[is-survey]` active, and `[is-form]` fixed at `0`. A public offline
+  page passes no record whereas a private participant may have one; the policy
+  consequently leaves record, participant, user, public-survey, and repeating
+  context variable, preserving field completion instead of imposing a
+  public-only restriction.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;
