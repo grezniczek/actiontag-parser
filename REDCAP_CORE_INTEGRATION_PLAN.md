@@ -982,6 +982,8 @@ App Fields - Do Not Modify” only to the UUID field. That
 standalone field.
 Its production-draft counterpart verifies that this repair path writes only to
 `redcap_metadata_temp` and leaves the active `redcap_metadata` table unchanged.
+The corresponding non-draft production test confirms the early guard makes no
+change to either metadata table.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and

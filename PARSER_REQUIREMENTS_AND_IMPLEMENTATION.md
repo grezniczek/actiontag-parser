@@ -865,6 +865,8 @@ separate metadata row.
 A companion production-draft test preloads both metadata tables and verifies
 that repair writes the seven fields and UUID header only to
 `redcap_metadata_temp`, leaving live metadata unchanged.
+The production non-draft regression test snapshots both metadata tables and
+verifies that the repair guard leaves them unchanged until draft mode opens.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one

@@ -500,6 +500,8 @@ for the header.
 Repeat the assertion in production draft mode with both metadata tables
 preloaded: the repair belongs in `redcap_metadata_temp` and must not alter live
 metadata.
+Also cover production outside draft mode: snapshot both tables and confirm the
+repair guard makes no change until a draft is opened.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed
