@@ -440,22 +440,26 @@ without a type or validation guard. Do not add a Text Box or date-validation
 requirement until a runtime consumer enforces it. Keep participant
 creation, join timing, values, and save success outside static analysis.
 MyCap active-task result annotations are an exception to the usual
-`Form::getActionTags()` registration source: active-task setup generates them
-in metadata, while `ProjectHandler::processAnnotation()` consumes a specific
-provider-info map that the help registry does not publish. Add a supplemental
-catalog entry only for that proven map, and gate it on the ordinary MyCap
-registration so a project without MyCap still receives the normal unknown-tag
-advisory. The current supported set is the 32 `AMS`, `AUD`, `FIT`, `REA`,
-`REC-AUD`, `RMO`, `SEL`, `SHO`, `SPR-AUDIO`, `TIM`, and `TWO` annotations.
-Do not add every `Annotation::TASK_ACTIVE_*` constant merely because it exists:
-the remaining constants have no corresponding current provider-info path.
-`Annotation::matchExists()` proves that these are bare, whitespace-delimited
-names. The provider-info pass follows generic field conversion and has neither
-a target-type nor active-task-format guard, so restrict authoring only to an
-enabled MyCap task form. Do not infer the active-task setup, client/provider
-behavior, multi-annotation precedence, data, or uploads. Document this as a
-controlled registration exception until catalogs become the primary legacy
-Action Tag source.
+`Form::getActionTags()` registration source. Gate their supplemental catalog
+entries on ordinary MyCap registration so a project without MyCap still
+receives the normal unknown-tag advisory. There are two acceptable evidence
+paths. `ProjectHandler::processAnnotation()` proves the 32 provider-info
+annotations (`AMS`, `AUD`, `FIT`, `REA`, `REC-AUD`, `RMO`, `SEL`, `SHO`,
+`SPR-AUDIO`, `TIM`, and `TWO`). Separately, a current `ActiveTasks` class's
+`getFormFields()` method plus `ResultHandler::saveResult()` and
+`ProjectMapper::fieldMap()` proves the 12 generated result annotations: four
+`HOL` names, `PSA`, `SPA`, `SPR-TRANSCRIPTION`, `SPR-EDITED-TRANSCRIPTION`,
+`STR`, `TON`, `TOW`, and `TRA`. The latter save path adds each received result
+key to its map and resolves the exact whitespace-delimited annotation; it does
+not require provider info. Do not add every `Annotation::TASK_ACTIVE_*`
+constant merely because it exists: `DBH`, `SIN`, `VAU`, and both `VCT` names
+lack both current evidence paths. Both supported groups are bare,
+whitespace-delimited names and are useful only on an enabled MyCap task form.
+Neither runtime path provides a target-type or active-task-format guard, so do
+not invent one. Do not infer the active-task setup, client/provider behavior,
+multi-annotation precedence, data, or uploads. Document this as a controlled
+registration exception until catalogs become the primary legacy Action Tag
+source.
 For the required MyCap task-result family, inspect both the task repair helper
 and the result save path. `@MC-TASK-UUID`, `@MC-TASK-STARTDATE`,
 `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`, `@MC-TASK-STATUS`,

@@ -1122,10 +1122,12 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the MyCap participant-metadata, ignored-parameter, non-record-ID contracts
    for `@MC-PARTICIPANT-CODE`, `@MC-PARTICIPANT-JOINDATE`,
    `@MC-PARTICIPANT-JOINDATE-UTC`, and `@MC-PARTICIPANT-TIMEZONE`, plus
-   the supplemental MyCap active-task provider-annotation recognition and
-   bare/enabled-task-form contracts for the 32 currently consumed `AMS`,
-   `AUD`, `FIT`, `REA`, `REC-AUD`, `RMO`, `SEL`, `SHO`, `SPR-AUDIO`, `TIM`,
-   and `TWO` tags, plus
+   the supplemental MyCap active-task recognition and bare/enabled-task-form
+   contracts for the 32 provider-info `AMS`, `AUD`, `FIT`, `REA`, `REC-AUD`,
+   `RMO`, `SEL`, `SHO`, `SPR-AUDIO`, `TIM`, and `TWO` tags, plus the 12
+   current form-generator/result-mapper `HOL`, `PSA`, `SPA`,
+   `SPR-TRANSCRIPTION`, `SPR-EDITED-TRANSCRIPTION`, `STR`, `TON`, `TOW`, and
+   `TRA` tags, plus
    the MyCap task-result, enabled-task-form contracts for `@MC-TASK-UUID`,
    `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
    `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and

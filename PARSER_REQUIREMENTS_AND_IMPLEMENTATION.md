@@ -805,22 +805,26 @@ ignored but does not invent a Text Box or validation restriction. It does not
 predict participant creation, an app join, the stored values, or a successful
 record update.
 MyCap active-task result annotations are a narrow catalog exception. They are
-generated in active-task data dictionaries and consumed by
-`ProjectHandler::processAnnotation()`, but are absent from
-`Form::getActionTags()` and thus from its user-facing help list. To avoid
-diagnosing those generated fields as unknown, the project catalog supplements
-the existing MyCap-registered Action Tags with exactly the 32 annotations in
-that provider-info map: the four `AMS-*`, two `AUD-*`, six `FIT-*`, `REA`,
-`REC-AUD`, three `RMO-*`, `SEL`, six `SHO-*`, `SPR-AUDIO`, three `TIM-*`, and
-four `TWO-*` names. It deliberately does not surface the other historical
-`Annotation::TASK_ACTIVE_*` constants, which have no matching current
-provider-info processing. `Annotation::matchExists()` requires each supported
-name as a bare, whitespace-delimited marker, and provider metadata is
-meaningful only for an enabled MyCap task form. `ProjectHandler` applies it
-after converting any supported or fallback field type, without checking the
-task format or target type; the catalog therefore adds no such restriction.
-It does not predict an active-task configuration, client processing, provider
-selection when several annotations coexist, captured values, or uploads.
+absent from `Form::getActionTags()` and thus from its user-facing help list,
+but two current runtime paths establish their authoring contracts. The project
+catalog supplements the existing MyCap-registered Action Tags with the 32
+annotations in `ProjectHandler::processAnnotation()`'s provider-info map: the
+four `AMS-*`, two `AUD-*`, six `FIT-*`, `REA`, `REC-AUD`, three `RMO-*`, `SEL`,
+six `SHO-*`, `SPR-AUDIO`, three `TIM-*`, and four `TWO-*` names. It also adds
+the 12 annotations emitted by the current `ActiveTasks` form generators but
+not needing provider info: four `HOL-*`, `PSA`, `SPA`,
+`SPR-TRANSCRIPTION`, `SPR-EDITED-TRANSCRIPTION`, `STR`, `TON`, `TOW`, and
+`TRA`. `ResultHandler::saveResult()` includes every returned result key in
+`ProjectMapper`'s field map, whose exact whitespace-delimited annotation match
+persists those generated fields. The other historical
+`Annotation::TASK_ACTIVE_*` constants (`DBH`, `SIN`, `VAU`, and the two `VCT`
+names) have neither a current form generator nor provider-info path and remain
+outside completion. `Annotation::matchExists()` and `ProjectMapper` require a
+supported name as a bare, whitespace-delimited marker; saving is meaningful
+only for an enabled MyCap task form. Neither path checks task format or target
+type, so the catalog adds no such restriction. It does not predict an
+active-task configuration, client processing, provider selection when several
+annotations coexist, captured values, or uploads.
 The required MyCap task-result annotations—`@MC-TASK-UUID`,
 `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
 `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
