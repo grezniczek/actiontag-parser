@@ -837,6 +837,12 @@ Notes fields only; the Piping and PDF paths additionally inspect raw
 `@RICHTEXT` text while formatting Text Box or Notes values. The catalog thus
 offers only the ignored-parameter advisory, with no Notes-only, record-ID,
 toolbar-configuration, or control-availability diagnostic.
+`@CONSENT-VERSION` ignores an attached value and sets the selected e-Consent
+version only for a blank Text Box on a survey page. The shared form catalog now
+marks surveys with an active e-Consent item through a read-only lookup. The
+editor warns only for a known non-survey form, a known survey without active
+e-Consent, the record-ID field, or a non-Text-Box target. It does not predict
+the DAG/MLM-specific selected version, blank-value state, or survey submission.
 `@DOWNLOAD-COUNT` extracts one parenthesized target with the shared Form
 helper, removes brackets and literal spaces, and performs an exact project
 metadata lookup. The authoring contract accepts the runtime's bare and
@@ -951,6 +957,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the ignored-parameter, Text Box, and record-ID contract for
    `@PASSWORDMASK`, plus
    the ignored-parameter-only contract for `@RICHTEXT`, plus
+   the ignored-parameter, active-e-Consent-survey, Text Box, and record-ID
+   contract for `@CONSENT-VERSION`, plus
    the parenthesized File Upload/attached-Descriptive target contract for
    `@DOWNLOAD-COUNT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It

@@ -286,6 +286,16 @@ an attached assignment or argument, but neither path consumes it, so model only
 or record-ID restriction, or infer enabled toolbar controls, attachment/image
 availability, AI availability, survey access, or collision behavior without
 separate runtime evidence.
+`@CONSENT-VERSION` demonstrates a project capability that is safe to expose
+per form without pretending to know a participant-specific result. The
+`DataEntry` Text Box path recognizes its name, ignores any attached assignment
+or argument, and assigns a version only when the value is blank on a survey
+page. Build `forms[].has_econsent` from active e-Consent items by survey ID;
+do not resolve the record/DAG/MLM-specific version in this catalog. Combine
+`requires_survey_form`, `requires_econsent_enabled`, the existing record-ID
+exclusion, and an allowed Text Box context. The analyzer must remain
+non-restrictive for missing/stale e-Consent state and must not predict the
+current version, field blankness, or submission outcome.
 `@DOWNLOAD-COUNT` uses `Form::getValueInParenthesesActionTag()` to read one
 target name, then removes brackets and literal spaces before looking up exact
 project metadata. Accept both the documented bare field name and its bracketed

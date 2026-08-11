@@ -469,7 +469,7 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
-The same analyzer now consumes thirty-five explicit `ActionTagCatalog` contracts.
+The same analyzer now consumes thirty-six explicit `ActionTagCatalog` contracts.
 `Form::getValueInQuotesActionTag()` extracts `@DEFAULT` only when it has an
 equals sign and a nonempty single- or double-quoted value. `DataEntry` pipes
 that value but deliberately skips the tag for File Upload/Signature fields, so
@@ -669,6 +669,15 @@ Box or Notes values. The catalog therefore gives the tag only an
 ignored-parameter advisory; it deliberately does not make a Notes-only or
 record-ID applicability claim, nor does it infer toolbar configuration,
 attachments, images, AI controls, survey access, or untraced tag interactions.
+`@CONSENT-VERSION` is another name-only renderer action. `DataEntry` assigns
+the context-selected e-Consent version only to a blank Text Box value on a
+survey page; the record-ID field is hidden or skipped before that Text Box
+path. The shared form catalog now exposes `has_econsent`, derived read-only
+from active e-Consent settings for each survey. The editor warns, in order,
+only when a known target is not a survey, has no active e-Consent item, is the
+record-ID field, or is not a Text Box. The boolean deliberately does not claim
+which record/DAG/MLM language version will be selected, whether the field will
+be blank, or whether the survey page will be submitted.
 `@DOWNLOAD-COUNT` reads the first parenthesized value through
 `Form::getValueInParenthesesActionTag()`, then removes brackets and literal
 spaces before its exact metadata lookup. The catalog therefore accepts one
