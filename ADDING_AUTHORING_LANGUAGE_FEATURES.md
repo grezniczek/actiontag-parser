@@ -232,6 +232,18 @@ same renderer ignores attached values and parenthesized arguments, so pair that
 property with `parameter.kind: none` and `ignores_parameter: true`. Do not
 infer a Text Box, validation, respondent identity, pagination, blank-value, or
 read-only rule: `@READONLY` is a separate runtime feature.
+`@WORDLIMIT` and `@CHARLIMIT` are the model for numeric parameters whose
+runtime acceptance is wider than a whole-number UI expectation. Their helper
+accepts quoted or unquoted assignments, requires a PHP-positive numeric value,
+and then casts that value to an integer. Model this with
+`requires_positive_numeric`, not `requires_positive_integer`; document the
+truncation rather than rejecting fractional syntax that runtime accepts. Both
+also use `excluded_record_id_field`. Where runtime has a documented and exact
+precedence branch, model the loser with `suppressed_by_action_tags`: here,
+`@WORDLIMIT` is suppressed by `@CHARLIMIT`. This is not a generic symmetric
+conflict rule. Finally, do not infer a Text Box/Notes field type simply from
+help text: the runtime helper selects named inputs and textareas without using
+metadata.
 `Calculate::buildCalcTextEquation()` proves that `@CALCTEXT` extracts a
 nonempty parenthesized Logic expression only for a Text Box field.
 `Calculate::buildCalcDateEquation()` proves the same shape for `@CALCDATE`

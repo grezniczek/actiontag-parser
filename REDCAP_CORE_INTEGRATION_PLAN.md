@@ -796,6 +796,17 @@ the known target field to both browser and fallback analysis. Warn only for a
 known record-ID target. Do not infer field type, validation, survey-user,
 blank-value, pagination, or page-lifecycle restrictions, and do not state that
 the tag makes the field read-only.
+`@WORDLIMIT` and `@CHARLIMIT` share assignment parameters extracted by
+`Form::getValueInActionTag()`, with or without wrapping quotes. `DataEntry`
+uses each only when the extracted text is numeric and greater than zero, then
+casts it to an integer before calling the browser counter. Use a shared
+positive-numeric-assignment property, not a positive-integer property, so the
+catalog does not reject fractional syntax that runtime accepts and truncates.
+Both tags share the record-ID exclusion. The `if`/`elseif` ordering gives
+`@CHARLIMIT` precedence, so add a cataloged suppression diagnostic only to
+`@WORDLIMIT`. Do not infer a Text Box/Notes restriction: the helper selects
+named inputs and textareas without field-metadata checks. Import and page
+lifecycle are not statically knowable.
 `@CALCTEXT`/`@CALCDATE`
 require a nonempty parenthesized Logic expression on a Text Box field, with a
 date/datetime validation also required for `@CALCDATE`. The Field Annotation
@@ -891,6 +902,8 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the matching ignored-parameter contracts for `@TODAY`, `@TODAY-SERVER`, and
    `@TODAY-UTC`, plus
    the record-ID-aware, ignored-parameter contract for `@USERNAME`, plus
+   the record-ID-aware, positive-numeric and precedence-aware contracts for
+   `@WORDLIMIT` and `@CHARLIMIT`, plus
    `@CALCTEXT`/`@CALCDATE` Logic and Text Box/date-validation contracts. It
    remains warning-only and leaves all other parameter, field-type, context,
    and module-specific semantics to a future schema-backed validator.

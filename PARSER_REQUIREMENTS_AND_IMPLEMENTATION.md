@@ -617,6 +617,19 @@ its known target name equals the catalog's `record_id_field`. It intentionally
 does not infer a field type, validation, survey identity, blank-value,
 page-pagination, or read-only rule. In particular, `@USERNAME` does not make a
 field uneditable; users may combine it with `@READONLY` when that is desired.
+`@WORDLIMIT` and `@CHARLIMIT` obtain their values from an equals assignment via
+`Form::getValueInActionTag()`, accepting quoted or unquoted numeric text. The
+renderer runs only for form/survey fields other than the record-ID field, then
+requires PHP `is_numeric()` and a value greater than zero before passing its
+integer cast to the browser counter. The catalog therefore requires a positive
+numeric assignment but preserves fractional runtime input rather than claiming
+it is invalid. `@CHARLIMIT` is tested first in the renderer; if both tags are
+enabled, the Word Limit code is skipped. The catalog reports that precise
+suppression on `@WORDLIMIT`, rather than treating both tags as symmetric
+conflicts. The browser helper selects named `input` and `textarea` elements
+without inspecting metadata, so the documented Text Box/Notes intent is not a
+safe static target-type restriction. Data import and page lifecycle remain
+outside Field Annotation analysis.
 `Calculate::buildCalcTextEquation()` and `buildCalcDateEquation()` extract a
 parenthesized, nonempty Logic expression from their respective tags only while
 calculating a Text Box field; `buildCalcDateEquation()` additionally returns no
