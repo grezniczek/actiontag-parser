@@ -948,6 +948,19 @@ are Text Boxes (the two dates have datetime validation), but the runtime
 selection and write paths have no target-type guard; do not turn help text into
 a Text Box or validation diagnostic. Participant creation, joining, values,
 and save outcomes remain runtime concerns.
+The active-task result annotations use a deliberate, catalog-only supplement
+to the user-facing Action Tag registry. MyCap creates fields with these
+annotations and `ProjectHandler::processAnnotation()` maps 32 exact names to
+provider metadata, but `Form::getActionTags()` does not expose them. When the
+ordinary MyCap registration is present, the editor adds only that proven set
+(the `AMS`, `AUD`, `FIT`, `REA`, `REC-AUD`, `RMO`, `SEL`, `SHO`, `SPR-AUDIO`,
+`TIM`, and `TWO` families) to recognition and completion. It deliberately
+omits the remaining `Annotation::TASK_ACTIVE_*` constants that lack a current
+provider-info consumer. The tags are bare and require an enabled MyCap task
+form. Because the conversion path applies provider metadata after any
+supported/fallback field conversion and does not verify the active-task format,
+there is no field-type or task-format diagnostic. Client processing, multiple-
+annotation precedence, captured output, and uploads remain runtime concerns.
 The seven required MyCap task-result tags—`@MC-TASK-UUID`,
 `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
 `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
@@ -1109,6 +1122,10 @@ The eventual validator therefore needs an extensible definition/schema mechanism
    the MyCap participant-metadata, ignored-parameter, non-record-ID contracts
    for `@MC-PARTICIPANT-CODE`, `@MC-PARTICIPANT-JOINDATE`,
    `@MC-PARTICIPANT-JOINDATE-UTC`, and `@MC-PARTICIPANT-TIMEZONE`, plus
+   the supplemental MyCap active-task provider-annotation recognition and
+   bare/enabled-task-form contracts for the 32 currently consumed `AMS`,
+   `AUD`, `FIT`, `REA`, `REC-AUD`, `RMO`, `SEL`, `SHO`, `SPR-AUDIO`, `TIM`,
+   and `TWO` tags, plus
    the MyCap task-result, enabled-task-form contracts for `@MC-TASK-UUID`,
    `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
    `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and

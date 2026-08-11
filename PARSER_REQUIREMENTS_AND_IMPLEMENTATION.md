@@ -804,6 +804,23 @@ target-type check; authoring therefore warns that a supplied parameter is
 ignored but does not invent a Text Box or validation restriction. It does not
 predict participant creation, an app join, the stored values, or a successful
 record update.
+MyCap active-task result annotations are a narrow catalog exception. They are
+generated in active-task data dictionaries and consumed by
+`ProjectHandler::processAnnotation()`, but are absent from
+`Form::getActionTags()` and thus from its user-facing help list. To avoid
+diagnosing those generated fields as unknown, the project catalog supplements
+the existing MyCap-registered Action Tags with exactly the 32 annotations in
+that provider-info map: the four `AMS-*`, two `AUD-*`, six `FIT-*`, `REA`,
+`REC-AUD`, three `RMO-*`, `SEL`, six `SHO-*`, `SPR-AUDIO`, three `TIM-*`, and
+four `TWO-*` names. It deliberately does not surface the other historical
+`Annotation::TASK_ACTIVE_*` constants, which have no matching current
+provider-info processing. `Annotation::matchExists()` requires each supported
+name as a bare, whitespace-delimited marker, and provider metadata is
+meaningful only for an enabled MyCap task form. `ProjectHandler` applies it
+after converting any supported or fallback field type, without checking the
+task format or target type; the catalog therefore adds no such restriction.
+It does not predict an active-task configuration, client processing, provider
+selection when several annotations coexist, captured values, or uploads.
 The required MyCap task-result annotations—`@MC-TASK-UUID`,
 `@MC-TASK-STARTDATE`, `@MC-TASK-ENDDATE`, `@MC-TASK-SCHEDULEDATE`,
 `@MC-TASK-STATUS`, `@MC-TASK-SUPPLEMENTALDATA`, and
