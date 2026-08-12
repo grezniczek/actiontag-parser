@@ -738,6 +738,15 @@ must not be required before the parser API is released.
 
 This gives callers accurate annotation structure without coupling the new parser to records, piping, project logic, or legacy evaluation behavior.
 
+The editor separately gives an enabled `@IF` condition advisory Logic pass.
+`Form::evaluateIfActionTag()` ultimately evaluates its raw condition through
+the normal Logic runtime, so matching PHP/browser
+`ActionTagConditionSemanticAnalyzer` products parse and semantically inspect
+the parser-published condition text with the active editor catalog/context.
+Their source-relative findings are shifted back into the annotation; they do
+not evaluate the condition, alter branch selection, or analyze a disabled
+`@.OFF.IF` container.
+
 `ActionTagConditionResolver` is a future API/EM-framework companion rather than parser logic: it receives already parsed results and an explicit runtime context (or evaluator callback), evaluates each result-local condition once, and marks which flattened tags are active. For project-wide callers, `ActionTagProjectConditionResolver` batches field retrieval for the union of conditions and reuses values for identical condition text. `ActionTagIndex` similarly accepts annotations supplied by a caller and creates aggregate field/tag/instrument views without knowing how metadata was obtained. These helpers can move to core or the EM Framework independently of the parser class.
 
 ## Future Runtime Performance Architecture
@@ -841,8 +850,8 @@ Survey variant has an additional advisory when the selected form is known not
 to be configured as a survey. Missing form context remains non-diagnostic.
 `@HIDDEN`, `@HIDDEN-FORM`, and `@HIDDEN-SURVEY` use the same no-parameter
 shape and form/survey split. The Survey variant receives the same
-known-non-survey advisory; the runtime's conditional `@IF` resolution remains
-unchanged and outside the structural contract.
+known-non-survey advisory; runtime conditional `@IF` resolution remains
+unchanged, while enabled conditions receive separate advisory Logic diagnostics.
 `@HIDDEN-PDF` also accepts no parameter. The PDF renderer applies it after
 runtime `@IF` resolution, but the Field Annotation editor deliberately does
 not infer a PDF-rendering context or availability warning.

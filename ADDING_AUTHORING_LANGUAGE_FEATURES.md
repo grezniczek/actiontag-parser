@@ -96,6 +96,15 @@ semantic. A missing catalog must remain structural-only for stale clients; an
 explicitly empty catalog means no names are registered. Disabled tags do not
 warn because they do not apply at runtime.
 
+An enabled `@IF` wrapper condition is an embedded Logic expression, not an
+Action Tag parameter contract. Because `Form::evaluateIfActionTag()` evaluates
+that raw condition with the normal Logic runtime, the PHP and browser
+`ActionTagConditionSemanticAnalyzer` products pass the structural parser's
+condition text to the shared Logic parser and semantic analyzer, then map
+findings back to the annotation offsets. This is syntax and metadata feedback
+only: do not evaluate a condition, infer its selected branch, or analyze an
+explicitly disabled `@.OFF.IF` container.
+
 `ActionTagCatalog` adds deliberately narrow built-in exceptions. The shared
 `Form::getValueInQuotesActionTag()` extractor proves that `@DEFAULT` needs an
 equals sign and a nonempty single- or double-quoted value; `DataEntry` pipes
@@ -1128,6 +1137,10 @@ moving migration target.
    properties and a name-only `deprecated_replacement` advisory; preserve any
    runtime collision precedence when both names appear. Do not copy a built-in
    property onto a module tag without manifest metadata that proves it.
+   When a tag's runtime consumes an embedded Logic expression, use the shared
+   Logic parser/analyzer only for the exact enabled source span the runtime
+   consumes, preserve its source offsets, and keep the result advisory rather
+   than evaluating it in the editor.
 6. For an External Module tag, update the module manifest and module tests
    instead. Confirm collision behavior with a built-in tag and its appearance
    in the project-specific help/catalog; do not edit `Form::getActionTags()`.

@@ -480,6 +480,14 @@ a disabled `@IF`, receive no registration warning. An absent catalog preserves
 structural-only output for stale browser/server callers, whereas a present
 empty collection intentionally declares that no names are registered.
 
+Enabled `@IF` wrapper conditions have a separate, equally advisory bridge to
+the shared Logic parser and semantic analyzer. The matching PHP and browser
+`ActionTagConditionSemanticAnalyzer` products consume the structural parser's
+published condition ranges, analyze the raw condition in the current authoring
+context, and shift every finding back to its annotation source range. They do
+not evaluate a condition or choose a branch, and deliberately skip an
+explicitly disabled `@.OFF.IF` container.
+
 The first intended architecture step after initial built-in completion is
 deliberately deferred: define External Module Action Tag syntax metadata. That
 may be a declarative `config.json` schema, a controlled module callback for
@@ -906,9 +914,10 @@ contain a tag that does not become a calculation. No other built-in tag and no
 External Module tag receives parameter or field-context inference until its
 runtime behavior is independently cataloged.
 
-This layer does not evaluate `@IF`, validate a condition, resolve piping or
-record values, or derive any module configuration; those remain future
-schema-backed semantic work.
+This layer does not evaluate `@IF`, select an `@IF` branch, resolve piping or
+record values, or derive any module configuration. It does provide advisory
+Logic syntax and metadata diagnostics for enabled `@IF` conditions; runtime
+condition evaluation and all module-specific semantics remain unchanged.
 
 ## Implementation Transition
 
