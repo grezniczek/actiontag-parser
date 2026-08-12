@@ -917,9 +917,17 @@ moving migration target.
    warning-only when the form never repeats, and remain available with an
    advisory when it repeats only in some designated events. `[first-instance]`
    and `[last-instance]` remain unchanged because the runtime has their
-   distinct non-repeating instance-1 fallback. Do not generalize this guidance
-   to field instance qualifiers, restrict generic Piping completion, or modify
-   Twilio without a separate runtime audit.
+   distinct non-repeating instance-1 fallback. The separate runtime audit of
+   field-reference qualifiers found that this form profile cannot safely guide
+   them: `pipeSpecialTags()` can normalize `previous`/`current`/`next` from the
+   enclosing rendered form, event, and instance before resolving the referenced
+   field, while `replaceVariablesInLabel()` deliberately treats a numeric
+   suffix on a non-repeating target as that target's ordinary value.
+   `first`/`last`/`new` take still different target-form paths. Consequently,
+   leave field-reference instance completion and diagnostics unchanged in the
+   shared editor; do not derive warnings from the edited form, restrict generic
+   Piping completion, or modify Twilio. Reconsider only for an authoring
+   surface that can prove its exact runtime form/event contract.
    A source may still support a useful partial policy when every branch calls
    Piping with some invariant arguments. Offline Instructions always run on
    the survey endpoint with event and form, but a public offline page has no

@@ -1308,8 +1308,17 @@ the runtime-blank standalone `[previous-instance]`, `[current-instance]`,
 the form never repeats; they remain offered with an advisory when it repeats in
 only some designated events. `[first-instance]` and `[last-instance]` remain
 unrestricted because their runtime behavior deliberately falls back to
-instance 1 without repeat instances. Field-reference instance qualifiers need
-a separate runtime audit before receiving comparable guidance.
+instance 1 without repeat instances. The field-reference qualifier audit
+intentionally leaves their shared-editor completion and diagnostics unchanged.
+`Piping::pipeSpecialTags()` can first normalize `previous`/`current`/`next`
+using the enclosing runtime form/event/instance before it resolves the target
+field; later target-field processing and `replaceVariablesInLabel()` allow a
+numeric qualifier on a non-repeating form to read the ordinary value instead.
+`first`/`last`/`new` use distinct target-form paths. The edited form's static
+repeat profile is therefore insufficient, especially for cross-form and
+event-qualified references. Do not turn it into a record-derived editor rule,
+change generic completion, or affect Twilio; revisit only for a surface that
+proves an exact runtime form/event contract.
 When source replacement depends on a selected delivery mode, the same policy
 can declare `piping_delivery_types`. The Twilio manual-invitation editor passes
 the current `delivery_type` as `pipingDeliveryType`; only `SMS_INVITE_WEB`

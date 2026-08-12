@@ -346,8 +346,15 @@ project event and the public route for the project's `firstForm`, but no record 
   repeating forms mute and warn, partially repeating forms retain them with an
   advisory. It is not record availability, a source policy, or a Twilio
   change. `[first-instance]` and `[last-instance]` retain their distinct
-  non-repeating instance-1 runtime fallback; field-reference instance
-  qualifiers remain a separately audited future extension.
+  non-repeating instance-1 runtime fallback. The field-reference qualifier
+  audit intentionally leaves their shared-editor behavior unchanged:
+  `pipeSpecialTags()` may normalize `previous`/`current`/`next` from the
+  enclosing runtime form/event/instance before target-field resolution, and
+  `replaceVariablesInLabel()` lets numeric suffixes on non-repeating targets
+  resolve as ordinary field values. `first`/`last`/`new` take different
+  target-form paths. The edited form profile is consequently not a safe rule
+  for cross-form or event-qualified field references, and must not create
+  record-based restrictions, generic completion changes, or a Twilio change.
   MyCap's editable participant display label is resolved centrally by
   `Participant::getParticipantIdentifier()`, which always supplies the
   participant's record and event but no form or survey participant to Piping.
