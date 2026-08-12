@@ -747,6 +747,13 @@ Their source-relative findings are shifted back into the annotation; they do
 not evaluate the condition, alter branch selection, or analyze a disabled
 `@.OFF.IF` container.
 
+The Field Annotation editor also uses the parser's enabled condition spans to
+route completion to the existing Logic completer. This supplies catalog-backed
+Logic fields, events, smart variables, functions, and keywords in a recognized
+enabled condition, rather than generic Action Tag suggestions. True/false
+branches and explicitly disabled `@.OFF.IF` containers must not take that
+route; completion remains non-evaluating and cannot choose a branch.
+
 `ActionTagConditionResolver` is a future API/EM-framework companion rather than parser logic: it receives already parsed results and an explicit runtime context (or evaluator callback), evaluates each result-local condition once, and marks which flattened tags are active. For project-wide callers, `ActionTagProjectConditionResolver` batches field retrieval for the union of conditions and reuses values for identical condition text. `ActionTagIndex` similarly accepts annotations supplied by a caller and creates aggregate field/tag/instrument views without knowing how metadata was obtained. These helpers can move to core or the EM Framework independently of the parser class.
 
 ## Future Runtime Performance Architecture

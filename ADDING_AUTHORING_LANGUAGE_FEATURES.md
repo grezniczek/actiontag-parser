@@ -105,6 +105,14 @@ findings back to the annotation offsets. This is syntax and metadata feedback
 only: do not evaluate a condition, infer its selected branch, or analyze an
 explicitly disabled `@.OFF.IF` container.
 
+The Field Annotation editor must use the same enabled condition spans when it
+offers completion: delegate an enabled condition to the standard Logic
+completer so authors receive Logic fields, events, smart variables, functions,
+and keywords instead of Action Tag suggestions. Keep true/false branches on
+the normal Action Tag path and provide no Logic completion for a disabled
+`@.OFF.IF` container. Completion is never evidence that a condition is true
+and must not choose a branch.
+
 `ActionTagCatalog` adds deliberately narrow built-in exceptions. The shared
 `Form::getValueInQuotesActionTag()` extractor proves that `@DEFAULT` needs an
 equals sign and a nonempty single- or double-quoted value; `DataEntry` pipes

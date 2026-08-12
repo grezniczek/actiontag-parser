@@ -488,6 +488,14 @@ context, and shift every finding back to its annotation source range. They do
 not evaluate a condition or choose a branch, and deliberately skip an
 explicitly disabled `@.OFF.IF` container.
 
+The browser editor uses those same enabled condition ranges for completion.
+Within a recognized enabled `@IF` condition it delegates to the normal Logic
+completion context, yielding project fields, events, smart variables, special
+functions, and keywords instead of Action Tag names. A false branch, true
+branch, or disabled `@.OFF.IF` container remains outside that Logic-completion
+path. Completion is authoring assistance only and must never evaluate a
+condition or select a branch.
+
 The first intended architecture step after initial built-in completion is
 deliberately deferred: define External Module Action Tag syntax metadata. That
 may be a declarative `config.json` schema, a controlled module callback for
