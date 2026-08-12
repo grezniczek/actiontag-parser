@@ -906,15 +906,20 @@ moving migration target.
    behavior, Twilio's channel-specific implementation, and blank PDFs must
    not restrict the shared editor. Blank PDFs do not perform this Piping
    replacement.
-   The editor openers already provide the containing form as
-   `fieldEmbeddingFormName`, and the catalog's `event_forms` map already
-   validates explicit event-qualified field/instrument references. It does not
-   yet send that form to Piping semantic analysis or expose repeat status for
-   every designated form/event. A future, advisory-only enhancement may derive
-   whether the edited form's possible render contexts are guaranteed, partial,
-   or never repeating, then explain instance-sensitive syntax accordingly. Do
-   not model that as record availability, restrict generic Piping completion,
-   or modify Twilio.
+   The editor openers provide the containing form as
+   `fieldEmbeddingFormName`, which is also transported to Piping semantic
+   analysis as `form_name`. Each cataloged form now carries a design-time
+   `repeat_context`: `guaranteed`, `partial`, or `unavailable`, derived with
+   `Project::isRepeatingFormOrEvent()` across the events to which that form is
+   designated. This is deliberately not record availability. In a standard
+   field editor, the standalone `[previous-instance]`, `[current-instance]`,
+   `[next-instance]`, and `[new-instance]` Smart Variables are muted and
+   warning-only when the form never repeats, and remain available with an
+   advisory when it repeats only in some designated events. `[first-instance]`
+   and `[last-instance]` remain unchanged because the runtime has their
+   distinct non-repeating instance-1 fallback. Do not generalize this guidance
+   to field instance qualifiers, restrict generic Piping completion, or modify
+   Twilio without a separate runtime audit.
    A source may still support a useful partial policy when every branch calls
    Piping with some invariant arguments. Offline Instructions always run on
    the survey endpoint with event and form, but a public offline page has no

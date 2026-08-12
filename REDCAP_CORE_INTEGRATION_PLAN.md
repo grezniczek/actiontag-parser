@@ -337,13 +337,17 @@ project event and the public route for the project's `firstForm`, but no record 
   context. The shared Data Entry/Survey renderer supplies record/event/
   instance/form values; public Survey pre-creation behavior, Twilio's
   channel-specific implementation, and blank PDFs must not restrict the
-  editor. The openers already identify the containing form for Field Embedding,
-  while the shared catalog exposes event/form designations for explicit
-  event-qualified references. A future advisory-only slice can additionally
-  transport that target form and catalog per-event/form repeat status, so
-  instance-sensitive syntax can be explained from every possible designated
-  event. It must not derive editor restrictions from record availability or
-  alter Twilio.
+  editor. The openers identify the containing form for Field Embedding and now
+  transport it as Piping `form_name`. The shared catalog exposes each form's
+  `repeat_context` (`guaranteed`, `partial`, or `unavailable`) from its
+  `Project::isRepeatingFormOrEvent()` status across designated events. This
+  guides only the standalone runtime-blank `[previous-instance]`,
+  `[current-instance]`, `[next-instance]`, and `[new-instance]` values: never
+  repeating forms mute and warn, partially repeating forms retain them with an
+  advisory. It is not record availability, a source policy, or a Twilio
+  change. `[first-instance]` and `[last-instance]` retain their distinct
+  non-repeating instance-1 runtime fallback; field-reference instance
+  qualifiers remain a separately audited future extension.
   MyCap's editable participant display label is resolved centrally by
   `Participant::getParticipantIdentifier()`, which always supplies the
   participant's record and event but no form or survey participant to Piping.

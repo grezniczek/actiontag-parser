@@ -1296,16 +1296,20 @@ the current record, event, instance, and form; a public Survey's pre-creation
 behavior, Twilio's channel-specific implementation details, and blank PDFs
 must not become authoring restrictions. Blank PDFs do not perform the relevant
 Piping replacement at all.
-Each of these editor openers already supplies its containing form as
-`fieldEmbeddingFormName`. The catalog also provides `event_forms`, and the
-Piping analyzers already use it for explicit event-qualified field and
-instrument references. It does not yet transport the edited form to Piping
-semantics or expose repeat status for each designated form/event. A future
-field-editor guidance slice may derive a guaranteed/partial/unavailable
-repetition profile from those mappings and show advisory help for
-instance-sensitive syntax. It must remain independent of record availability,
-must not change Twilio, and must not impose a source policy on ordinary field
-metadata.
+Each of these editor openers supplies its containing form as
+`fieldEmbeddingFormName`; the workspace transports it to Piping semantic
+analysis as `form_name`. The catalog now carries each form's design-time
+`repeat_context`—`guaranteed`, `partial`, or `unavailable`—calculated with
+`Project::isRepeatingFormOrEvent()` across all events where the form is
+designated. This does not represent a current record, does not create a Piping
+source policy, and does not affect Twilio. In these standard field editors,
+the runtime-blank standalone `[previous-instance]`, `[current-instance]`,
+`[next-instance]`, and `[new-instance]` values are warning-only and muted when
+the form never repeats; they remain offered with an advisory when it repeats in
+only some designated events. `[first-instance]` and `[last-instance]` remain
+unrestricted because their runtime behavior deliberately falls back to
+instance 1 without repeat instances. Field-reference instance qualifiers need
+a separate runtime audit before receiving comparable guidance.
 When source replacement depends on a selected delivery mode, the same policy
 can declare `piping_delivery_types`. The Twilio manual-invitation editor passes
 the current `delivery_type` as `pipingDeliveryType`; only `SMS_INVITE_WEB`
