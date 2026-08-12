@@ -767,6 +767,12 @@ keywords, and operators at the corresponding annotation offsets. Disabled
 presentation. This lexical highlight layer is non-evaluating and cannot select
 a branch.
 
+The Field Annotation Summary renders Action Tag structure separately from an
+`Enabled IF condition Logic` aggregate of Logic references and function calls.
+It includes enabled nested conditions but excludes disabled `@.OFF.IF`
+containers and descendants. This is a parser-derived description only: it
+does not evaluate a condition or infer a selected branch.
+
 `ActionTagConditionResolver` is a future API/EM-framework companion rather than parser logic: it receives already parsed results and an explicit runtime context (or evaluator callback), evaluates each result-local condition once, and marks which flattened tags are active. For project-wide callers, `ActionTagProjectConditionResolver` batches field retrieval for the union of conditions and reuses values for identical condition text. `ActionTagIndex` similarly accepts annotations supplied by a caller and creates aggregate field/tag/instrument views without knowing how metadata was obtained. These helpers can move to core or the EM Framework independently of the parser class.
 
 ## Future Runtime Performance Architecture

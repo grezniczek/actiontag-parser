@@ -127,6 +127,13 @@ markers on their exact annotation ranges. Leave disabled `@.OFF.IF` containers
 is lexical authoring feedback and must never evaluate a condition or select a
 branch.
 
+Keep Field Annotation Summary results distinct: the Action Tag structure tree
+lists contained tags, while an `Enabled IF condition Logic` section aggregates
+Logic references and function calls from enabled conditions, including enabled
+nested containers. Exclude disabled `@.OFF.IF` containers and descendants.
+The summary describes parsed authoring syntax only; it must not evaluate a
+condition or select a branch.
+
 `ActionTagCatalog` adds deliberately narrow built-in exceptions. The shared
 `Form::getValueInQuotesActionTag()` extractor proves that `@DEFAULT` needs an
 equals sign and a nonempty single- or double-quoted value; `DataEntry` pipes

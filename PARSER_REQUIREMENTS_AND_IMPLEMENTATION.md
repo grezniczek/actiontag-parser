@@ -510,6 +510,13 @@ keyword, and operator markers at annotation-relative offsets. A disabled
 presentation, including for nested conditions. Highlighting is lexical editor
 feedback only and neither evaluates a condition nor determines a branch.
 
+The Field Annotation Summary keeps its Action Tag structure tree separate from
+an `Enabled IF condition Logic` section. That section aggregates the shared
+Logic parser's referenced fields/smart variables and function calls from every
+enabled condition, including enabled nested `@IF` containers. It excludes a
+disabled `@.OFF.IF` container and its descendants, and is a descriptive parse
+summary rather than condition evaluation or branch selection.
+
 The first intended architecture step after initial built-in completion is
 deliberately deferred: define External Module Action Tag syntax metadata. That
 may be a declarative `config.json` schema, a controlled module callback for
