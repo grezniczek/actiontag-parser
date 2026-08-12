@@ -906,6 +906,11 @@ moving migration target.
    generic record lists do not. Its policy should declare only the invariant
    record/event facts and the absence of participant/public-survey routes;
    leave the caller-dependent contexts unclaimed.
+   Data Entry Trigger URL follows the same shared-renderer rule. Its helper
+   pipes after every saved record with record and event context, including a
+   Data Comparison merge. Normal form and survey saves pass an instrument,
+   but the merge path does not. Declare the shared record/event facts, not a
+   universal form, user, repeat, or page context.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,

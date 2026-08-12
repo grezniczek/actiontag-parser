@@ -397,6 +397,12 @@ project event and the public route for the project's `firstForm`, but no record 
   public-survey route. Data Entry and header paths can pre-resolve additional
   form, user, or repeat data while generic record lists do not; these and PAGE
   state consequently remain unclaimed, preserving compatible completion.
+  Project Setup's Data Entry Trigger URL has the `data_entry_trigger_url`
+  policy. `DataEntry::launchDataEntryTrigger()` pipes it after every record
+  save with record/event context, including public surveys before their
+  recordless guard applies. Normal form/survey saves pass an instrument but
+  Data Comparison merges do not, so form, user, repeat, and PAGE state remain
+  unclaimed; no survey participant or recordless public-survey route exists.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

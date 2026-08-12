@@ -1149,6 +1149,13 @@ Entry and header callers first resolve extra form, user, or repeat-instance
 state, while generic record-list callers do not; the policy intentionally
 leaves those contexts and PAGE state unclaimed so completion remains
 advisory-compatible across all display locations.
+Data Entry Trigger URL uses the `data_entry_trigger_url` policy. After a save,
+`DataEntry::launchDataEntryTrigger()` pipes its URL with the saved record and
+event, including a public survey response before the public-record guard is
+set. Ordinary Data Entry and Survey saves pass their instrument, whereas Data
+Comparison merges do not. The policy therefore keeps field, record, and event
+references available and declares no participant or recordless public-survey
+route, while leaving form, user, repeat, and PAGE state unclaimed.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and
