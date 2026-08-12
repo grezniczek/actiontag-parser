@@ -372,10 +372,12 @@ project event and the public route for the project's `firstForm`, but no record 
   Survey Instructions deliberately have no source policy. The web renderer
   passes event/form but can start a new public response without a record;
   Twilio either leaves the instructions unpiped until a record exists or pipes
-  without a form argument. Survey Settings cannot expose that runtime choice,
-  and even a nominal fixed-page diagnostic would misdescribe the literal
-  unpiped branch. The absent policy therefore preserves compatibility pending
-  a context model that can faithfully distinguish those alternatives.
+  without a form argument. PDF output is a third renderer: it passes the form
+  but blank PDFs have no record or event. Survey Settings cannot expose those
+  runtime choices, and even a partial static policy would misdescribe literal
+  Twilio text or blank-PDF output. The absent policy therefore preserves
+  compatibility pending a context model that can faithfully distinguish the
+  alternatives.
   Offline Instructions always call Piping on `Surveys/index.php` with the
   current event and form, so their policy keeps form-dependent completion
   active, `[is-survey]` active, and `[is-form]` fixed at `0`. A public offline

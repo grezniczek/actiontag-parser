@@ -881,10 +881,11 @@ moving migration target.
    Do not add a policy solely because one runtime branch is well understood.
    Survey Instructions illustrate the limit: web rendering supplies event and
    form but may have no public-response record, while Twilio either does not
-   run Piping yet or runs it without a form. With no editor-side indication of
-   that branch, a source policy would mislabel valid or literal output. Record
-   the audit and leave the policy absent until the transport can distinguish
-   the alternatives.
+   run Piping yet or runs it without a form. Survey PDF generation is a third
+   path: it supplies a form, but blank PDFs have neither record nor event.
+   With no editor-side indication of the delivery and record state, a source
+   policy would mislabel valid, literal, or blank output. Record the audit and
+   leave the policy absent until the transport can distinguish the alternatives.
    A source may still support a useful partial policy when every branch calls
    Piping with some invariant arguments. Offline Instructions always run on
    the survey endpoint with event and form, but a public offline page has no

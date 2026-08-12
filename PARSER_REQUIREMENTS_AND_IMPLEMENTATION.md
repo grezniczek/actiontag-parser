@@ -1120,11 +1120,13 @@ after a deleting stop action.
 Survey Instructions are intentionally not assigned a source policy. The web
 renderer calls Piping from `Surveys/index.php` with event and form arguments,
 but a new public response has no record. The Twilio renderer either leaves the
-text unpiped until a record exists or pipes it without a form argument. Since
-the Survey Settings editor cannot identify that delivery/record state, even a
-fixed page-state warning could incorrectly describe literal, unpiped Twilio
-text. The absent policy preserves existing completion and diagnostics until a
-future authoring context can represent those alternatives precisely.
+text unpiped until a record exists or pipes it without a form argument. PDF
+rendering adds a third path: it supplies the survey form, but a blank PDF has
+neither record nor event context. Since the Survey Settings editor cannot
+identify that delivery/record state, even a partial static policy could
+incorrectly describe literal Twilio text or blank-PDF output. The absent policy
+preserves existing completion and diagnostics until a future authoring context
+can represent those alternatives precisely.
 Offline Instructions have a narrower, safe policy. Their unavailable-survey
 renderer always calls Piping on `Surveys/index.php` with the current event and
 form, so `[is-survey]` remains active and `[is-form]` is muted/warned as fixed
