@@ -134,6 +134,12 @@ nested containers. Exclude disabled `@.OFF.IF` containers and descendants.
 The summary describes parsed authoring syntax only; it must not evaluate a
 condition or select a branch.
 
+Render each enabled-condition Logic reference and function call as a source
+link with its exact annotation range. Selecting it must activate Edit and
+select the corresponding ACE token; retain the Action Tag structure tree as a
+separate read-only view. This source navigation must not evaluate a condition
+or select a branch.
+
 `ActionTagCatalog` adds deliberately narrow built-in exceptions. The shared
 `Form::getValueInQuotesActionTag()` extractor proves that `@DEFAULT` needs an
 equals sign and a nonempty single- or double-quoted value; `DataEntry` pipes

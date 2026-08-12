@@ -517,6 +517,12 @@ enabled condition, including enabled nested `@IF` containers. It excludes a
 disabled `@.OFF.IF` container and its descendants, and is a descriptive parse
 summary rather than condition evaluation or branch selection.
 
+Each enabled-condition reference and function-call summary occurrence carries
+its exact annotation range. Selecting it activates the Edit tab and selects
+the corresponding Logic token in ACE; the Action Tag tree remains a separate,
+read-only structure view. This navigation is source-location UI only and does
+not evaluate a condition or choose a branch.
+
 The first intended architecture step after initial built-in completion is
 deliberately deferred: define External Module Action Tag syntax metadata. That
 may be a declarative `config.json` schema, a controlled module callback for
