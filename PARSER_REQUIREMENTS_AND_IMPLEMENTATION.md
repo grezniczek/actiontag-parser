@@ -525,6 +525,11 @@ disabled entries), displayed tag parameters, and displayed condition text to
 their exact ranges; malformed candidates remain plain text. This navigation is
 source-location UI only and does not evaluate a condition or choose a branch.
 
+Field Annotation Summary diagnostics with valid browser UTF-16 ranges are also
+source links: selecting one activates Edit and selects the reported span. This
+includes advisory enabled-`@IF` Logic findings but does not alter severity,
+diagnostic production, condition evaluation, or branch selection.
+
 The first intended architecture step after initial built-in completion is
 deliberately deferred: define External Module Action Tag syntax metadata. That
 may be a declarative `config.json` schema, a controlled module callback for

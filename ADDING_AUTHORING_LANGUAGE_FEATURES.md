@@ -142,6 +142,11 @@ displayed parameters, and displayed condition text to their exact ranges; leave
 malformed candidates as plain structure content. This source navigation must
 not evaluate a condition or select a branch.
 
+For Field Annotation Summary, render any diagnostic with a valid browser
+UTF-16 range as a source link to its reported ACE span. This includes enabled
+`@IF` Logic advisories but must not change diagnostic severity, evaluate a
+condition, or select a branch.
+
 `ActionTagCatalog` adds deliberately narrow built-in exceptions. The shared
 `Form::getValueInQuotesActionTag()` extractor proves that `@DEFAULT` needs an
 equals sign and a nonempty single- or double-quoted value; `DataEntry` pipes
