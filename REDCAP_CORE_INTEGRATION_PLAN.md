@@ -403,6 +403,12 @@ project event and the public route for the project's `firstForm`, but no record 
   recordless guard applies. Normal form/survey saves pass an instrument but
   Data Comparison merges do not, so form, user, repeat, and PAGE state remain
   unclaimed; no survey participant or recordless public-survey route exists.
+  e-Consent Custom Label has the `econsent_custom_label` policy. Its only
+  renderer is the e-Consent PDF header, and
+  `Econsent::getCustomEconsentLabel()` always supplies the current e-Consent
+  instrument. Blank PDF generation supplies neither a record nor an event, so
+  those contexts remain unclaimed while field completion stays compatible; the
+  policy excludes survey-participant and public-survey fallbacks.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;
@@ -595,7 +601,7 @@ project event and the public route for the project's `firstForm`, but no record 
   screen's established save flow.
 - Project Setup's Data Entry Trigger URL is a one-line piping workspace that
   preserves the original URL/localhost checks after save. e-Consent's custom
-  label is likewise a record-aware one-line piping workspace in its existing
+  label is likewise a form-aware one-line piping workspace in its existing
   AJAX dialog and retains its normal save path.
 - Project Dashboard body text has an explicit TinyMCE source-editor action.
   It is HTML-aware for text-node syntax feedback and deliberately offers smart

@@ -1156,6 +1156,14 @@ set. Ordinary Data Entry and Survey saves pass their instrument, whereas Data
 Comparison merges do not. The policy therefore keeps field, record, and event
 references available and declares no participant or recordless public-survey
 route, while leaving form, user, repeat, and PAGE state unclaimed.
+e-Consent Custom Label uses the `econsent_custom_label` policy. It is rendered
+only as a custom e-Consent PDF header, where
+`Econsent::getCustomEconsentLabel()` always passes the e-Consent instrument to
+Piping. The same PDF renderer can create a blank form PDF, however, so record
+and event context are not invariant. The policy therefore keeps field
+completion compatible, declares the current form, excludes participant and
+public-survey fallbacks, and leaves record, event, user, repeat, and PAGE
+state unclaimed.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and

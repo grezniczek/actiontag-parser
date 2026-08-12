@@ -911,6 +911,14 @@ moving migration target.
    Data Comparison merge. Normal form and survey saves pass an instrument,
    but the merge path does not. Declare the shared record/event facts, not a
    universal form, user, repeat, or page context.
+   e-Consent Custom Label is a different shared-PDF case. Its only renderer,
+   `Econsent::getCustomEconsentLabel()`, always passes the e-Consent
+   instrument to `Piping::replaceVariablesInLabel()`, so it can declare form
+   context. The generic PDF renderer also creates blank PDFs, where neither a
+   record nor event exists. Declare the invariant form plus the absence of
+   survey-participant/public-survey alternatives, but leave record, event,
+   user, repeat, and page state absent; do not turn blank-PDF behavior into a
+   global denial of the normal record-backed e-Consent header use.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,
