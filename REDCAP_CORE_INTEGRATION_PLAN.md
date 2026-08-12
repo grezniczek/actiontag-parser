@@ -409,6 +409,13 @@ project event and the public route for the project's `firstForm`, but no record 
   instrument. Blank PDF generation supplies neither a record nor an event, so
   those contexts remain unclaimed while field completion stays compatible; the
   policy excludes survey-participant and public-survey fallbacks.
+  Custom Repeating Instrument Label has the `repeating_instrument_label`
+  policy. `RepeatInstance::getPipedCustomRepeatingFormLabels()` supplies the
+  target record, event, repeating form, and exact instance. Whole repeating
+  events never reach its Piping call, so form context is guaranteed and a
+  repeating-event alternative is explicitly unavailable. Survey Queue and
+  Participant List callers vary in user and page state, which remain
+  unclaimed; no participant or public-survey fallback is supplied.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

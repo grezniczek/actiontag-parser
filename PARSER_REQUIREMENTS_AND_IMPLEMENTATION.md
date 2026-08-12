@@ -1164,6 +1164,13 @@ and event context are not invariant. The policy therefore keeps field
 completion compatible, declares the current form, excludes participant and
 public-survey fallbacks, and leaves record, event, user, repeat, and PAGE
 state unclaimed.
+Custom Repeating Instrument Label uses the `repeating_instrument_label`
+policy. `RepeatInstance::getPipedCustomRepeatingFormLabels()` supplies every
+label's record, event, repeating instrument, and exact instance to Piping.
+It returns before Piping for a whole repeating event, so the policy declares
+form context and explicitly excludes a repeating-event alternative, as well
+as participant and public-survey fallbacks. Survey Queue and Participant List
+callers differ in user and PAGE state, which remain unclaimed.
 `[record-name]`, `[record-dag-id]`, `[record-dag-name]`, and
 `[record-dag-label]` read the current record only; the DAG variables then look
 up that record's assigned Data Access Group. They accept no parameters and

@@ -919,6 +919,15 @@ moving migration target.
    survey-participant/public-survey alternatives, but leave record, event,
    user, repeat, and page state absent; do not turn blank-PDF behavior into a
    global denial of the normal record-backed e-Consent header use.
+   Custom Repeating Instrument Label has the complementary record-backed
+   repeating-form case. `RepeatInstance::getPipedCustomRepeatingFormLabels()`
+   passes every rendered label's record, event, form, and exact instance to
+   Piping. It returns before replacement for a whole repeating event, so
+   declare record/event/form context and an explicitly false
+   `has_repeating_event_context`, rather than treating the repeating form as
+   an event alternative. It has no participant/public-survey fallback. Its
+   Survey Queue and Participant List callers differ in user and PAGE state, so
+   leave those properties absent.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,
