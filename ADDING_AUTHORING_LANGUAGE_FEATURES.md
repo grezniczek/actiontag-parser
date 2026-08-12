@@ -897,16 +897,24 @@ moving migration target.
    post-completion AJAX branch provides none. Do not reuse the default policy
    or add a translation-specific one until that editor can identify the exact
    rendering route.
-   Generic project-metadata sources can also be deliberately uncataloged.
-   `field_label` includes labels, choice labels, and section headers. Its
-   common `DataEntry::renderForm()` path passes record/event/form values, but a
-   not-yet-created public survey clears the record, Twilio pipes only an
-   existing record and supplies no form, and blank PDFs leave metadata
-   literal. `field_note` spans the normal Data Entry/Survey and PDF renderers,
-   including the same record-backed versus blank-PDF distinction. Do not add a
-   field-label or field-note policy merely because one renderer is rich in
-   context: their metadata editor cannot select the display route, so absence
-   correctly preserves established completion and diagnostics.
+   Standard field-metadata editors are also deliberately free of a policy that
+   infers a record or delivery channel. `field_label` includes field labels,
+   choice labels, and section headers; `field_note` is the ordinary Field
+   Note. These values are authored outside a record and are evaluated later in
+   the displayed record's context. The normal `DataEntry::renderForm()` path
+   supplies record/event/instance/form values; public Survey pre-creation
+   behavior, Twilio's channel-specific implementation, and blank PDFs must
+   not restrict the shared editor. Blank PDFs do not perform this Piping
+   replacement.
+   The editor openers already provide the containing form as
+   `fieldEmbeddingFormName`, and the catalog's `event_forms` map already
+   validates explicit event-qualified field/instrument references. It does not
+   yet send that form to Piping semantic analysis or expose repeat status for
+   every designated form/event. A future, advisory-only enhancement may derive
+   whether the edited form's possible render contexts are guaranteed, partial,
+   or never repeating, then explain instance-sensitive syntax accordingly. Do
+   not model that as record availability, restrict generic Piping completion,
+   or modify Twilio.
    A source may still support a useful partial policy when every branch calls
    Piping with some invariant arguments. Offline Instructions always run on
    the survey endpoint with event and form, but a public offline page has no

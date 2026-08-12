@@ -330,14 +330,20 @@ project event and the public route for the project's `firstForm`, but no record 
   record-only for the standalone Queue, record/event/form on normal
   acknowledgements, and empty on the post-completion AJAX path. The default
   editor cannot distinguish those routes.
-  Generic field labels and notes deliberately have no source policy. The
-  `field_label` kind includes choice labels and section headers. Its usual
-  Data Entry/Survey renderer receives record/event/form values, but a public
-  response before record creation clears the record, Twilio pipes existing
-  field labels without a form, and blank PDFs leave metadata literal. Field
-  notes likewise span normal and blank-PDF behavior that the metadata editor
-  cannot distinguish. Leaving both kinds uncataloged preserves established
-  completion rather than making a broad context promise or prohibition.
+  Standard field-metadata editors deliberately have no policy that infers a
+  record or delivery channel. `field_label` includes field labels, choice
+  labels, and section headers; `field_note` is the ordinary Field Note. They
+  are authored outside a record and evaluated later in the displayed record's
+  context. The shared Data Entry/Survey renderer supplies record/event/
+  instance/form values; public Survey pre-creation behavior, Twilio's
+  channel-specific implementation, and blank PDFs must not restrict the
+  editor. The openers already identify the containing form for Field Embedding,
+  while the shared catalog exposes event/form designations for explicit
+  event-qualified references. A future advisory-only slice can additionally
+  transport that target form and catalog per-event/form repeat status, so
+  instance-sensitive syntax can be explained from every possible designated
+  event. It must not derive editor restrictions from record availability or
+  alter Twilio.
   MyCap's editable participant display label is resolved centrally by
   `Participant::getParticipantIdentifier()`, which always supplies the
   participant's record and event but no form or survey participant to Piping.

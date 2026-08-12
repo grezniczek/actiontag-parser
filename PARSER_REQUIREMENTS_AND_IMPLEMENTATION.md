@@ -1287,17 +1287,25 @@ acknowledgement branches provide record/event/form details, and the
 post-completion AJAX branch provides none of them. The editor cannot identify
 that rendering branch, so those translations deliberately do not inherit the
 default-source policy.
-Generic field labels and notes intentionally have no `PipingSourcePolicyCatalog`
-entry. `field_label` also covers choice labels and section headers: the normal
-`DataEntry::renderForm()` path supplies record/event/form values, but a
-not-yet-created public survey clears the record before Piping, the Twilio
-field-label path pipes only existing records and passes no form, and blank
-PDFs leave metadata literal. Field notes share the browser and PDF renderers,
-whose record-backed and blank-PDF behavior likewise cannot be distinguished by
-their project-metadata editor. Do not turn one common path into a global
-record, form, participant, user, or page promise; the absent policy preserves
-the established unrestricted completion and diagnostics for these generic
-metadata values.
+Standard field-metadata editors intentionally have no Piping source policy
+that infers a record or a particular delivery channel. `field_label` covers
+field labels, choice labels, and section headers; `field_note` covers the
+ordinary Field Note. They are authored outside a record and are evaluated later
+for the displayed record. The shared `DataEntry::renderForm()` path supplies
+the current record, event, instance, and form; a public Survey's pre-creation
+behavior, Twilio's channel-specific implementation details, and blank PDFs
+must not become authoring restrictions. Blank PDFs do not perform the relevant
+Piping replacement at all.
+Each of these editor openers already supplies its containing form as
+`fieldEmbeddingFormName`. The catalog also provides `event_forms`, and the
+Piping analyzers already use it for explicit event-qualified field and
+instrument references. It does not yet transport the edited form to Piping
+semantics or expose repeat status for each designated form/event. A future
+field-editor guidance slice may derive a guaranteed/partial/unavailable
+repetition profile from those mappings and show advisory help for
+instance-sensitive syntax. It must remain independent of record availability,
+must not change Twilio, and must not impose a source policy on ordinary field
+metadata.
 When source replacement depends on a selected delivery mode, the same policy
 can declare `piping_delivery_types`. The Twilio manual-invitation editor passes
 the current `delivery_type` as `pipingDeliveryType`; only `SMS_INVITE_WEB`
