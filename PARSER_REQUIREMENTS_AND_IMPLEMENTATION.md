@@ -519,9 +519,11 @@ summary rather than condition evaluation or branch selection.
 
 Each enabled-condition reference and function-call summary occurrence carries
 its exact annotation range. Selecting it activates the Edit tab and selects
-the corresponding Logic token in ACE; the Action Tag tree remains a separate,
-read-only structure view. This navigation is source-location UI only and does
-not evaluate a condition or choose a branch.
+the corresponding Logic token in ACE. The separate Action Tag structure tree
+also links each structurally recognized tag and `@IF` container name (including
+disabled entries) to its exact name range; malformed candidates remain plain
+text. This navigation is source-location UI only and does not evaluate a
+condition or choose a branch.
 
 The first intended architecture step after initial built-in completion is
 deliberately deferred: define External Module Action Tag syntax metadata. That

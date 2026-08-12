@@ -136,9 +136,10 @@ condition or select a branch.
 
 Render each enabled-condition Logic reference and function call as a source
 link with its exact annotation range. Selecting it must activate Edit and
-select the corresponding ACE token; retain the Action Tag structure tree as a
-separate read-only view. This source navigation must not evaluate a condition
-or select a branch.
+select the corresponding ACE token. In the separate Action Tag structure tree,
+link every recognized tag and `@IF` container name, including disabled entries,
+to its exact name range; leave malformed candidates as plain structure content.
+This source navigation must not evaluate a condition or select a branch.
 
 `ActionTagCatalog` adds deliberately narrow built-in exceptions. The shared
 `Form::getValueInQuotesActionTag()` extractor proves that `@DEFAULT` needs an

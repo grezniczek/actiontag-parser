@@ -775,8 +775,10 @@ does not evaluate a condition or infer a selected branch.
 
 Each enabled-condition Logic summary occurrence links to its exact source
 range: selecting it activates Edit and selects the Logic token in ACE. The
-separate Action Tag tree remains read-only structure content. Source navigation
-does not evaluate a condition or select a branch.
+separate Action Tag tree also links recognized tags and `@IF` container names,
+including disabled entries, to their exact name ranges; malformed candidates
+remain plain structure content. Source navigation does not evaluate a condition
+or select a branch.
 
 `ActionTagConditionResolver` is a future API/EM-framework companion rather than parser logic: it receives already parsed results and an explicit runtime context (or evaluator callback), evaluates each result-local condition once, and marks which flattened tags are active. For project-wide callers, `ActionTagProjectConditionResolver` batches field retrieval for the union of conditions and reuses values for identical condition text. `ActionTagIndex` similarly accepts annotations supplied by a caller and creates aggregate field/tag/instrument views without knowing how metadata was obtained. These helpers can move to core or the EM Framework independently of the parser class.
 
