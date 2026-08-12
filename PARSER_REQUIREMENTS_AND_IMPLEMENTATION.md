@@ -496,6 +496,13 @@ branch, or disabled `@.OFF.IF` container remains outside that Logic-completion
 path. Completion is authoring assistance only and must never evaluate a
 condition or select a branch.
 
+Hover documentation follows the same boundary. Within an enabled `@IF`
+condition, its Logic token is mapped to the shared field, smart-variable, or
+special-function documentation; the condition's outer offsets are retained so
+the hover anchor remains precise. Disabled `@.OFF.IF` containers (including
+their nested conditionals) receive no Logic hover. Hover is metadata guidance,
+not condition evaluation or branch selection.
+
 The first intended architecture step after initial built-in completion is
 deliberately deferred: define External Module Action Tag syntax metadata. That
 may be a declarative `config.json` schema, a controlled module callback for

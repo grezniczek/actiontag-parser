@@ -113,6 +113,13 @@ the normal Action Tag path and provide no Logic completion for a disabled
 `@.OFF.IF` container. Completion is never evidence that a condition is true
 and must not choose a branch.
 
+Use the same enabled-only condition ranges for hover documentation. Map a
+Logic field, smart variable, or special function in a recognized enabled
+condition to the existing Logic metadata renderer and its exact annotation
+range. Do not provide Logic hover inside a disabled `@.OFF.IF` container,
+including its nested conditionals. Hover remains descriptive only; it does not
+evaluate a condition or imply a selected branch.
+
 `ActionTagCatalog` adds deliberately narrow built-in exceptions. The shared
 `Form::getValueInQuotesActionTag()` extractor proves that `@DEFAULT` needs an
 equals sign and a nonempty single- or double-quoted value; `DataEntry` pipes
