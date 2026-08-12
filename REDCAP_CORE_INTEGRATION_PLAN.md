@@ -330,6 +330,14 @@ project event and the public route for the project's `firstForm`, but no record 
   record-only for the standalone Queue, record/event/form on normal
   acknowledgements, and empty on the post-completion AJAX path. The default
   editor cannot distinguish those routes.
+  Generic field labels and notes deliberately have no source policy. The
+  `field_label` kind includes choice labels and section headers. Its usual
+  Data Entry/Survey renderer receives record/event/form values, but a public
+  response before record creation clears the record, Twilio pipes existing
+  field labels without a form, and blank PDFs leave metadata literal. Field
+  notes likewise span normal and blank-PDF behavior that the metadata editor
+  cannot distinguish. Leaving both kinds uncataloged preserves established
+  completion rather than making a broad context promise or prohibition.
   MyCap's editable participant display label is resolved centrally by
   `Participant::getParticipantIdentifier()`, which always supplies the
   participant's record and event but no form or survey participant to Piping.

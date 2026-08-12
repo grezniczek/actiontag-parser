@@ -897,6 +897,16 @@ moving migration target.
    post-completion AJAX branch provides none. Do not reuse the default policy
    or add a translation-specific one until that editor can identify the exact
    rendering route.
+   Generic project-metadata sources can also be deliberately uncataloged.
+   `field_label` includes labels, choice labels, and section headers. Its
+   common `DataEntry::renderForm()` path passes record/event/form values, but a
+   not-yet-created public survey clears the record, Twilio pipes only an
+   existing record and supplies no form, and blank PDFs leave metadata
+   literal. `field_note` spans the normal Data Entry/Survey and PDF renderers,
+   including the same record-backed versus blank-PDF distinction. Do not add a
+   field-label or field-note policy merely because one renderer is rich in
+   context: their metadata editor cannot select the display route, so absence
+   correctly preserves established completion and diagnostics.
    A source may still support a useful partial policy when every branch calls
    Piping with some invariant arguments. Offline Instructions always run on
    the survey endpoint with event and form, but a public offline page has no

@@ -1287,6 +1287,17 @@ acknowledgement branches provide record/event/form details, and the
 post-completion AJAX branch provides none of them. The editor cannot identify
 that rendering branch, so those translations deliberately do not inherit the
 default-source policy.
+Generic field labels and notes intentionally have no `PipingSourcePolicyCatalog`
+entry. `field_label` also covers choice labels and section headers: the normal
+`DataEntry::renderForm()` path supplies record/event/form values, but a
+not-yet-created public survey clears the record before Piping, the Twilio
+field-label path pipes only existing records and passes no form, and blank
+PDFs leave metadata literal. Field notes share the browser and PDF renderers,
+whose record-backed and blank-PDF behavior likewise cannot be distinguished by
+their project-metadata editor. Do not turn one common path into a global
+record, form, participant, user, or page promise; the absent policy preserves
+the established unrestricted completion and diagnostics for these generic
+metadata values.
 When source replacement depends on a selected delivery mode, the same policy
 can declare `piping_delivery_types`. The Twilio manual-invitation editor passes
 the current `delivery_type` as `pipingDeliveryType`; only `SMS_INVITE_WEB`
