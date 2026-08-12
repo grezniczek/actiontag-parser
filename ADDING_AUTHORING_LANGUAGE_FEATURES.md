@@ -120,6 +120,13 @@ range. Do not provide Logic hover inside a disabled `@.OFF.IF` container,
 including its nested conditionals. Hover remains descriptive only; it does not
 evaluate a condition or imply a selected branch.
 
+For enabled conditions, retain the structural condition highlight and layer
+the shared Logic lexer’s reference, function, literal, keyword, and operator
+markers on their exact annotation ranges. Leave disabled `@.OFF.IF` containers
+(including nested conditions) with structural presentation only. Highlighting
+is lexical authoring feedback and must never evaluate a condition or select a
+branch.
+
 `ActionTagCatalog` adds deliberately narrow built-in exceptions. The shared
 `Form::getValueInQuotesActionTag()` extractor proves that `@DEFAULT` needs an
 equals sign and a nonempty single- or double-quoted value; `DataEntry` pipes

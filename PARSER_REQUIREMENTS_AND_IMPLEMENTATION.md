@@ -503,6 +503,13 @@ the hover anchor remains precise. Disabled `@.OFF.IF` containers (including
 their nested conditionals) receive no Logic hover. Hover is metadata guidance,
 not condition evaluation or branch selection.
 
+Enabled conditions also retain their subtle structural range marker while the
+browser layers the shared Logic lexer’s field/reference, function, literal,
+keyword, and operator markers at annotation-relative offsets. A disabled
+`@.OFF.IF` container deliberately retains only its structural condition
+presentation, including for nested conditions. Highlighting is lexical editor
+feedback only and neither evaluates a condition nor determines a branch.
+
 The first intended architecture step after initial built-in completion is
 deliberately deferred: define External Module Action Tag syntax metadata. That
 may be a declarative `config.json` schema, a controlled module callback for
