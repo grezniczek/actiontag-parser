@@ -1279,8 +1279,13 @@ project first event but no current form, so form-dependent Smart Variables are
 warning-only and muted while field, record, and event references remain
 available. Its transported `has_repeating_event_context` value is the actual
 repeating state of that first event, allowing only the cataloged form-or-repeat
-alternative when it is true. Its language-specific queue translations use
-their own rendering contexts and are deliberately not claimed by this
+alternative when it is true. The language-specific Queue translations are a
+separate, currently unenhanced Multi-Language rich-text surface.
+`MultiLanguage::getSurveyQueueSettings()` pipes them with the caller's
+`Context`: the standalone Queue provides a record but no event or form, normal
+acknowledgement branches provide record/event/form details, and the
+post-completion AJAX branch provides none of them. The editor cannot identify
+that rendering branch, so those translations deliberately do not inherit the
 default-source policy.
 When source replacement depends on a selected delivery mode, the same policy
 can declare `piping_delivery_types`. The Twilio manual-invitation editor passes

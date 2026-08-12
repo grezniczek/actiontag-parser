@@ -886,6 +886,17 @@ moving migration target.
    With no editor-side indication of the delivery and record state, a source
    policy would mislabel valid, literal, or blank output. Record the audit and
    leave the policy absent until the transport can distinguish the alternatives.
+   The same discipline applies where a translated value is visibly associated
+   with an editor-supported setting but uses a different authoring surface.
+   Survey Queue custom text is one example: its default setting has the
+   `survey_queue_custom_text` workspace policy, while language-specific
+   translations are edited through Multi-Language's separate rich-text
+   control. `MultiLanguage::getSurveyQueueSettings()` pipes those translations
+   from the caller's `Context`: the standalone Queue provides a record only,
+   acknowledgement branches provide record/event/form details, and the
+   post-completion AJAX branch provides none. Do not reuse the default policy
+   or add a translation-specific one until that editor can identify the exact
+   rendering route.
    A source may still support a useful partial policy when every branch calls
    Piping with some invariant arguments. Offline Instructions always run on
    the survey endpoint with event and form, but a public offline page has no

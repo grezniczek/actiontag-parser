@@ -324,8 +324,12 @@ project event and the public route for the project's `firstForm`, but no record 
   The default Survey Queue custom-text renderer supplies a record and the
   project first event but no form. Its transported repeating-event state lets
   form-or-repeating-event Smart Variables remain available only when that
-  exact first event repeats; its language-specific translation path is
-  intentionally outside that default-source policy.
+  exact first event repeats. Its language-specific translations remain outside
+  that default-source policy: their separate, currently unenhanced
+  Multi-Language rich-text surface pipes from the caller's `Context`, which is
+  record-only for the standalone Queue, record/event/form on normal
+  acknowledgements, and empty on the post-completion AJAX path. The default
+  editor cannot distinguish those routes.
   MyCap's editable participant display label is resolved centrally by
   `Participant::getParticipantIdentifier()`, which always supplies the
   participant's record and event but no form or survey participant to Piping.
