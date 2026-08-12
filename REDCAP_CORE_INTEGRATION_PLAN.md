@@ -416,6 +416,12 @@ project event and the public route for the project's `firstForm`, but no record 
   repeating-event alternative is explicitly unavailable. Survey Queue and
   Participant List callers vary in user and page state, which remain
   unclaimed; no participant or public-survey fallback is supplied.
+  Alerts & Notifications email subject, message, and SendGrid template data
+  share the `alert_notification` policy. `Alerts::sendNotification()` pipes
+  each with the alert record/event context. Conditional-logic-only alerts can
+  have no instrument, and cron/interactive sends vary user, repeat, and page
+  state, so those remain unclaimed. The policy excludes participant and
+  public-survey fallback while retaining field completion.
   A source policy may also limit Piping itself to explicit
   `piping_delivery_types`. Twilio supplies the live delivery selection to both
   browser and server semantic contexts: only `SMS_INVITE_WEB` invokes Piping;

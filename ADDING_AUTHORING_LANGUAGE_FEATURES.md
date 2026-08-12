@@ -928,6 +928,14 @@ moving migration target.
    an event alternative. It has no participant/public-survey fallback. Its
    Survey Queue and Participant List callers differ in user and PAGE state, so
    leave those properties absent.
+   When multiple editable source surfaces converge in the same runtime
+   replacement call, give them one source kind. Alerts & Notifications email
+   subject, message, and SendGrid template-data values all reach
+   `Alerts::sendNotification()`, which passes the alert record and event to
+   Piping. Conditional-logic-only alerts may have no instrument, and cron
+   delivery has no authenticated user, so declare only record/event plus the
+   absence of participant/public-survey fallbacks; leave form, user, repeat,
+   and page context unclaimed.
 3. Confirm the catalog is transported by
    `buildAuthoringSyntaxEditorCatalog()`. The workspace starts loading it when
    opening and applies it as soon as it arrives, so completion,
