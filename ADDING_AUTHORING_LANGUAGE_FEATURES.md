@@ -156,11 +156,12 @@ removes the delegated listener.
 
 Render each enabled-condition Logic reference and function call as a source
 link with its exact annotation range. Selecting it must activate Edit and
-select the corresponding ACE token. In the separate Action Tag structure tree,
-link every recognized tag and `@IF` container name, including disabled entries,
-displayed parameters, and displayed condition text to their exact ranges; leave
-malformed candidates as plain structure content. This source navigation must
-not evaluate a condition or select a branch.
+select the corresponding ACE token. In the Structural Action Tag tree, link
+every recognized tag and `@IF` container name, including disabled entries,
+displayed parameters, and displayed condition text to their exact ranges. Use
+the same delegated source-navigation path as condition counts, leave malformed
+candidates as plain structure content, and do not evaluate a condition or
+select a branch.
 
 For Field Annotation Summary, render any diagnostic with a valid browser
 UTF-16 range as a source link to its reported ACE span. This includes enabled

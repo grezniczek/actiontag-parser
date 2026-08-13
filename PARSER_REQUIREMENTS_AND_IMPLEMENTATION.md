@@ -541,11 +541,12 @@ including Edit activation, ACE range selection, and dialog-listener cleanup.
 
 Each enabled-condition reference and function-call summary occurrence carries
 its exact annotation range. Selecting it activates the Edit tab and selects
-the corresponding Logic token in ACE. The separate Action Tag structure tree
-also links each structurally recognized tag and `@IF` container name (including
+the corresponding Logic token in ACE. The Structural Action Tag tree also
+links each structurally recognized tag and `@IF` container name (including
 disabled entries), displayed tag parameters, and displayed condition text to
-their exact ranges; malformed candidates remain plain text. This navigation is
-source-location UI only and does not evaluate a condition or choose a branch.
+their exact ranges. These links use the same delegated navigation path as
+condition counts; malformed candidates remain plain text. Source navigation is
+UI only and does not evaluate a condition or choose a branch.
 
 Field Annotation Summary diagnostics with valid browser UTF-16 ranges are also
 source links: selecting one activates Edit and selects the reported span. This

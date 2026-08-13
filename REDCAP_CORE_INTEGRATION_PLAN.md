@@ -794,10 +794,12 @@ handling, Edit activation, ACE selection, and dialog-listener cleanup.
 
 Each enabled-condition Logic summary occurrence links to its exact source
 range: selecting it activates Edit and selects the Logic token in ACE. The
-separate Action Tag tree also links recognized tags and `@IF` container names,
-including disabled entries, displayed parameters, and displayed condition text
-to their exact ranges; malformed candidates remain plain structure content.
-Source navigation does not evaluate a condition or select a branch.
+Structural Action Tag tree also links recognized tags and `@IF` container
+names, including disabled entries, displayed parameters, and displayed
+condition text to their exact ranges. These controls use the same delegated
+source-navigation path as Structural condition counts; malformed candidates
+remain plain structure content. Source navigation does not evaluate a
+condition or select a branch.
 
 Field Annotation Summary diagnostics with valid browser UTF-16 source ranges
 also link to their reported spans. This includes enabled-`@IF` Logic advisories
