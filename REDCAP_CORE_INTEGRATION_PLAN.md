@@ -778,6 +778,11 @@ its own source link and a top-level or true/false nested-path label. References
 and function calls stay with their originating condition; grouping conveys
 syntax nesting only, not runtime branch selection.
 
+Each enabled-condition group additionally shows compact source-linked badges
+for diagnostics whose full browser ranges lie within that condition. These
+supplement rather than replace the global Syntax health list and do not change
+diagnostics, runtime evaluation, or branch selection.
+
 Each enabled-condition Logic summary occurrence links to its exact source
 range: selecting it activates Edit and selects the Logic token in ACE. The
 separate Action Tag tree also links recognized tags and `@IF` container names,

@@ -523,6 +523,12 @@ condition or its true/false nested path, retains that condition's source link,
 and lists only its own references and calls. Grouping expresses parser
 structure, not a branch that has been selected at runtime.
 
+Each enabled-condition group also shows compact, source-linked badges for
+diagnostics whose complete browser range belongs to that condition. The global
+Syntax health list remains unchanged; the badges provide condition-local
+context without changing severity, diagnostic production, evaluation, or
+branch selection.
+
 Each enabled-condition reference and function-call summary occurrence carries
 its exact annotation range. Selecting it activates the Edit tab and selects
 the corresponding Logic token in ACE. The separate Action Tag structure tree

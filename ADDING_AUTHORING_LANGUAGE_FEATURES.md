@@ -139,6 +139,11 @@ with a top-level or true/false nested-path label and its own source link. Keep
 that condition's references and function calls together. The grouping must
 describe syntax nesting only and must not imply that any branch was selected.
 
+Within each enabled-condition group, show compact source-linked badges only
+for diagnostics whose complete browser ranges fall inside that condition. Keep
+the global Syntax health list unchanged; badges add local context without
+altering severity, diagnostic production, evaluation, or branch selection.
+
 Render each enabled-condition Logic reference and function call as a source
 link with its exact annotation range. Selecting it must activate Edit and
 select the corresponding ACE token. In the separate Action Tag structure tree,
