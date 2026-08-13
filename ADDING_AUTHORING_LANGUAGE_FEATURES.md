@@ -35,7 +35,9 @@ the already visible workspace, it must focus the existing ACE editor without
 moving the dialog. Browser coverage must execute the rendered control's actual
 focus-then-click handlers for both Calculated Field and SQL selections, and
 assert one dialog creation, one dependency load, and refocus of the existing
-editor for each.
+editor for each. It must also execute those handlers for Radio, Drop-down, and
+Checkbox selections, asserting no workspace request or opener marker and no
+cancellation of native direct editing.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 

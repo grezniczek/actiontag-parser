@@ -57,6 +57,8 @@ when that is warranted.
   coverage executes the rendered focus-then-click handlers for both
   Calculated Field and SQL and verifies one dialog creation and dependency load
   with an editor refocus on click in each case.
+  Radio, Drop-down, and Checkbox run the same rendered handlers with no
+  workspace request or opener marker, preserving native direct editing.
 - Every `field.*` workspace title adds its current variable name as a
   code-styled ` - [field_name]` token with muted gray brackets, including Field
   Label, Field Note, and Branching Logic. A new field without a name retains

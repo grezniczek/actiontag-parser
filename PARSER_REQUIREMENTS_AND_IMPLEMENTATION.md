@@ -1700,7 +1700,9 @@ opener already owns the visible workspace, the duplicate request focuses its
 existing ACE editor without moving the dialog. Browser coverage executes the
 rendered `element_enum` focus and click handlers for both Calculated Field and
 SQL, asserting one dialog creation and dependency load, followed by a focus of
-the existing editor in each case.
+the existing editor in each case. The same rendered handlers for Radio,
+Drop-down, and Checkbox make no workspace request or opener marker and leave
+their native direct-edit events uncancelled.
 
 The workspace's metadata catalog is cacheable only between unchanged project
 definitions. Online Designer field additions and edits now reload the affected
