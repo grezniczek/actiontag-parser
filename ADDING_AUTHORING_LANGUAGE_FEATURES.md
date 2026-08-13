@@ -162,7 +162,8 @@ count, recognized tag name, parameter, disabled `@IF` name, and condition
 text; assert Edit activation and ACE selection, and confirm dialog cleanup
 removes the delegated listener. Include a multiline condition and assert its
 exact cross-line ACE range, plus a non-BMP condition that proves browser UTF-16
-source offsets map to the expected ACE columns.
+source offsets map to the expected ACE columns. Also cover a nested enabled
+`@IF` condition and assert its link selects its own range, not the outer one.
 
 Render each enabled-condition Logic reference and function call as a source
 link with its exact annotation range. Selecting it must activate Edit and
