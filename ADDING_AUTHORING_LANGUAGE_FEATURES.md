@@ -144,6 +144,12 @@ for diagnostics whose complete browser ranges fall inside that condition. Keep
 the global Syntax health list unchanged; badges add local context without
 altering severity, diagnostic production, evaluation, or branch selection.
 
+In the separate Structural analysis tree, show compact error/warning counts
+beside an `@IF` condition only for existing diagnostics fully within its range.
+Keep a nested finding on the nested node rather than duplicating it on an outer
+condition, and leave zero-count conditions uncluttered. Counts must not add
+validation, evaluate a condition, or select a branch.
+
 Render each enabled-condition Logic reference and function call as a source
 link with its exact annotation range. Selecting it must activate Edit and
 select the corresponding ACE token. In the separate Action Tag structure tree,

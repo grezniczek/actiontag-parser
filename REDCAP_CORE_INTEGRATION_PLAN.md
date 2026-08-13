@@ -783,6 +783,12 @@ for diagnostics whose full browser ranges lie within that condition. These
 supplement rather than replace the global Syntax health list and do not change
 diagnostics, runtime evaluation, or branch selection.
 
+The Structural analysis tree also displays compact error/warning counts beside
+each `@IF` condition whose full diagnostic ranges it contains. Nested findings
+belong only to their nested condition and zero-count nodes remain uncluttered.
+The counts summarize existing results without adding validation, evaluating a
+condition, or selecting a branch.
+
 Each enabled-condition Logic summary occurrence links to its exact source
 range: selecting it activates Edit and selects the Logic token in ACE. The
 separate Action Tag tree also links recognized tags and `@IF` container names,
