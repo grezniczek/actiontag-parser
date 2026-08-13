@@ -153,7 +153,8 @@ Counts must not add validation, evaluate a condition, or select a branch.
 Cover these Structural interactions in the browser workspace test: click a
 count, recognized tag name, parameter, disabled `@IF` name, and condition
 text; assert Edit activation and ACE selection, and confirm dialog cleanup
-removes the delegated listener.
+removes the delegated listener. Include a multiline condition and assert its
+exact cross-line ACE range.
 
 Render each enabled-condition Logic reference and function call as a source
 link with its exact annotation range. Selecting it must activate Edit and

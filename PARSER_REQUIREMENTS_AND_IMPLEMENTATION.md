@@ -538,8 +538,8 @@ summarize existing findings; they do not add validation, evaluate a condition,
 or select a branch.
 Browser workspace coverage exercises this delegated Structural-pane click path
 for condition counts, recognized tag names, parameters, disabled `@IF` names,
-and condition text, including Edit activation, ACE range selection, and
-dialog-listener cleanup.
+and condition text. A multiline `@IF` condition asserts its exact cross-line
+ACE selection, including Edit activation and dialog-listener cleanup.
 
 Each enabled-condition reference and function-call summary occurrence carries
 its exact annotation range. Selecting it activates the Edit tab and selects
