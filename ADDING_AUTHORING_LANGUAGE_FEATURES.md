@@ -150,6 +150,9 @@ Keep a nested finding on the nested node rather than duplicating it on an outer
 condition, and leave zero-count conditions uncluttered. Selecting a nonzero
 count must activate Edit and select its first source-ordered contained finding.
 Counts must not add validation, evaluate a condition, or select a branch.
+Cover this interaction in the browser workspace test: click the Structural
+count, assert Edit activation and ACE selection, and confirm dialog cleanup
+removes the delegated listener.
 
 Render each enabled-condition Logic reference and function call as a source
 link with its exact annotation range. Selecting it must activate Edit and

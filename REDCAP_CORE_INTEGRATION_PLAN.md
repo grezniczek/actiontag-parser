@@ -789,6 +789,8 @@ belong only to their nested condition and zero-count nodes remain uncluttered.
 Selecting a nonzero count activates Edit and selects its first source-ordered
 contained finding. The counts summarize existing results without adding
 validation, evaluating a condition, or selecting a branch.
+The browser workspace regression test covers delegated Structural-pane click
+handling, Edit activation, ACE selection, and dialog-listener cleanup.
 
 Each enabled-condition Logic summary occurrence links to its exact source
 range: selecting it activates Edit and selects the Logic token in ACE. The

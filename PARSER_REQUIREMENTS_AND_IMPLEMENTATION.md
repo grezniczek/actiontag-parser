@@ -536,6 +536,8 @@ zero-count conditions remain uncluttered. Selecting a nonzero count activates
 Edit and selects its first source-ordered contained finding. These counts
 summarize existing findings; they do not add validation, evaluate a condition,
 or select a branch.
+Browser workspace coverage exercises this delegated Structural-pane click path,
+including Edit activation, ACE range selection, and dialog-listener cleanup.
 
 Each enabled-condition reference and function-call summary occurrence carries
 its exact annotation range. Selecting it activates the Edit tab and selects
