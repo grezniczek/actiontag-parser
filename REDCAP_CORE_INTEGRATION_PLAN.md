@@ -792,7 +792,8 @@ validation, evaluating a condition, or selecting a branch.
 The browser workspace regression test covers delegated Structural-pane clicks
 for counts, tag names, parameters, disabled `@IF` names, and condition text,
 plus Edit activation, ACE selection, and dialog-listener cleanup. Its multiline
-condition case asserts the exact cross-line ACE range.
+condition case asserts the exact cross-line ACE range, while its non-BMP case
+asserts browser UTF-16 offsets map to the matching ACE columns.
 
 Each enabled-condition Logic summary occurrence links to its exact source
 range: selecting it activates Edit and selects the Logic token in ACE. The
