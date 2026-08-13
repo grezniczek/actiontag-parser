@@ -532,8 +532,10 @@ branch selection.
 The Structural analysis tree separately shows compact error/warning counts on
 each `@IF` condition when an already-produced diagnostic range is fully within
 that condition. A nested condition's findings count only on its own node, and
-zero-count conditions remain uncluttered. These counts summarize existing
-findings; they do not add validation, evaluate a condition, or select a branch.
+zero-count conditions remain uncluttered. Selecting a nonzero count activates
+Edit and selects its first source-ordered contained finding. These counts
+summarize existing findings; they do not add validation, evaluate a condition,
+or select a branch.
 
 Each enabled-condition reference and function-call summary occurrence carries
 its exact annotation range. Selecting it activates the Edit tab and selects
