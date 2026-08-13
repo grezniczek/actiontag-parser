@@ -134,6 +134,11 @@ nested containers. Exclude disabled `@.OFF.IF` containers and descendants.
 The summary describes parsed authoring syntax only; it must not evaluate a
 condition or select a branch.
 
+Group enabled-condition Summary findings by their individual parsed condition,
+with a top-level or true/false nested-path label and its own source link. Keep
+that condition's references and function calls together. The grouping must
+describe syntax nesting only and must not imply that any branch was selected.
+
 Render each enabled-condition Logic reference and function call as a source
 link with its exact annotation range. Selecting it must activate Edit and
 select the corresponding ACE token. In the separate Action Tag structure tree,

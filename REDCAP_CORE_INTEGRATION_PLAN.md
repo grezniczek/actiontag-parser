@@ -773,6 +773,11 @@ It includes enabled nested conditions but excludes disabled `@.OFF.IF`
 containers and descendants. This is a parser-derived description only: it
 does not evaluate a condition or infer a selected branch.
 
+The aggregate is rendered as one group per parsed enabled condition, retaining
+its own source link and a top-level or true/false nested-path label. References
+and function calls stay with their originating condition; grouping conveys
+syntax nesting only, not runtime branch selection.
+
 Each enabled-condition Logic summary occurrence links to its exact source
 range: selecting it activates Edit and selects the Logic token in ACE. The
 separate Action Tag tree also links recognized tags and `@IF` container names,

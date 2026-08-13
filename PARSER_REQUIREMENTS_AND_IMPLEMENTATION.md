@@ -517,6 +517,12 @@ enabled condition, including enabled nested `@IF` containers. It excludes a
 disabled `@.OFF.IF` container and its descendants, and is a descriptive parse
 summary rather than condition evaluation or branch selection.
 
+The `Enabled IF condition Logic` section groups findings by their individual
+condition rather than flattening them. Each group identifies a top-level
+condition or its true/false nested path, retains that condition's source link,
+and lists only its own references and calls. Grouping expresses parser
+structure, not a branch that has been selected at runtime.
+
 Each enabled-condition reference and function-call summary occurrence carries
 its exact annotation range. Selecting it activates the Edit tab and selects
 the corresponding Logic token in ACE. The separate Action Tag structure tree
