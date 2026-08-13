@@ -33,8 +33,9 @@ workspace opener marker: it must be set before asynchronous loading so a second
 request resolves without creating another dialog. When that request belongs to
 the already visible workspace, it must focus the existing ACE editor without
 moving the dialog. Browser coverage must execute the rendered control's actual
-focus-then-click handlers and assert one dialog creation, one dependency load,
-and refocus of the existing editor.
+focus-then-click handlers for both Calculated Field and SQL selections, and
+assert one dialog creation, one dependency load, and refocus of the existing
+editor for each.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 

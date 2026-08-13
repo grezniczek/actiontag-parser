@@ -54,8 +54,9 @@ when that is warranted.
   The shared workspace opener marker is set before dependency loading, so a
   following click does not create a second dialog; if the workspace is already
   visible for that opener, it focuses the existing ACE editor instead. Browser
-  coverage executes the rendered focus-then-click handlers and verifies one
-  dialog creation and dependency load with an editor refocus on click.
+  coverage executes the rendered focus-then-click handlers for both
+  Calculated Field and SQL and verifies one dialog creation and dependency load
+  with an editor refocus on click in each case.
 - Every `field.*` workspace title adds its current variable name as a
   code-styled ` - [field_name]` token with muted gray brackets, including Field
   Label, Field Note, and Branching Logic. A new field without a name retains

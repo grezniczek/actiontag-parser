@@ -1698,8 +1698,9 @@ marks its opener before dependency loading, so the second request from a
 focus-then-click gesture resolves without creating another dialog. If that
 opener already owns the visible workspace, the duplicate request focuses its
 existing ACE editor without moving the dialog. Browser coverage executes the
-rendered `element_enum` focus and click handlers, asserting one dialog creation
-and dependency load, followed by a focus of the existing editor.
+rendered `element_enum` focus and click handlers for both Calculated Field and
+SQL, asserting one dialog creation and dependency load, followed by a focus of
+the existing editor in each case.
 
 The workspace's metadata catalog is cacheable only between unchanged project
 definitions. Online Designer field additions and edits now reload the affected
