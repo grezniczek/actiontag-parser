@@ -1691,6 +1691,9 @@ Before review, the dedicated Manual's shared-control checklist also exercises
 new and existing fields in the real Edit Field dialog: direct choice editing,
 the Calculated Field/SQL workspace launch, return to direct editing without
 closing the dialog, and persistence of a valid choice edit.
+The shared focus/click launcher uses one dynamic field-type gate: it does
+nothing for choice-owning types and opens only the matching Calculation or SQL
+workspace with the current target field and safe focus return.
 
 The workspace's metadata catalog is cacheable only between unchanged project
 definitions. Online Designer field additions and edits now reload the affected

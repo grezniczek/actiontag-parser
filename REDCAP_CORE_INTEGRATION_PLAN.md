@@ -48,6 +48,9 @@ when that is warranted.
   existing choice fields, Calculated Field/SQL workspace launch, switching
   back to direct choice editing without closing the dialog, and persistence of
   a valid choice change.
+- Both `element_enum` focus and click use the same dynamic launcher gate. It
+  leaves choice-owning types on the direct-edit path and opens only the
+  corresponding Calculation or SQL workspace with the current field identity.
 - Every `field.*` workspace title adds its current variable name as a
   code-styled ` - [field_name]` token with muted gray brackets, including Field
   Label, Field Note, and Branching Logic. A new field without a name retains

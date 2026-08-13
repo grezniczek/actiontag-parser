@@ -25,6 +25,11 @@ transitions and assert both `readonly` and `aria-readonly` after every change.
 Do not treat the choice list as a raw authoring workspace until that separate
 feature is intentionally designed.
 
+Keep focus and click behind one dynamic launcher gate. Test that choice-owning
+types take no workspace action, while Calculated Field and SQL open their
+respective workspace with the current target-field identity and safe focus
+return.
+
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
 Before requesting review for a change to this shared control, use the Edit
