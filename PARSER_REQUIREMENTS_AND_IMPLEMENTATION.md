@@ -1684,7 +1684,9 @@ The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes
 readonly only while the currently selected type is Calculated Field or SQL,
 which launch their authoring workspaces. This state is recalculated on every
-field-type change; choices are not yet a shared raw-choice authoring workspace.
+field-type change. Browser coverage exercises Radio → Calculated Field → SQL →
+Drop-down → Checkbox transitions and verifies both `readonly` and
+`aria-readonly`; choices are not yet a shared raw-choice authoring workspace.
 
 The workspace's metadata catalog is cacheable only between unchanged project
 definitions. Online Designer field additions and edits now reload the affected

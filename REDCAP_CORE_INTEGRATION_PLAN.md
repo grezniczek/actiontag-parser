@@ -39,8 +39,10 @@ when that is warranted.
   SQL. Only the currently selected Calculated Field or SQL type makes it
   readonly and opens an authoring workspace; Radio, Drop-down, Checkbox, and
   other choice-owning types remain direct editors. The toggle runs on every
-  in-dialog field-type change. Choice-list authoring remains a separate future
-  scope.
+  in-dialog field-type change, with browser coverage of Radio → Calculated
+  Field → SQL → Drop-down → Checkbox and both `readonly` and `aria-readonly`
+  states.
+  Choice-list authoring remains a separate future scope.
 - Every `field.*` workspace title adds its current variable name as a
   code-styled ` - [field_name]` token with muted gray brackets, including Field
   Label, Field Note, and Branching Logic. A new field without a name retains
