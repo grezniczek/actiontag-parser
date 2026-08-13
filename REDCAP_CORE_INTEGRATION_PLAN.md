@@ -51,6 +51,8 @@ when that is warranted.
 - Both `element_enum` focus and click use the same dynamic launcher gate. It
   leaves choice-owning types on the direct-edit path and opens only the
   corresponding Calculation or SQL workspace with the current field identity.
+  The shared workspace opener marker is set before dependency loading, so a
+  following click does not create a second dialog.
 - Every `field.*` workspace title adds its current variable name as a
   code-styled ` - [field_name]` token with muted gray brackets, including Field
   Label, Field Note, and Branching Logic. A new field without a name retains

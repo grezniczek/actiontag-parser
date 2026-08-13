@@ -28,7 +28,9 @@ feature is intentionally designed.
 Keep focus and click behind one dynamic launcher gate. Test that choice-owning
 types take no workspace action, while Calculated Field and SQL open their
 respective workspace with the current target-field identity and safe focus
-return.
+return. When both events can fire for one gesture, rely on and test the shared
+workspace opener marker: it must be set before asynchronous loading so a second
+request resolves without creating another dialog.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
