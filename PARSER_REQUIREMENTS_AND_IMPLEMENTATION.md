@@ -1678,6 +1678,12 @@ also performs a one-line-safe `<br>` round trip: supported existing `<br>`
 spellings display as newlines and can be saved as canonical `<br>` tags or
 spaces, while Cancel preserves the original stored text.
 
+The Edit Field dialog's shared `element_enum` textarea remains directly editable
+for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes
+readonly only while the currently selected type is Calculated Field or SQL,
+which launch their authoring workspaces. This state is recalculated on every
+field-type change; choices are not yet a shared raw-choice authoring workspace.
+
 The workspace's metadata catalog is cacheable only between unchanged project
 definitions. Online Designer field additions and edits now reload the affected
 form from the server; that refresh also replaces the cached catalog, so field

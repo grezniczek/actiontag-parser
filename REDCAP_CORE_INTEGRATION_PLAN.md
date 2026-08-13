@@ -35,6 +35,12 @@ when that is warranted.
   Action Tags workspace on focus or click and identifies itself with
   `quick_edit.action_tags`. Syntax feedback is diagnostic only; the established
   server-side validators remain authoritative when metadata is saved.
+- The Edit Field dialog reuses `element_enum` for choices, calculations, and
+  SQL. Only the currently selected Calculated Field or SQL type makes it
+  readonly and opens an authoring workspace; Radio, Drop-down, Checkbox, and
+  other choice-owning types remain direct editors. The toggle runs on every
+  in-dialog field-type change. Choice-list authoring remains a separate future
+  scope.
 - Every `field.*` workspace title adds its current variable name as a
   code-styled ` - [field_name]` token with muted gray brackets, including Field
   Label, Field Note, and Branching Logic. A new field without a name retains

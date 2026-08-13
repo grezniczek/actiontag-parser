@@ -16,6 +16,13 @@ also identify its invalidation boundary. Online Designer metadata changes
 reload the affected form and refetch that catalog; do not add a second client
 side field cache without an equally complete add/rename/delete refresh plan.
 
+When a legacy control is shared between direct editing and an authoring
+workspace, update its readonly state whenever the user changes field type in
+the Edit Field dialog. `element_enum` is direct-editable for choice-owning
+types; only Calculated Field and SQL use it as a readonly authoring-workspace
+launcher. Do not treat the choice list as a raw authoring workspace until that
+separate feature is intentionally designed.
+
 Authoring-workspace controls are `rcDialog` components. Use native DOM events
 and the bundled Font Awesome icons for their behavior and presentation; do not
 introduce a jQuery UI dependency for a new control or icon state. Opt into the
