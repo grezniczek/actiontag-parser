@@ -30,7 +30,9 @@ types take no workspace action, while Calculated Field and SQL open their
 respective workspace with the current target-field identity and safe focus
 return. When both events can fire for one gesture, rely on and test the shared
 workspace opener marker: it must be set before asynchronous loading so a second
-request resolves without creating another dialog.
+request resolves without creating another dialog. When that request belongs to
+the already visible workspace, it must focus the existing ACE editor without
+moving the dialog.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 

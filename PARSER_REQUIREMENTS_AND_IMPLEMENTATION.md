@@ -1695,7 +1695,9 @@ The shared focus/click launcher uses one dynamic field-type gate: it does
 nothing for choice-owning types and opens only the matching Calculation or SQL
 workspace with the current target field and safe focus return. The workspace
 marks its opener before dependency loading, so the second request from a
-focus-then-click gesture resolves without creating another dialog.
+focus-then-click gesture resolves without creating another dialog. If that
+opener already owns the visible workspace, the duplicate request focuses its
+existing ACE editor without moving the dialog.
 
 The workspace's metadata catalog is cacheable only between unchanged project
 definitions. Online Designer field additions and edits now reload the affected
