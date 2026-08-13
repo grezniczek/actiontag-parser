@@ -32,7 +32,9 @@ return. When both events can fire for one gesture, rely on and test the shared
 workspace opener marker: it must be set before asynchronous loading so a second
 request resolves without creating another dialog. When that request belongs to
 the already visible workspace, it must focus the existing ACE editor without
-moving the dialog.
+moving the dialog. Browser coverage must execute the rendered control's actual
+focus-then-click handlers and assert one dialog creation, one dependency load,
+and refocus of the existing editor.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
