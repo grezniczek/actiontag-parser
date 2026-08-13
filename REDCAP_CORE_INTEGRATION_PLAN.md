@@ -43,6 +43,11 @@ when that is warranted.
   Field → SQL → Drop-down → Checkbox and both `readonly` and `aria-readonly`
   states.
   Choice-list authoring remains a separate future scope.
+- Before PR review, follow the Manual's shared Choices/Calculation/SQL
+  regression checklist in the real Edit Field dialog. It covers new and
+  existing choice fields, Calculated Field/SQL workspace launch, switching
+  back to direct choice editing without closing the dialog, and persistence of
+  a valid choice change.
 - Every `field.*` workspace title adds its current variable name as a
   code-styled ` - [field_name]` token with muted gray brackets, including Field
   Label, Field Note, and Branching Logic. A new field without a name retains

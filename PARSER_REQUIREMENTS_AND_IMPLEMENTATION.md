@@ -1687,6 +1687,10 @@ which launch their authoring workspaces. This state is recalculated on every
 field-type change. Browser coverage exercises Radio → Calculated Field → SQL →
 Drop-down → Checkbox transitions and verifies both `readonly` and
 `aria-readonly`; choices are not yet a shared raw-choice authoring workspace.
+Before review, the dedicated Manual's shared-control checklist also exercises
+new and existing fields in the real Edit Field dialog: direct choice editing,
+the Calculated Field/SQL workspace launch, return to direct editing without
+closing the dialog, and persistence of a valid choice edit.
 
 The workspace's metadata catalog is cacheable only between unchanged project
 definitions. Online Designer field additions and edits now reload the affected

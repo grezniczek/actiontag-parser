@@ -25,6 +25,27 @@ transitions and assert both `readonly` and `aria-readonly` after every change.
 Do not treat the choice list as a raw authoring workspace until that separate
 feature is intentionally designed.
 
+### Manual Online Designer regression: shared Choices/Calculation/SQL control
+
+Before requesting review for a change to this shared control, use the Edit
+Field dialog to verify all of the following:
+
+1. For a new Radio, Drop-down, and Checkbox field, type and edit choice lines
+   directly in the Choices textarea.
+2. For an existing choice field, change the type to Calculated Field, then SQL.
+   In each state, the textarea must be readonly and focus/click must open the
+   corresponding authoring workspace rather than permit direct edits.
+3. Without closing the dialog, change it back through a choice-owning type.
+   The textarea must immediately accept direct edits again and must not launch
+   an authoring workspace.
+4. Make a valid choice edit, save the field, and reopen it to confirm that the
+   choice text persisted. Do not save an intentionally incompatible temporary
+   calculation or SQL value merely to exercise the transition.
+
+The automated launcher test covers the same Radio → Calculated Field → SQL →
+Drop-down → Checkbox state sequence and its `readonly`/`aria-readonly` values;
+this manual check confirms the real dialog's focus, direct-edit, and save path.
+
 Authoring-workspace controls are `rcDialog` components. Use native DOM events
 and the bundled Font Awesome icons for their behavior and presentation; do not
 introduce a jQuery UI dependency for a new control or icon state. Opt into the
