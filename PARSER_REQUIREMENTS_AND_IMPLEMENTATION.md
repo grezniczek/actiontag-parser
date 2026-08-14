@@ -1713,8 +1713,11 @@ blur logic validation once re-enabled. Exact generated-handler coverage also
 keeps the Bulk and Follow-up Survey Invitation subjects, Automated Survey
 Invitation subject and condition, and Survey Queue condition to one eventual
 workspace. The two condition save callbacks must retain nonblank trimming,
-option activation, and their established validation helper. Field Annotation
-is intentionally click-only, so it is not part of that duplicate-event path.
+option activation, and their established validation helper. Form Display Logic
+repeater rows clone the initial condition textarea before renaming it; coverage
+must dispatch that inherited handler for an added row and return focus to its
+own form/event selector. Field Annotation is intentionally click-only, so it is
+not part of that duplicate-event path.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes

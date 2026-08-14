@@ -647,7 +647,10 @@ project event and the public route for the project's `firstForm`, but no record 
 - Form Display Logic conditions use the readonly logic workspace both for the
   initial condition and controls added by the dialog's repeater. Saving keeps
   the existing client-side validation and returns focus to that condition's
-  target-form selector. Field embedding remains disabled.
+  target-form selector. Browser coverage confirms the repeater clones the
+  source textarea before renaming its ID, then executes the inherited pending
+  focus/click handler for an added condition and returns focus to that row's
+  selector. Field embedding remains disabled.
 - Record Status Dashboard filter logic uses a readonly logic workspace. Its
   existing trimming and validation behavior is retained on save, and focus
   returns to the dashboard Save button. Field embedding remains disabled.

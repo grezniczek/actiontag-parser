@@ -50,14 +50,17 @@ Record Label, Custom Event Label, Custom Repeating Instrument Label, Survey
 Settings' Confirmation Email Subject, Bulk Survey Invitation Email Subject, and
 Follow-up Survey Invitation Email Subject, and Automated Survey Invitation
 Email Subject and condition logic, and Survey Queue condition logic; do not
-apply it to a deliberately click-only surface such as Field Annotation. Retain
-each source's existing click cancellation, focus-return, mode-selection,
-conditional availability, and validation behavior while testing the shared
-guard. When a source passes live context availability, test that the workspace
-retains the provider function until current recipient state is needed. For
-generated HTML, execute the decoded rendered handler rather than a hand-written
-equivalent. Preserve nonblank condition activation, trimming, and the
-established validation helper when testing a condition's save callback.
+apply it to a deliberately click-only surface such as Field Annotation. Form
+Display Logic conditions need an additional repeater check: its dynamic rows
+clone the source textarea and receive a new ID, so dispatch the inherited
+handler and verify focus returns to that row's form/event selector. Retain each
+source's existing click cancellation, focus-return, mode-selection, conditional
+availability, and validation behavior while testing the shared guard. When a
+source passes live context availability, test that the workspace retains the
+provider function until current recipient state is needed. For generated HTML,
+execute the decoded rendered handler rather than a hand-written equivalent.
+Preserve nonblank condition activation, trimming, and the established validation
+helper when testing a condition's save callback.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
