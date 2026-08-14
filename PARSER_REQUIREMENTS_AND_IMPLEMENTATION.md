@@ -1730,6 +1730,13 @@ validation callback across that same pending pair. Alerts condition logic does
 likewise, while Alerts email subject and SendGrid template-data values each
 retain their source-specific focus-return selector. Field Annotation is
 intentionally click-only, so it is not part of that duplicate-event path.
+e-Consent Custom Label keeps its setup-dialog close-control return through one
+eventual workspace for its rendered focus/click pair.
+Explicit rich-text source-editor buttons must route through
+`REDCap.openTinyMCEAuthoringWorkspace()` with their rendered textarea and
+policy. Coverage preserves Project Dashboard's Save focus return, Survey
+Queue custom text's dialog-close return and `fitDialog()` callback, and the
+Automated Survey Invitation email-content and Alerts-message source policies.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes

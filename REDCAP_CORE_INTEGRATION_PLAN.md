@@ -729,13 +729,20 @@ project event and the public route for the project's `firstForm`, but no record 
   click cancellation, and confirms the existing marker-aware blur validator is
   suppressed only until the workspace closes. e-Consent's custom label is
   likewise a form-aware one-line piping workspace in its existing AJAX dialog
-  and retains its normal save path.
+  and retains its normal save path. Browser coverage holds its rendered
+  focus/click pair pending through dependencies and restores focus to the
+  setup dialog's close control after the one eventual workspace closes.
 - Project Dashboard body text has an explicit TinyMCE source-editor action.
   It is HTML-aware for text-node syntax feedback and deliberately offers smart
   variables, not record fields: dashboard smart charts, tables, and functions
   remain dashboard-specific runtime syntax. The real-time Twilio SMS message
   uses the same smart-variable-only completion scope because it has no record
   context. Both retain their existing send/save actions.
+  Browser coverage executes Project Dashboard's rendered source action through
+  the TinyMCE bridge and retains its Save focus return. Equivalent source-action
+  coverage preserves Survey Queue custom text's dialog-close return and
+  `fitDialog()` callback, Automated Survey Invitation email-content policy,
+  and Alerts message policy.
 - Generic External Modules JSON settings and the Vue `useLogicTextArea`
   helper remain on their legacy editor path. They are framework hooks rather
   than concrete source contracts, so assigning them a single workspace policy

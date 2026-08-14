@@ -78,6 +78,13 @@ focus/click pair shares one pending workspace. Alerts condition logic has the
 same validation-callback requirement; Alerts email subject and SendGrid
 template-data values must retain their distinct focus-return selectors while
 each pair produces only one eventual workspace.
+e-Consent Custom Label must likewise keep its setup-dialog close-control
+focus return while its rendered focus/click pair shares one pending workspace.
+For rich-text source actions, execute the rendered button handler and assert
+that it calls `REDCap.openTinyMCEAuthoringWorkspace()` with the intended
+textarea and policy. Preserve Project Dashboard's Save return, Survey Queue's
+dialog-close return and `fitDialog()` save callback, and the source policies
+for Automated Survey Invitation email content and Alerts message.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
