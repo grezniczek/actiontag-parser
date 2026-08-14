@@ -1766,6 +1766,10 @@ matrix field as the Field Embedding target for `element_preceding_header`.
 The rendered Field Label and Matrix Section Header source-action buttons are
 also executable coverage cases: each remains cancellable and dispatches once
 to its established `REDCap` launcher.
+Choice Editor label authoring must guard missing selection/cell state, then use
+a detached label buffer with field, form, and choice-code context. It returns
+focus to the selected label cell, writes saves through the spreadsheet API,
+restores that selection, and removes the buffer only after workspace close.
 Field Note coverage executes its rendered keyboard, double-click, and explicit
 source-action routes: Enter remains non-submitting, while F2, double-click,
 and the button are cancellable and preserve the current host field and form

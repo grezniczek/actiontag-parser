@@ -119,6 +119,11 @@ Execute the rendered Field Label and Matrix Section Header source-action
 buttons as well as their helpers. Each must be cancellable and dispatch exactly
 once to its existing `REDCap` launcher; do not rely on a static button string
 to prove the user-facing path.
+For Choice Editor label authoring, test both empty-selection guards and a
+selected row. The workspace uses a detached label buffer, carries field,
+form, and choice-code context, returns focus to the same label cell, writes a
+save through the spreadsheet API, restores that selection, and removes its
+buffer only on close.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
 source-action handlers. Enter must keep the dialog from submitting; the three
 authoring gestures must remain cancellable and pass the current field name and
