@@ -127,6 +127,9 @@ buffer only on close.
 Also execute the rendered Choice Editor toolbar action through its dispatcher.
 It must dispatch `authoring` exactly once without spurious arguments while
 retaining the existing spreadsheet disable/restore and success-flash behavior.
+Also execute the Choice Editor dialog-open callback: it must bind the delegated
+toolbar click listener, forward the rendered action button to the dispatcher,
+and retain the toolbar placement and initial spreadsheet selection.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
 source-action handlers. Enter must keep the dialog from submitting; the three
 authoring gestures must remain cancellable and pass the current field name and

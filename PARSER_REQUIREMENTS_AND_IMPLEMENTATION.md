@@ -1773,6 +1773,9 @@ restores that selection, and removes the buffer only after workspace close.
 Its rendered toolbar `authoring` action is also dispatcher coverage: it must
 call the selected-row action once without unrelated arguments while retaining
 the existing spreadsheet disable/restore and success-flash behavior.
+The Choice Editor dialog-open callback binds the delegated toolbar listener,
+keeps toolbar placement and initial spreadsheet selection, then forwards the
+rendered action button to that dispatcher.
 Field Note coverage executes its rendered keyboard, double-click, and explicit
 source-action routes: Enter remains non-submitting, while F2, double-click,
 and the button are cancellable and preserve the current host field and form
