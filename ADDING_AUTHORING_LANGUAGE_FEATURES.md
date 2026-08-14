@@ -45,11 +45,11 @@ the opener marker was cleared. Also hold dependency loading pending across a
 focus-then-click pair and verify that it produces only one eventual workspace.
 Apply that pending-load check to every readonly focus/click launcher, including
 Quick-modify fields' custom Action Tags source, Data Quality Rule Logic, Data
-Entry Trigger URL, Custom Record Label, Custom Event Label, and Custom
-Repeating Instrument Label; do not apply it to a deliberately click-only
-surface such as Field Annotation. Retain each source's existing click
-cancellation, focus-return, and marker-aware blur behavior while testing the
-shared guard.
+Entry Trigger URL, End Survey Redirect URL, Custom Record Label, Custom Event
+Label, and Custom Repeating Instrument Label; do not apply it to a deliberately
+click-only surface such as Field Annotation. Retain each source's existing
+click cancellation, focus-return, mode-selection, and marker-aware blur
+behavior while testing the shared guard.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
