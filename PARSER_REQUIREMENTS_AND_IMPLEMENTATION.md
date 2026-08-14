@@ -1679,10 +1679,10 @@ Custom Record Label, Custom Event Label, and Custom Repeating Instrument Label
 also performs a one-line-safe `<br>` round trip: supported existing `<br>`
 spellings display as newlines and can be saved as canonical `<br>` tags or
 spaces, while Cancel preserves the original stored text.
-Custom Event Label's readonly focus/click launcher also exercises the shared
-pending-load marker guard: the two rendered events produce one workspace after
-dependencies resolve. Field Annotation is intentionally click-only, so it is
-not part of that duplicate-event path.
+Custom Record Label and Custom Event Label's readonly focus/click launchers
+also exercise the shared pending-load marker guard: each pair of rendered
+events produces one workspace after dependencies resolve. Field Annotation is
+intentionally click-only, so it is not part of that duplicate-event path.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes
