@@ -1235,6 +1235,10 @@ The scheduler generates the readonly Email Subject focus/click handlers through
 PHP string concatenation. Browser coverage must normalize those transport
 escapes before executing the rendered pair, which must create one eventual
 workspace and return focus to the sender control.
+The generated Automated Survey Invitation condition handlers likewise use the
+shared pending-load guard. Its save callback must trim a nonblank condition,
+activate the corresponding condition option, and run the existing logic-error
+check followed by `validate_auto_invite_logic()` when no error is found.
 Custom Record Label uses the shared `custom_record_label` policy. Its general
 `getCustomRecordLabels()` renderer pipes every displayed record with the first
 event in that record's arm, making field, record, and event references

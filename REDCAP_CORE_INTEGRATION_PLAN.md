@@ -613,8 +613,11 @@ project event and the public route for the project's `firstForm`, but no record 
   subject is a readonly one-line piping source; the existing Piping help area
   provides an explicit ACE source-editor action for the TinyMCE email body;
   and the condition is a readonly logic workspace that retains the existing
-  trimming, activation, and server-side validation behavior after save. Field
-  embedding remains disabled for all ASI sources.
+  trimming, activation, and server-side validation behavior after save. Browser
+  coverage holds the condition's generated focus/click pair pending across
+  dependencies, then executes its save callback to verify that a nonblank
+  condition is trimmed, activates its option, and takes the established
+  validation path. Field embedding remains disabled for all ASI sources.
 - Bulk Survey Invitation subject and content use the
   `survey_invitation_bulk_email` source policy. Record, event, and form
   availability is calculated from the selected recipients as guaranteed,
