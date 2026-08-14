@@ -85,6 +85,11 @@ that it calls `REDCap.openTinyMCEAuthoringWorkspace()` with the intended
 textarea and policy. Preserve Project Dashboard's Save return, Survey Queue's
 dialog-close return and `fitDialog()` save callback, and the source policies
 for Automated Survey Invitation email content and Alerts message.
+Parameterize the same rendered-button check for Survey Settings' Offline
+Instructions, Survey Instructions, acknowledgement, stop-action
+acknowledgement, and confirmation-email body. Each must remain a cancellable
+TinyMCE source action with exactly its catalog policy; do not fabricate a
+focus-return or callback where its runtime handler has none.
 Test the shared TinyMCE bridge itself with and without an active TinyMCE
 editor. With one active, it must use a detached source buffer, write the saved
 source back through TinyMCE, trigger the original field's input path, call the

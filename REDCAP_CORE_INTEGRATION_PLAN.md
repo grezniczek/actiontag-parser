@@ -596,7 +596,10 @@ project event and the public route for the project's `firstForm`, but no record 
   Piping help links for Offline Instructions, Survey Instructions, the
   acknowledgement, stop-action acknowledgement, and confirmation-email body.
   Those sources remain TinyMCE-based visual editors; ACE is the deliberate
-  HTML-aware source-editor path. The confirmation-email subject and end-survey
+  HTML-aware source-editor path. Browser coverage executes each rendered
+  action, retaining its intended textarea and exact policy without adding a
+  callback or focus behavior absent from the source handler. The
+  confirmation-email subject and end-survey
   redirect URL are one-line readonly source controls that open the piping
   workspace on focus or click. Browser coverage holds both rendered handler
   pairs pending across dependency loading: the subject retains one eventual

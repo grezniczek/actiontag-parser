@@ -1737,6 +1737,10 @@ Explicit rich-text source-editor buttons must route through
 policy. Coverage preserves Project Dashboard's Save focus return, Survey
 Queue custom text's dialog-close return and `fitDialog()` callback, and the
 Automated Survey Invitation email-content and Alerts-message source policies.
+The Survey Settings Offline Instructions, Survey Instructions, acknowledgement,
+stop-action acknowledgement, and confirmation-email body actions are likewise
+parameterized rendered-button cases: each is cancellable, routes its intended
+textarea through TinyMCE, and supplies only its exact source policy.
 The shared TinyMCE bridge must use a detached buffer only for an active editor,
 then write saved source through that editor, trigger the live field's input
 path, run the caller callback with the original field, and remove the buffer
