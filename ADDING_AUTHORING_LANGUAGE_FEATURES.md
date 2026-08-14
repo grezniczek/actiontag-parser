@@ -69,6 +69,15 @@ delegate post-save checks to `check_advanced_logic()`; do not reproduce the
 report builder's validation in the workspace callback.
 PDF Snapshot trigger logic needs the guarded launch plus its existing nonblank
 trigger activation, trimming, and validation callback.
+Randomization real-time logic must preserve its Save-button enablement before
+both focus and click workspace requests, including when the second request is
+suppressed while dependencies are pending.
+MyCap's participant-allow condition must retain its dialog-close focus return
+and existing `checkLogicErrors()`/`validate_logic()` save callback while its
+focus/click pair shares one pending workspace. Alerts condition logic has the
+same validation-callback requirement; Alerts email subject and SendGrid
+template-data values must retain their distinct focus-return selectors while
+each pair produces only one eventual workspace.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 

@@ -1722,7 +1722,13 @@ callback without activating an option. Data Export advanced logic likewise
 keeps one eventual workspace and delegates its save callback to the established
 `check_advanced_logic()` report validator. PDF Snapshot trigger logic also
 keeps one eventual workspace and must trim a nonblank saved value, activate its
-logic trigger, and use the established validation helper. Field Annotation is
+logic trigger, and use the established validation helper. Randomization
+real-time logic likewise keeps one eventual workspace while retaining its
+Save-button enablement before both focus and click requests. MyCap's
+participant-allow condition preserves its dialog-close focus return and logic
+validation callback across that same pending pair. Alerts condition logic does
+likewise, while Alerts email subject and SendGrid template-data values each
+retain their source-specific focus-return selector. Field Annotation is
 intentionally click-only, so it is not part of that duplicate-event path.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable

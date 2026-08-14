@@ -673,13 +673,17 @@ project event and the public route for the project's `firstForm`, but no record 
 - Randomization real-time trigger logic uses a readonly logic workspace. Its
   established AJAX save path, including server-side trimming, is unchanged;
   opening the workspace retains the existing behavior of enabling the Save
-  button, and focus returns to the trigger-mode selector. Field embedding
-  remains disabled.
+  button, and focus returns to the trigger-mode selector. Browser coverage
+  holds its focus/click pair pending across dependencies while preserving the
+  Save-button enablement before both requests and allowing one eventual
+  workspace. Field embedding remains disabled.
 - MyCap's participant-allow condition uses a readonly logic workspace in its
   configuration dialog. Saving retains its existing client-side logic
   validation before the dialog's established AJAX save and reload flow; focus
   returns to the dialog's close control. Its custom participant label is also
-  a readonly, one-line piping source in that dialog. Field embedding remains
+  a readonly, one-line piping source in that dialog. Browser coverage holds
+  its rendered focus/click pair pending through dependencies while preserving
+  that close-control return and validation callback. Field embedding remains
   disabled.
 - Alerts & Notifications uses the same source-policy integration for its
   trigger logic, email subject, rich-text alert message, and the values of new
@@ -687,9 +691,12 @@ project event and the public route for the project's `firstForm`, but no record 
   values are readonly source controls that open the workspace on focus or
   click. The rich-text message retains TinyMCE as its visual editor and gains
   an explicit HTML-aware source-editor action beside the existing Piping help.
-  Field embedding remains disabled for all Alert sources. Email-address and
-  phone-number controls remain outside this integration because their
-  recipient/format validation has different authoring semantics.
+  Browser coverage keeps the condition's existing validation callback and
+  each condition, subject, and SendGrid-template-data focus/click pair to one
+  eventual workspace with its own focus-return target. Field embedding remains
+  disabled for all Alert sources. Email-address and phone-number controls
+  remain outside this integration because their recipient/format validation
+  has different authoring semantics.
 - Data Quality rule logic uses a readonly logic workspace for both the
   new-rule input and inline editing of existing user-defined rules. The
   existing rule-specific validation and Save behavior are retained after an
