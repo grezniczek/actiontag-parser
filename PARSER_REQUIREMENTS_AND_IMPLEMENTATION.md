@@ -1770,6 +1770,9 @@ Choice Editor label authoring must guard missing selection/cell state, then use
 a detached label buffer with field, form, and choice-code context. It returns
 focus to the selected label cell, writes saves through the spreadsheet API,
 restores that selection, and removes the buffer only after workspace close.
+Its rendered toolbar `authoring` action is also dispatcher coverage: it must
+call the selected-row action once without unrelated arguments while retaining
+the existing spreadsheet disable/restore and success-flash behavior.
 Field Note coverage executes its rendered keyboard, double-click, and explicit
 source-action routes: Enter remains non-submitting, while F2, double-click,
 and the button are cancellable and preserve the current host field and form

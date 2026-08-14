@@ -124,6 +124,9 @@ selected row. The workspace uses a detached label buffer, carries field,
 form, and choice-code context, returns focus to the same label cell, writes a
 save through the spreadsheet API, restores that selection, and removes its
 buffer only on close.
+Also execute the rendered Choice Editor toolbar action through its dispatcher.
+It must dispatch `authoring` exactly once without spurious arguments while
+retaining the existing spreadsheet disable/restore and success-flash behavior.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
 source-action handlers. Enter must keep the dialog from submitting; the three
 authoring gestures must remain cancellable and pass the current field name and

@@ -786,7 +786,9 @@ project event and the public route for the project's `firstForm`, but no record 
   the selected row's Choice Label and returns the saved text through its
   existing spreadsheet/update flow. Browser coverage keeps that selected-row
   guard, detached source cleanup, field/form/choice-code context, selection
-  return, and spreadsheet write-back path intact. Matrix headers retain their rich-text
+  return, and spreadsheet write-back path intact. It also executes the rendered
+  toolbar dispatcher, retaining its one-call `authoring` route, spreadsheet
+  disable/restore, and success flash. Matrix headers retain their rich-text
   handoff. Choice Labels use the restricted `filter_tags` HTML mode and retain
   their established one-line `<br>` handling. Do not enable field embedding
   for generic piping-only surfaces such as survey instructions or exit text.
