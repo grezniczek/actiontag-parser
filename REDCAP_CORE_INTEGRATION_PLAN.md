@@ -599,6 +599,10 @@ project event and the public route for the project's `firstForm`, but no record 
   HTML-aware source-editor path. Browser coverage executes each rendered
   action, retaining its intended textarea and exact policy without adding a
   callback or focus behavior absent from the source handler. The
+  Bulk and Follow-up Invitation email-content source actions are covered
+  separately: both retain their focus-return target and
+  `checkComposeForSurveyLink()` callback, while only Bulk retains its live
+  recipient context-availability provider. The
   confirmation-email subject and end-survey
   redirect URL are one-line readonly source controls that open the piping
   workspace on focus or click. Browser coverage holds both rendered handler

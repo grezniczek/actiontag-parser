@@ -1741,6 +1741,10 @@ The Survey Settings Offline Instructions, Survey Instructions, acknowledgement,
 stop-action acknowledgement, and confirmation-email body actions are likewise
 parameterized rendered-button cases: each is cancellable, routes its intended
 textarea through TinyMCE, and supplies only its exact source policy.
+Bulk and Follow-up Survey Invitation email-content actions preserve their
+respective focus-return targets and `checkComposeForSurveyLink()` callbacks.
+Bulk additionally retains its context-availability function rather than a
+stale resolved recipient state; Follow-up receives no such provider.
 The shared TinyMCE bridge must use a detached buffer only for an active editor,
 then write saved source through that editor, trigger the live field's input
 path, run the caller callback with the original field, and remove the buffer

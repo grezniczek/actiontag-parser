@@ -90,6 +90,11 @@ Instructions, Survey Instructions, acknowledgement, stop-action
 acknowledgement, and confirmation-email body. Each must remain a cancellable
 TinyMCE source action with exactly its catalog policy; do not fabricate a
 focus-return or callback where its runtime handler has none.
+Bulk and Follow-up Invitation email-content buttons require the same rendered
+execution check, but must preserve their `checkComposeForSurveyLink()` save
+callbacks. Bulk Invitation also keeps its context-availability provider as a
+function until the workspace needs the current recipient state; Follow-up does
+not inherit that provider.
 Test the shared TinyMCE bridge itself with and without an active TinyMCE
 editor. With one active, it must use a detached source buffer, write the saved
 source back through TinyMCE, trigger the original field's input path, call the
