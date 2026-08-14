@@ -1686,7 +1686,8 @@ readonly only while the currently selected type is Calculated Field or SQL,
 which launch their authoring workspaces. This state is recalculated on every
 field-type change. Browser coverage exercises Radio → Calculated Field → SQL →
 Drop-down → Checkbox transitions and verifies both `readonly` and
-`aria-readonly`; choices are not yet a shared raw-choice authoring workspace.
+`aria-readonly`, then dispatches the rendered focus/click handlers at each
+state; choices are not yet a shared raw-choice authoring workspace.
 Before review, the dedicated Manual's shared-control checklist also exercises
 new and existing fields in the real Edit Field dialog: direct choice editing,
 the Calculated Field/SQL workspace launch, return to direct editing without

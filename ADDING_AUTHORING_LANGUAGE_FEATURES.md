@@ -22,6 +22,8 @@ the Edit Field dialog. `element_enum` is direct-editable for choice-owning
 types; only Calculated Field and SQL use it as a readonly authoring-workspace
 launcher. Cover sequential Radio → Calculated Field → SQL → Drop-down → Checkbox
 transitions and assert both `readonly` and `aria-readonly` after every change.
+Immediately dispatch the rendered focus/click handlers at every transition
+state, so readonly changes and launch behavior cannot drift apart.
 Do not treat the choice list as a raw authoring workspace until that separate
 feature is intentionally designed.
 

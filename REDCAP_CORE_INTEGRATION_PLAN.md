@@ -41,7 +41,7 @@ when that is warranted.
   other choice-owning types remain direct editors. The toggle runs on every
   in-dialog field-type change, with browser coverage of Radio → Calculated
   Field → SQL → Drop-down → Checkbox and both `readonly` and `aria-readonly`
-  states.
+  states, followed by the rendered focus/click handlers at each transition.
   Choice-list authoring remains a separate future scope.
 - Before PR review, follow the Manual's shared Choices/Calculation/SQL
   regression checklist in the real Edit Field dialog. It covers new and
