@@ -667,6 +667,10 @@ project event and the public route for the project's `firstForm`, but no record 
   `<br />` spelling is shown as an editor line break; a one-line warning lets
   the author save edited line breaks as spaces or canonical `<br>` tags and
   preselects the latter when the stored source already contains a break tag.
+  Custom Event Label also has browser coverage for a pending dependency load
+  across its rendered focus/click pair, which creates one eventual workspace.
+  Field Annotation remains deliberately click-only and is not part of that
+  duplicate-event path.
   Saving removes trailing horizontal whitespace; Cancel leaves the source
   byte-for-byte unchanged. This completes the
   immediate data-entry-form design label surfaces while retaining each

@@ -43,6 +43,9 @@ cancellation of native direct editing. Simulate a dependency-load failure for a
 workspace-owning type, then verify the next rendered handler can retry because
 the opener marker was cleared. Also hold dependency loading pending across a
 focus-then-click pair and verify that it produces only one eventual workspace.
+Apply that pending-load check to every readonly focus/click launcher, including
+Custom Event Label; do not apply it to a deliberately click-only surface such
+as Field Annotation.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
