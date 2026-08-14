@@ -1231,6 +1231,10 @@ completion, including participant-backed Smart Variables, and have no
 public-survey route. Scheduling can originate from interactive save paths or
 background work, so user, repeating, and PAGE-state context deliberately
 remain unclaimed; `[is-survey]` and `[is-form]` retain normal completion.
+The scheduler generates the readonly Email Subject focus/click handlers through
+PHP string concatenation. Browser coverage must normalize those transport
+escapes before executing the rendered pair, which must create one eventual
+workspace and return focus to the sender control.
 Custom Record Label uses the shared `custom_record_label` policy. Its general
 `getCustomRecordLabels()` renderer pipes every displayed record with the first
 event in that record's arm, making field, record, and event references

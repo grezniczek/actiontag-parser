@@ -48,13 +48,14 @@ Quick-modify fields' custom Action Tags source, Data Quality Rule Logic, Data
 Entry Trigger URL, End Survey Redirect URL, Auto-Continue condition, Custom
 Record Label, Custom Event Label, Custom Repeating Instrument Label, Survey
 Settings' Confirmation Email Subject, Bulk Survey Invitation Email Subject, and
-Follow-up Survey Invitation Email Subject; do not apply it to a deliberately
-click-only surface such as Field Annotation. Retain each source's existing
-click cancellation, focus-return, mode-selection, conditional availability,
-and validation behavior while testing the shared guard. When a source passes
-live context availability, test that the workspace retains the provider
-function until current recipient state is needed. For generated HTML, execute
-the decoded rendered handler rather than a hand-written equivalent.
+Follow-up Survey Invitation Email Subject, and Automated Survey Invitation
+Email Subject; do not apply it to a deliberately click-only surface such as
+Field Annotation. Retain each source's existing click cancellation,
+focus-return, mode-selection, conditional availability, and validation behavior
+while testing the shared guard. When a source passes live context availability,
+test that the workspace retains the provider function until current recipient
+state is needed. For generated HTML, execute the decoded rendered handler rather
+than a hand-written equivalent.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 

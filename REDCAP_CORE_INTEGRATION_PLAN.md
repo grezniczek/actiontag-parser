@@ -454,6 +454,10 @@ project event and the public route for the project's `firstForm`, but no record 
   available and the route is not public; user, repeating, and PAGE-state
   context remain variable because scheduling can run interactively or in the
   background, so page-state Smart Variables remain unlabelled.
+  The scheduler's generated readonly subject handler strings also have browser
+  coverage for a pending focus/click pair: after decoding PHP string escapes,
+  they create one eventual workspace and return focus to the invitation sender
+  control.
   Project Setup's Custom Record Label has the `custom_record_label` policy.
   `getCustomRecordLabels()` renders every displayed record with the first
   event in its arm, so it has record/event context and no participant or
