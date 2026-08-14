@@ -659,7 +659,10 @@ project event and the public route for the project's `firstForm`, but no record 
   remains disabled.
 - Data Export report-builder advanced logic uses a readonly logic workspace.
   Saving invokes the existing report-specific validation and returns focus to
-  the option to switch back to simple logic. Field embedding remains disabled.
+  the option to switch back to simple logic. Browser coverage holds its
+  rendered focus/click pair pending across dependencies, then confirms its save
+  callback delegates to `check_advanced_logic()` rather than duplicating report
+  validation. Field embedding remains disabled.
 - PDF Snapshot trigger logic uses a readonly logic workspace in its Add/Edit
   Trigger dialog. Saving retains the existing trim, trigger activation, and
   client-side validation behavior, and focus returns to the survey-completion

@@ -64,6 +64,9 @@ helper when testing a condition's save callback.
 Apply the same delayed-launch and save-callback coverage to Record Status
 Dashboard filter logic, which trims and validates without activating a separate
 condition option.
+Data Export advanced logic needs the same pending focus/click guard but must
+delegate post-save checks to `check_advanced_logic()`; do not reproduce the
+report builder's validation in the workspace callback.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 

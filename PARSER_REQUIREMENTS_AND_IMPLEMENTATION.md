@@ -1718,7 +1718,9 @@ repeater rows clone the initial condition textarea before renaming it; coverage
 must dispatch that inherited handler for an added row and return focus to its
 own form/event selector. Record Status Dashboard filter logic similarly keeps
 one eventual workspace and must trim and validate through its established save
-callback without activating an option. Field Annotation is intentionally
+callback without activating an option. Data Export advanced logic likewise
+keeps one eventual workspace and delegates its save callback to the established
+`check_advanced_logic()` report validator. Field Annotation is intentionally
 click-only, so it is not part of that duplicate-event path.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
