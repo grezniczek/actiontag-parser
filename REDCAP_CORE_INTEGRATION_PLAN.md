@@ -590,14 +590,16 @@ project event and the public route for the project's `firstForm`, but no record 
   Those sources remain TinyMCE-based visual editors; ACE is the deliberate
   HTML-aware source-editor path. The confirmation-email subject and end-survey
   redirect URL are one-line readonly source controls that open the piping
-  workspace on focus or click. Browser coverage holds the redirect URL's
-  rendered focus/click pair pending across dependency loading, preserving its
-  cancellable click, focus-selected URL mode, and marker-aware URL validation
-  until workspace closure. The auto-continue condition uses the logic workspace
-  in the same way. Its browser coverage preserves its checkbox-controlled
-  disabled/dimmed state, shared pending-load guard once enabled, and existing
-  logic validation on both workspace save and blur. These Survey Settings
-  sources are piping-only: field embedding remains disabled there.
+  workspace on focus or click. Browser coverage holds both rendered handler
+  pairs pending across dependency loading: the subject retains one eventual
+  workspace and its confirmation-enable focus return, while the redirect URL
+  preserves its cancellable click, focus-selected URL mode, and marker-aware
+  URL validation until workspace closure. The auto-continue condition uses the
+  logic workspace in the same way. Its browser coverage preserves its
+  checkbox-controlled disabled/dimmed state, shared pending-load guard once
+  enabled, and existing logic validation on both workspace save and blur. These
+  Survey Settings sources are piping-only: field embedding remains disabled
+  there.
 - Automated Survey Invitations use the same source-policy integration for
   their email subject, rich-text email content, and send-condition logic. The
   subject is a readonly one-line piping source; the existing Piping help area

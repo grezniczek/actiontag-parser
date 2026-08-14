@@ -1681,17 +1681,19 @@ spellings display as newlines and can be saved as canonical `<br>` tags or
 spaces, while Cancel preserves the original stored text.
 Quick-modify fields' custom Action Tags source, Data Quality Rule Logic, Data
 Entry Trigger URL, End Survey Redirect URL, Auto-Continue condition, Custom
-Record Label, Custom Event Label, and Custom Repeating Instrument Label's
-readonly focus/click launchers also exercise the shared pending-load marker
-guard: each pair of rendered events produces one workspace after dependencies
-resolve while retaining its established click cancellation and focus return.
-The Data Entry Trigger URL and End Survey Redirect URL's existing blur
-validators must continue to defer while that marker is present, then resume
-after workspace closure; the redirect URL's focus handler must still select URL
-mode exactly once. The Auto-Continue condition must remain unavailable while
-its enable checkbox is clear, then retain both its save and blur logic
-validation once re-enabled. Field Annotation is intentionally click-only, so
-it is not part of that duplicate-event path.
+Record Label, Custom Event Label, Custom Repeating Instrument Label, and Survey
+Settings' Confirmation Email Subject readonly focus/click launchers also
+exercise the shared pending-load marker guard: each pair of rendered events
+produces one workspace after dependencies resolve while retaining its
+established click cancellation and focus return. The Confirmation Email Subject
+must retain its one-line readonly control and return focus to the confirmation
+enable checkbox. The Data Entry Trigger URL and End Survey Redirect URL's
+existing blur validators must continue to defer while that marker is present,
+then resume after workspace closure; the redirect URL's focus handler must
+still select URL mode exactly once. The Auto-Continue condition must remain
+unavailable while its enable checkbox is clear, then retain both its save and
+blur logic validation once re-enabled. Field Annotation is intentionally
+click-only, so it is not part of that duplicate-event path.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes
