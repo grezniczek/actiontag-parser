@@ -1703,7 +1703,9 @@ rendered `element_enum` focus and click handlers for both Calculated Field and
 SQL, asserting one dialog creation and dependency load, followed by a focus of
 the existing editor in each case. The same rendered handlers for Radio,
 Drop-down, and Checkbox make no workspace request or opener marker and leave
-their native direct-edit events uncancelled.
+their native direct-edit events uncancelled. A failed Calculation dependency
+load clears the opener marker, so the following rendered handler can retry the
+workspace request.
 
 The workspace's metadata catalog is cacheable only between unchanged project
 definitions. Online Designer field additions and edits now reload the affected

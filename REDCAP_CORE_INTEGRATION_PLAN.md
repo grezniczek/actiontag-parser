@@ -59,6 +59,8 @@ when that is warranted.
   with an editor refocus on click in each case.
   Radio, Drop-down, and Checkbox run the same rendered handlers with no
   workspace request or opener marker, preserving native direct editing.
+  A failed dependency load clears the marker, allowing the following rendered
+  handler to retry the Calculation workspace request.
 - Every `field.*` workspace title adds its current variable name as a
   code-styled ` - [field_name]` token with muted gray brackets, including Field
   Label, Field Note, and Branching Logic. A new field without a name retains

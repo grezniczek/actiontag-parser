@@ -39,7 +39,9 @@ focus-then-click handlers for both Calculated Field and SQL selections, and
 assert one dialog creation, one dependency load, and refocus of the existing
 editor for each. It must also execute those handlers for Radio, Drop-down, and
 Checkbox selections, asserting no workspace request or opener marker and no
-cancellation of native direct editing.
+cancellation of native direct editing. Simulate a dependency-load failure for a
+workspace-owning type, then verify the next rendered handler can retry because
+the opener marker was cleared.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
