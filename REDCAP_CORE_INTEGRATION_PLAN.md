@@ -743,6 +743,23 @@ project event and the public route for the project's `firstForm`, but no record 
   coverage preserves Survey Queue custom text's dialog-close return and
   `fitDialog()` callback, Automated Survey Invitation email-content policy,
   and Alerts message policy.
+  The shared TinyMCE bridge is covered independently: it uses a detached
+  buffer only while TinyMCE owns the live textarea, returns saved source
+  through TinyMCE and the original input/callback path, removes that buffer
+  after close, and leaves the direct textarea path intact when TinyMCE is not
+  active. An unavailable source keeps the existing rejected-promise behavior.
+  Browser coverage also executes the Field Label bridge for ordinary fields
+  and section headers. It keeps ordinary `element_label` versus persisted-host
+  `element_preceding_header` storage, current-form Field Embedding, and the
+  variable-name keyup callback. Matrix Section Header remains separate: its
+  Field Embedding target is the first persisted matrix field and its form comes
+  from the surrounding Add/Edit Field dialog.
+  Field Note retains its direct source workspace. Browser coverage executes its
+  rendered Enter, F2, double-click, and explicit source-action handlers: Enter
+  remains a non-submit gesture, while the three authoring gestures preserve the
+  current host field and form for Field Embedding.
+  Advanced Branching Logic remains an intentionally focus-only Logic launcher;
+  browser coverage executes that handler and preserves its live field target.
 - Generic External Modules JSON settings and the Vue `useLogicTextArea`
   helper remain on their legacy editor path. They are framework hooks rather
   than concrete source contracts, so assigning them a single workspace policy

@@ -1737,6 +1737,24 @@ Explicit rich-text source-editor buttons must route through
 policy. Coverage preserves Project Dashboard's Save focus return, Survey
 Queue custom text's dialog-close return and `fitDialog()` callback, and the
 Automated Survey Invitation email-content and Alerts-message source policies.
+The shared TinyMCE bridge must use a detached buffer only for an active editor,
+then write saved source through that editor, trigger the live field's input
+path, run the caller callback with the original field, and remove the buffer
+on close. Its inactive-editor path continues to use the workspace-owned
+textarea; an unavailable source returns the established rejected promise and
+does not launch a workspace.
+Field Label coverage must distinguish ordinary `element_label` storage from a
+section header's persisted `sq_id` host and `element_preceding_header`, while
+retaining current-form Field Embedding and the variable-name keyup callback.
+Matrix Section Header instead uses its enclosing form and the first persisted
+matrix field as the Field Embedding target for `element_preceding_header`.
+Field Note coverage executes its rendered keyboard, double-click, and explicit
+source-action routes: Enter remains non-submitting, while F2, double-click,
+and the button are cancellable and preserve the current host field and form
+for Field Embedding.
+Advanced Branching Logic is deliberately focus-only. Coverage executes its
+rendered handler and keeps its live field name as the Logic target without
+inventing a click route.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes

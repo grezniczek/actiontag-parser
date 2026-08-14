@@ -85,6 +85,25 @@ that it calls `REDCap.openTinyMCEAuthoringWorkspace()` with the intended
 textarea and policy. Preserve Project Dashboard's Save return, Survey Queue's
 dialog-close return and `fitDialog()` save callback, and the source policies
 for Automated Survey Invitation email content and Alerts message.
+Test the shared TinyMCE bridge itself with and without an active TinyMCE
+editor. With one active, it must use a detached source buffer, write the saved
+source back through TinyMCE, trigger the original field's input path, call the
+source callback with the original field, and remove the buffer on close. With
+no editor, it must retain the workspace-owned textarea path; a missing source
+must return the established rejected promise without launching a workspace.
+Exercise Field Label through that bridge for both ordinary labels and section
+headers: ordinary labels target `element_label`, while a section header targets
+its persisted `sq_id` host and `element_preceding_header`; both retain current
+form field embedding and the keyup callback used for variable-name generation.
+Test Matrix Section Header separately: its source belongs to the surrounding
+form and the first persisted matrix field's `element_preceding_header`.
+For Field Note, execute the rendered Enter, F2, double-click, and explicit
+source-action handlers. Enter must keep the dialog from submitting; the three
+authoring gestures must remain cancellable and pass the current field name and
+form for Field Embedding.
+Advanced Branching Logic is intentionally focus-only. Its rendered handler must
+continue to open the Logic workspace from that textarea and pass the live field
+name as the target; do not add a click path merely to match other controls.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
