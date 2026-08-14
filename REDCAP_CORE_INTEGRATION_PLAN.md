@@ -594,8 +594,10 @@ project event and the public route for the project's `firstForm`, but no record 
   rendered focus/click pair pending across dependency loading, preserving its
   cancellable click, focus-selected URL mode, and marker-aware URL validation
   until workspace closure. The auto-continue condition uses the logic workspace
-  in the same way. These Survey Settings sources are piping-only: field
-  embedding remains disabled there.
+  in the same way. Its browser coverage preserves its checkbox-controlled
+  disabled/dimmed state, shared pending-load guard once enabled, and existing
+  logic validation on both workspace save and blur. These Survey Settings
+  sources are piping-only: field embedding remains disabled there.
 - Automated Survey Invitations use the same source-policy integration for
   their email subject, rich-text email content, and send-condition logic. The
   subject is a readonly one-line piping source; the existing Piping help area
