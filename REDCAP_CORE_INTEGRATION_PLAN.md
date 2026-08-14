@@ -634,7 +634,10 @@ project event and the public route for the project's `firstForm`, but no record 
   time rather than at launch time.
 - Survey Queue's condition logic uses the same readonly logic workspace. On
   save it retains the existing trimming, automatic condition activation, and
-  validation behavior. Its rich-text custom text has an explicit TinyMCE
+  validation behavior. Browser coverage holds its generated focus/click pair
+  pending across dependency loading, then executes the save callback to verify
+  that a nonblank condition is trimmed, activates its option, and follows the
+  existing validation path. Its rich-text custom text has an explicit TinyMCE
   source-editor action using the `survey_queue.custom_text` piping policy.
   Field embedding remains disabled.
 - Bulk survey invitations and the follow-up-survey popup now cover their

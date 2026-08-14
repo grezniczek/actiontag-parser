@@ -1709,8 +1709,12 @@ existing blur validators must continue to defer while that marker is present,
 then resume after workspace closure; the redirect URL's focus handler must
 still select URL mode exactly once. The Auto-Continue condition must remain
 unavailable while its enable checkbox is clear, then retain both its save and
-blur logic validation once re-enabled. Field Annotation is intentionally
-click-only, so it is not part of that duplicate-event path.
+blur logic validation once re-enabled. Exact generated-handler coverage also
+keeps the Bulk and Follow-up Survey Invitation subjects, Automated Survey
+Invitation subject and condition, and Survey Queue condition to one eventual
+workspace. The two condition save callbacks must retain nonblank trimming,
+option activation, and their established validation helper. Field Annotation
+is intentionally click-only, so it is not part of that duplicate-event path.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes
