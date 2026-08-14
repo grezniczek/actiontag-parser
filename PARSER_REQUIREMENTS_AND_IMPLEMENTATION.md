@@ -1745,6 +1745,13 @@ Bulk and Follow-up Survey Invitation email-content actions preserve their
 respective focus-return targets and `checkComposeForSurveyLink()` callbacks.
 Bulk additionally retains its context-availability function rather than a
 stale resolved recipient state; Follow-up receives no such provider.
+Twilio SMS Invitation message is a readonly focus/click source. Its rendered
+pair must share one pending workspace while retaining the live delivery type,
+Send focus return, and `checkComposeForSurveyLink()` save callback.
+The explicit Alerts SendGrid template-data source button must separately route
+the same textarea to `alert.sendgrid_template_data` and return focus to its
+key field; coverage executes that rendered button rather than assuming it
+matches the textarea's focus/click controls.
 The shared TinyMCE bridge must use a detached buffer only for an active editor,
 then write saved source through that editor, trigger the live field's input
 path, run the caller callback with the original field, and remove the buffer
@@ -1756,6 +1763,9 @@ section header's persisted `sq_id` host and `element_preceding_header`, while
 retaining current-form Field Embedding and the variable-name keyup callback.
 Matrix Section Header instead uses its enclosing form and the first persisted
 matrix field as the Field Embedding target for `element_preceding_header`.
+The rendered Field Label and Matrix Section Header source-action buttons are
+also executable coverage cases: each remains cancellable and dispatches once
+to its established `REDCap` launcher.
 Field Note coverage executes its rendered keyboard, double-click, and explicit
 source-action routes: Enter remains non-submitting, while F2, double-click,
 and the button are cancellable and preserve the current host field and form

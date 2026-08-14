@@ -95,6 +95,14 @@ execution check, but must preserve their `checkComposeForSurveyLink()` save
 callbacks. Bulk Invitation also keeps its context-availability provider as a
 function until the workspace needs the current recipient state; Follow-up does
 not inherit that provider.
+Twilio SMS Invitation message is a readonly focus/click source rather than a
+TinyMCE button. Execute both rendered handlers through the pending-workspace
+guard, retain the live delivery-type lookup, preserve its Send-button focus
+return, and run `checkComposeForSurveyLink()` after a source-editor save.
+The explicit Alerts SendGrid template-data source button must use the same
+textarea, policy, and key-field focus return as the readonly focus/click
+control; execute the rendered button handler rather than assuming that shared
+configuration remains aligned.
 Test the shared TinyMCE bridge itself with and without an active TinyMCE
 editor. With one active, it must use a detached source buffer, write the saved
 source back through TinyMCE, trigger the original field's input path, call the
@@ -107,6 +115,10 @@ its persisted `sq_id` host and `element_preceding_header`; both retain current
 form field embedding and the keyup callback used for variable-name generation.
 Test Matrix Section Header separately: its source belongs to the surrounding
 form and the first persisted matrix field's `element_preceding_header`.
+Execute the rendered Field Label and Matrix Section Header source-action
+buttons as well as their helpers. Each must be cancellable and dispatch exactly
+once to its existing `REDCap` launcher; do not rely on a static button string
+to prove the user-facing path.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
 source-action handlers. Enter must keep the dialog from submitting; the three
 authoring gestures must remain cancellable and pass the current field name and

@@ -603,6 +603,10 @@ project event and the public route for the project's `firstForm`, but no record 
   separately: both retain their focus-return target and
   `checkComposeForSurveyLink()` callback, while only Bulk retains its live
   recipient context-availability provider. The
+  Twilio SMS Invitation message is instead a readonly focus/click source.
+  Browser coverage holds its rendered pair pending through dependencies,
+  preserving the live delivery-type lookup, Send focus return, and
+  `checkComposeForSurveyLink()` callback. The
   confirmation-email subject and end-survey
   redirect URL are one-line readonly source controls that open the piping
   workspace on focus or click. Browser coverage holds both rendered handler
@@ -700,7 +704,9 @@ project event and the public route for the project's `firstForm`, but no record 
   an explicit HTML-aware source-editor action beside the existing Piping help.
   Browser coverage keeps the condition's existing validation callback and
   each condition, subject, and SendGrid-template-data focus/click pair to one
-  eventual workspace with its own focus-return target. Field embedding remains
+  eventual workspace with its own focus-return target. The explicit SendGrid
+  template-data source button is separately executed to preserve its textarea,
+  policy, and key-field focus return. Field embedding remains
   disabled for all Alert sources. Email-address and phone-number controls
   remain outside this integration because their recipient/format validation
   has different authoring semantics.
@@ -761,6 +767,8 @@ project event and the public route for the project's `firstForm`, but no record 
   variable-name keyup callback. Matrix Section Header remains separate: its
   Field Embedding target is the first persisted matrix field and its form comes
   from the surrounding Add/Edit Field dialog.
+  Browser coverage also executes both rendered source-action buttons, ensuring
+  each is cancellable and dispatches once to its established `REDCap` launcher.
   Field Note retains its direct source workspace. Browser coverage executes its
   rendered Enter, F2, double-click, and explicit source-action handlers: Enter
   remains a non-submit gesture, while the three authoring gestures preserve the
