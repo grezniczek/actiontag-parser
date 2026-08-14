@@ -616,7 +616,11 @@ project event and the public route for the project's `firstForm`, but no record 
   `Piping::pipeSpecialTags()` derives their current form from the participant
   ID. This is intentionally limited to bare, unqualified forms; it does not
   allow event/instance qualifiers, and an explicit `survey-title` instrument
-  parameter uses its separately cataloged target route.
+  parameter uses its separately cataloged target route. The readonly subject's
+  pending focus/click browser coverage produces one eventual workspace and
+  keeps `surveyInvitationBulkPipingContextAvailability` as a live function,
+  so diagnostics and completion observe recipient selections current at use
+  time rather than at launch time.
 - Survey Queue's condition logic uses the same readonly logic workspace. On
   save it retains the existing trimming, automatic condition activation, and
   validation behavior. Its rich-text custom text has an explicit TinyMCE

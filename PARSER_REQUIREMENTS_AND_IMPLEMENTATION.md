@@ -39,6 +39,11 @@ from the participant before returning those values. This is not a general
 recordless-form rule. Event or instance qualifiers remain unsupported, and an
 explicit `survey-title` instrument parameter remains its independently
 cataloged metadata-target route rather than a participant fallback.
+The Bulk Survey Invitation Email Subject's readonly focus/click launcher keeps
+the recipient-availability provider as a function through a pending workspace
+launch. It must produce one eventual editor and resolve record/event/form
+availability only when diagnostics or completion require the current selected
+recipients.
 The MyCap participant display label has a distinct invariant path:
 `Participant::getParticipantIdentifier()` passes its record and event to
 `replaceVariablesInLabel()` but no form or survey participant. Its source
