@@ -41,7 +41,8 @@ editor for each. It must also execute those handlers for Radio, Drop-down, and
 Checkbox selections, asserting no workspace request or opener marker and no
 cancellation of native direct editing. Simulate a dependency-load failure for a
 workspace-owning type, then verify the next rendered handler can retry because
-the opener marker was cleared.
+the opener marker was cleared. Also hold dependency loading pending across a
+focus-then-click pair and verify that it produces only one eventual workspace.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 

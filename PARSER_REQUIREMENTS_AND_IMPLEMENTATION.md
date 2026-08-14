@@ -1705,7 +1705,9 @@ the existing editor in each case. The same rendered handlers for Radio,
 Drop-down, and Checkbox make no workspace request or opener marker and leave
 their native direct-edit events uncancelled. A failed Calculation dependency
 load clears the opener marker, so the following rendered handler can retry the
-workspace request.
+workspace request. When Calculation dependencies remain pending across the
+rendered focus-then-click pair, the marker permits only one eventual workspace
+creation after loading completes.
 
 The workspace's metadata catalog is cacheable only between unchanged project
 definitions. Online Designer field additions and edits now reload the affected

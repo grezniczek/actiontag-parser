@@ -61,6 +61,8 @@ when that is warranted.
   workspace request or opener marker, preserving native direct editing.
   A failed dependency load clears the marker, allowing the following rendered
   handler to retry the Calculation workspace request.
+  While Calculation dependencies are pending, the focus-then-click pair still
+  yields only one workspace after loading completes.
 - Every `field.*` workspace title adds its current variable name as a
   code-styled ` - [field_name]` token with muted gray brackets, including Field
   Label, Field Note, and Branching Logic. A new field without a name retains
