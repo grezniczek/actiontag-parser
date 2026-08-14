@@ -666,7 +666,10 @@ project event and the public route for the project's `firstForm`, but no record 
 - PDF Snapshot trigger logic uses a readonly logic workspace in its Add/Edit
   Trigger dialog. Saving retains the existing trim, trigger activation, and
   client-side validation behavior, and focus returns to the survey-completion
-  trigger selector. Field embedding remains disabled.
+  trigger selector. Browser coverage holds its rendered focus/click pair
+  pending across dependencies, then verifies its saved nonblank trigger is
+  trimmed, activates the PDF Snapshot logic option, and follows the existing
+  validation path. Field embedding remains disabled.
 - Randomization real-time trigger logic uses a readonly logic workspace. Its
   established AJAX save path, including server-side trimming, is unchanged;
   opening the workspace retains the existing behavior of enabling the Save

@@ -1720,8 +1720,10 @@ own form/event selector. Record Status Dashboard filter logic similarly keeps
 one eventual workspace and must trim and validate through its established save
 callback without activating an option. Data Export advanced logic likewise
 keeps one eventual workspace and delegates its save callback to the established
-`check_advanced_logic()` report validator. Field Annotation is intentionally
-click-only, so it is not part of that duplicate-event path.
+`check_advanced_logic()` report validator. PDF Snapshot trigger logic also
+keeps one eventual workspace and must trim a nonblank saved value, activate its
+logic trigger, and use the established validation helper. Field Annotation is
+intentionally click-only, so it is not part of that duplicate-event path.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes

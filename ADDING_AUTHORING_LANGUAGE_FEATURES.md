@@ -67,6 +67,8 @@ condition option.
 Data Export advanced logic needs the same pending focus/click guard but must
 delegate post-save checks to `check_advanced_logic()`; do not reproduce the
 report builder's validation in the workspace callback.
+PDF Snapshot trigger logic needs the guarded launch plus its existing nonblank
+trigger activation, trimming, and validation callback.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
