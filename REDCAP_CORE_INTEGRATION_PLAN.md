@@ -680,9 +680,12 @@ project event and the public route for the project's `firstForm`, but no record 
   immediate data-entry-form design label surfaces while retaining each
   screen's established save flow.
 - Project Setup's Data Entry Trigger URL is a one-line piping workspace that
-  preserves the original URL/localhost checks after save. e-Consent's custom
-  label is likewise a form-aware one-line piping workspace in its existing
-  AJAX dialog and retains its normal save path.
+  preserves the original URL/localhost checks after save. Its browser coverage
+  holds the rendered focus/click pair pending across dependency loading, keeps
+  click cancellation, and confirms the existing marker-aware blur validator is
+  suppressed only until the workspace closes. e-Consent's custom label is
+  likewise a form-aware one-line piping workspace in its existing AJAX dialog
+  and retains its normal save path.
 - Project Dashboard body text has an explicit TinyMCE source-editor action.
   It is HTML-aware for text-node syntax feedback and deliberately offers smart
   variables, not record fields: dashboard smart charts, tables, and functions

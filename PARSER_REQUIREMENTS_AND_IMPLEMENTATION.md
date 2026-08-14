@@ -1679,13 +1679,15 @@ Custom Record Label, Custom Event Label, and Custom Repeating Instrument Label
 also performs a one-line-safe `<br>` round trip: supported existing `<br>`
 spellings display as newlines and can be saved as canonical `<br>` tags or
 spaces, while Cancel preserves the original stored text.
-Quick-modify fields' custom Action Tags source, Data Quality Rule Logic, Custom
-Record Label, Custom Event Label, and Custom Repeating Instrument Label's
-readonly focus/click launchers also exercise the shared pending-load marker
-guard: each pair of rendered events produces one workspace after dependencies
-resolve while retaining its established click cancellation and focus return.
-Field Annotation is intentionally click-only, so it is not part of that
-duplicate-event path.
+Quick-modify fields' custom Action Tags source, Data Quality Rule Logic, Data
+Entry Trigger URL, Custom Record Label, Custom Event Label, and Custom
+Repeating Instrument Label's readonly focus/click launchers also exercise the
+shared pending-load marker guard: each pair of rendered events produces one
+workspace after dependencies resolve while retaining its established click
+cancellation and focus return. The Data Entry Trigger URL's existing blur
+validator must continue to defer while that marker is present, then resume
+after workspace closure. Field Annotation is intentionally click-only, so it
+is not part of that duplicate-event path.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes
