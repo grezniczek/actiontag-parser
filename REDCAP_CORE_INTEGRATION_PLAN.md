@@ -334,7 +334,11 @@ project event and the public route for the project's `firstForm`, but no record 
   fallback. It also records `Surveys/invite_participant_popup.php` as the
   actual evaluation route, so `[is-survey]` and `[is-form]` are correctly
   muted and warned as fixed `0` rather than inheriting the surrounding Data
-  Entry page. The bulk invitation composer has a recipient-conditional policy:
+  Entry page. Its generated popup subject retains one eventual readonly
+  workspace through the pending focus/click pair; browser coverage decodes and
+  executes its rendered HTML-entity option values before asserting the shared
+  marker guard and return to the send control. The bulk invitation composer has
+  a recipient-conditional policy:
   `email_participants.php` resolves text once per selected participant, using
   record, event, and form arguments only for record-backed recipients and a
   participant ID for recordless initial-survey recipients. Its source policy

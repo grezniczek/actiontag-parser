@@ -1135,8 +1135,12 @@ record, event, selected survey form, and authenticated-request user fallback.
 They can therefore receive normal field and context-aware Smart Variable
 completion. Their Piping call runs on `Surveys/invite_participant_popup.php`,
 so the fixed source policy also warns/mutes `[is-survey]` and `[is-form]` as
-zero rather than inheriting the Data Entry page's state. The bulk invitation
-composer uses the shared `survey_invitation_bulk_email` policy, but declares
+zero rather than inheriting the Data Entry page's state. The popup's generated
+readonly Email Subject focus/click attributes encode option strings as HTML
+entities; browser coverage must decode and execute those rendered handlers,
+which retain one eventual workspace and return focus to the send control. The
+bulk invitation composer uses the shared `survey_invitation_bulk_email` policy,
+but declares
 its record, event, and form contexts as `recipient_dependent_contexts` rather
 than as fixed booleans. `email_participants.php` pipes each selected
 participant independently: a record-backed participant receives record,
