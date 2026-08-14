@@ -656,7 +656,10 @@ project event and the public route for the project's `firstForm`, but no record 
 - Data Quality rule logic uses a readonly logic workspace for both the
   new-rule input and inline editing of existing user-defined rules. The
   existing rule-specific validation and Save behavior are retained after an
-  authoring-editor save, and field embedding remains disabled.
+  authoring-editor save, and field embedding remains disabled. Browser coverage
+  holds the inline editor's rendered focus/click pair pending across dependency
+  loading, preserving its cancellable click and returning one eventual
+  workspace to the existing rule's Save button.
 - Project Setup's Custom Record Label, Define My Events' Custom Event Label,
   and the Custom Label inputs in the Repeating Instruments and Events dialog
   now use readonly, one-line piping workspaces on focus or click. They carry

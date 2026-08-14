@@ -44,8 +44,11 @@ workspace-owning type, then verify the next rendered handler can retry because
 the opener marker was cleared. Also hold dependency loading pending across a
 focus-then-click pair and verify that it produces only one eventual workspace.
 Apply that pending-load check to every readonly focus/click launcher, including
-Custom Record Label, Custom Event Label, and Custom Repeating Instrument Label;
-do not apply it to a deliberately click-only surface such as Field Annotation.
+Quick-modify fields' custom Action Tags source, Data Quality Rule Logic, Custom
+Record Label, Custom Event Label, and Custom Repeating Instrument Label; do not
+apply it to a deliberately click-only surface such as Field Annotation. Retain
+each source's existing click cancellation and focus-return behavior while
+testing the shared guard.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 
