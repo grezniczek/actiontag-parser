@@ -653,7 +653,10 @@ project event and the public route for the project's `firstForm`, but no record 
   selector. Field embedding remains disabled.
 - Record Status Dashboard filter logic uses a readonly logic workspace. Its
   existing trimming and validation behavior is retained on save, and focus
-  returns to the dashboard Save button. Field embedding remains disabled.
+  returns to the dashboard Save button. Browser coverage holds its rendered
+  focus/click pair pending across dependencies, then verifies the save callback
+  trims and validates without activating a separate option. Field embedding
+  remains disabled.
 - Data Export report-builder advanced logic uses a readonly logic workspace.
   Saving invokes the existing report-specific validation and returns focus to
   the option to switch back to simple logic. Field embedding remains disabled.

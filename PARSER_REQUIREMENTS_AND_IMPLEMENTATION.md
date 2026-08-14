@@ -1716,8 +1716,10 @@ workspace. The two condition save callbacks must retain nonblank trimming,
 option activation, and their established validation helper. Form Display Logic
 repeater rows clone the initial condition textarea before renaming it; coverage
 must dispatch that inherited handler for an added row and return focus to its
-own form/event selector. Field Annotation is intentionally click-only, so it is
-not part of that duplicate-event path.
+own form/event selector. Record Status Dashboard filter logic similarly keeps
+one eventual workspace and must trim and validate through its established save
+callback without activating an option. Field Annotation is intentionally
+click-only, so it is not part of that duplicate-event path.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes
