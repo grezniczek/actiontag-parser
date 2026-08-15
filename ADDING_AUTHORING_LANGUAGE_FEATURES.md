@@ -85,6 +85,10 @@ that it calls `REDCap.openTinyMCEAuthoringWorkspace()` with the intended
 textarea and policy. Preserve Project Dashboard's Save return, Survey Queue's
 dialog-close return and `fitDialog()` save callback, and the source policies
 for Automated Survey Invitation email content and Alerts message.
+For an active TinyMCE editor, retain one detached source buffer on the live
+field while that workspace is pending or visible. A duplicate source action
+must reuse that buffer so the shared workspace guard can suppress or refocus it;
+remove the buffer reference only after the workspace closes.
 Parameterize the same rendered-button check for Survey Settings' Offline
 Instructions, Survey Instructions, acknowledgement, stop-action
 acknowledgement, and confirmation-email body. Each must remain a cancellable

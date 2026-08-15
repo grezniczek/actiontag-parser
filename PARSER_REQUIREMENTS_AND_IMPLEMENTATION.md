@@ -1770,9 +1770,11 @@ matches the textarea's focus/click controls.
 The shared TinyMCE bridge must use a detached buffer only for an active editor,
 then write saved source through that editor, trigger the live field's input
 path, run the caller callback with the original field, and remove the buffer
-on close. Its inactive-editor path continues to use the workspace-owned
-textarea; an unavailable source returns the established rejected promise and
-does not launch a workspace.
+on close. While pending or visible, the live field retains that one buffer so
+a duplicate source action reuses it and reaches the shared workspace guard;
+the reference is cleared only on close. Its inactive-editor path continues to
+use the workspace-owned textarea; an unavailable source returns the established
+rejected promise and does not launch a workspace.
 Field Label coverage must distinguish ordinary `element_label` storage from a
 section header's persisted `sq_id` host and `element_preceding_header`, while
 retaining current-form Field Embedding and the variable-name keyup callback.
