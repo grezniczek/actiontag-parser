@@ -790,7 +790,9 @@ project event and the public route for the project's `firstForm`, but no record 
   Field Note retains its direct source workspace. Browser coverage executes its
   rendered Enter, F2, double-click, and explicit source-action handlers: Enter
   remains a non-submit gesture, while the three authoring gestures preserve the
-  current host field and form for Field Embedding.
+  current host field and form for Field Embedding. While dependencies are
+  pending, F2, double-click, and the source action share one eventual workspace
+  and clear its opener marker after closure.
   Advanced Branching Logic remains an intentionally focus-only Logic launcher;
   browser coverage executes that handler and preserves its live field target.
 - Generic External Modules JSON settings and the Vue `useLogicTextArea`
