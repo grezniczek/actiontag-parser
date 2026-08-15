@@ -176,6 +176,8 @@ another dialog.
 Advanced Branching Logic is intentionally focus-only. Its rendered handler must
 continue to open the Logic workspace from that textarea and pass the live field
 name as the target; do not add a click path merely to match other controls.
+Also simulate a failed dependency load: its marker must clear so a following
+focus can retry from the same Advanced Branching Logic source.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 

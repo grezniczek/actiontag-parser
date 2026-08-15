@@ -798,6 +798,7 @@ project event and the public route for the project's `firstForm`, but no record 
   dependencies or creating another dialog.
   Advanced Branching Logic remains an intentionally focus-only Logic launcher;
   browser coverage executes that handler and preserves its live field target.
+  A failed dependency load clears its marker so a following focus can retry.
 - Generic External Modules JSON settings and the Vue `useLogicTextArea`
   helper remain on their legacy editor path. They are framework hooks rather
   than concrete source contracts, so assigning them a single workspace policy

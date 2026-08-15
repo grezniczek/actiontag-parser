@@ -1813,7 +1813,8 @@ while its workspace is already visible refocuses the existing ACE editor
 without loading dependencies or creating another dialog.
 Advanced Branching Logic is deliberately focus-only. Coverage executes its
 rendered handler and keeps its live field name as the Logic target without
-inventing a click route.
+inventing a click route. A failed dependency load clears the opener marker so
+a following focus can retry from the same source.
 
 The Edit Field dialog's shared `element_enum` textarea remains directly editable
 for choice-owning types such as Radio, Drop-down, and Checkbox. It becomes
