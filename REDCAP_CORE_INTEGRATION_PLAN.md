@@ -788,8 +788,10 @@ project event and the public route for the project's `firstForm`, but no record 
   after close, and leaves the direct textarea path intact when TinyMCE is not
   active. The live field retains one detached buffer while the workspace is
   pending or visible, so a duplicate source action reuses it and reaches the
-  shared opener guard before it is cleared on close. An unavailable source
-  keeps the existing rejected-promise behavior.
+  shared opener guard before it is cleared on close. The direct textarea path
+  retains no bridge buffer reference; its duplicates go directly through that
+  shared opener marker. An unavailable source keeps the existing
+  rejected-promise behavior.
   Browser coverage also executes the Field Label bridge for ordinary fields
   and section headers. It keeps ordinary `element_label` versus persisted-host
   `element_preceding_header` storage, current-form Field Embedding, and the

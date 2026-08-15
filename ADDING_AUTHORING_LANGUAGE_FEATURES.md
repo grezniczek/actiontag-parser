@@ -89,6 +89,8 @@ For an active TinyMCE editor, retain one detached source buffer on the live
 field while that workspace is pending or visible. A duplicate source action
 must reuse that buffer so the shared workspace guard can suppress or refocus it;
 remove the buffer reference only after the workspace closes.
+An inactive TinyMCE/direct-textarea path keeps no bridge buffer reference:
+duplicate launches go directly to the shared opener's existing source marker.
 Execute the rendered Field Label action twice through that bridge. It must keep
 its live target/form context while creating and reusing one detached buffer.
 Do the same for the rendered Matrix Section Header action, retaining its
