@@ -91,6 +91,9 @@ must reuse that buffer so the shared workspace guard can suppress or refocus it;
 remove the buffer reference only after the workspace closes.
 Execute the rendered Field Label action twice through that bridge. It must keep
 its live target/form context while creating and reusing one detached buffer.
+Do the same for the rendered Matrix Section Header action, retaining its
+enclosing form and first persisted matrix field; its policy owns the header
+storage attribute.
 Parameterize the same rendered-button check for Survey Settings' Offline
 Instructions, Survey Instructions, acknowledgement, stop-action
 acknowledgement, and confirmation-email body. Each must remain a cancellable

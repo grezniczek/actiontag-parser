@@ -789,7 +789,10 @@ project event and the public route for the project's `firstForm`, but no record 
   that bridge, preserving live target/form context while sharing one detached
   buffer. Matrix Section Header remains separate: its
   Field Embedding target is the first persisted matrix field and its form comes
-  from the surrounding Add/Edit Field dialog.
+  from the surrounding Add/Edit Field dialog. Its rendered action also executes
+  twice through the bridge, sharing one detached buffer while retaining that
+  form/first-field context; the `matrix.section_header` policy owns the header
+  storage attribute.
   Browser coverage also executes both rendered source-action buttons, ensuring
   each is cancellable and dispatches once to its established `REDCap` launcher.
   Field Note retains its direct source workspace. Browser coverage executes its

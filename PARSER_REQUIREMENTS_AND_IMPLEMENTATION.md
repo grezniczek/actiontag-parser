@@ -1781,7 +1781,10 @@ retaining current-form Field Embedding and the variable-name keyup callback.
 Its rendered source action also executes twice through the TinyMCE bridge,
 preserving live target/form context while sharing one detached buffer.
 Matrix Section Header instead uses its enclosing form and the first persisted
-matrix field as the Field Embedding target for `element_preceding_header`.
+matrix field as the Field Embedding target for `element_preceding_header`. Its
+rendered source action likewise executes twice through the TinyMCE bridge while
+sharing one detached buffer and retaining its form/first-field context; the
+`matrix.section_header` policy continues to own the storage attribute.
 The rendered Field Label and Matrix Section Header source-action buttons are
 also executable coverage cases: each remains cancellable and dispatches once
 to its established `REDCap` launcher.
