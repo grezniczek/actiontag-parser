@@ -110,6 +110,12 @@ not inherit that provider.
 Execute Bulk Invitation email content twice through the TinyMCE bridge. It must
 share one detached buffer, retain its live availability provider and focus
 return, and run `checkComposeForSurveyLink()` only once after a real save.
+Apply the same duplicate-action bridge test to every remaining rendered
+TinyMCE source action: Project Dashboard body, Automated Invitation content,
+Alerts message, Follow-up Invitation content, and all five Survey Settings
+content fields. Each must reuse one buffer and preserve only its established
+policy, focus return, and save callback; Follow-up must not inherit Bulk's
+availability provider.
 Twilio SMS Invitation message is a readonly focus/click source rather than a
 TinyMCE button. Execute both rendered handlers through the pending-workspace
 guard, retain the live delivery-type lookup, preserve its Send-button focus

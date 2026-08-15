@@ -622,6 +622,11 @@ project event and the public route for the project's `firstForm`, but no record 
   Bulk rendered action also executes twice through the TinyMCE bridge, sharing
   one detached buffer while retaining that provider and focus return; its
   `checkComposeForSurveyLink()` callback runs once after a real save. The
+  remaining rendered TinyMCE source actions—Project Dashboard body, Automated
+  Invitation content, Alerts message, Follow-up Invitation content, and five
+  Survey Settings fields—also execute twice through the bridge and share one
+  detached buffer. Each preserves only its established policy and focus/save
+  behavior; Follow-up never inherits Bulk's availability provider. The
   Twilio SMS Invitation message is instead a readonly focus/click source.
   Browser coverage holds its rendered pair pending through dependencies,
   preserving the live delivery-type lookup, Send focus return, and

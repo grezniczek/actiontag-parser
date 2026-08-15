@@ -1763,6 +1763,12 @@ stale resolved recipient state; Follow-up receives no such provider.
 Bulk's rendered action also executes twice through the TinyMCE bridge while
 sharing one detached buffer, retaining that live provider and focus return, and
 running `checkComposeForSurveyLink()` once after a real save.
+Project Dashboard body, Automated Survey Invitation email content, Alerts
+message, Follow-up Invitation email content, and the five Survey Settings
+content fields likewise execute their rendered actions twice through the bridge
+and share one detached buffer. Each retains only its established policy and
+focus/save behavior; Follow-up retains its link-validation callback and never
+inherits Bulk's availability provider.
 Twilio SMS Invitation message is a readonly focus/click source. Its rendered
 pair must share one pending workspace while retaining the live delivery type,
 Send focus return, and `checkComposeForSurveyLink()` save callback.
