@@ -147,6 +147,10 @@ and save must retain `showHideValidationForMCFields()`.
 Quick Edit Action Tags uses delegated focus/click handling. Execute both event
 paths, keep its append-mode focus return, cancel click, and ensure save updates
 dialog state and triggers the existing custom-source change path.
+Hold that focus/click pair pending through dependency loading and assert one
+eventual workspace plus marker cleanup after it closes.
+Also simulate a failed dependency load: its marker must clear so the next
+delegated click can retry from the same Quick Edit source.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
 source-action handlers. Enter must keep the dialog from submitting; the three
 authoring gestures must remain cancellable and pass the current field name and

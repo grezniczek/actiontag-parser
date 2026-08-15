@@ -1734,7 +1734,9 @@ retain their source-specific focus-return selector. Field Annotation is
 intentionally click-only, so it is not part of that duplicate-event path.
 Quick Edit Action Tags instead has delegated focus/click handling: coverage
 keeps its append-mode focus return, click cancellation, and custom-source
-change path after an authoring save.
+change path after an authoring save. The pair shares one pending workspace and
+clears its opener marker after closure. A failed dependency load also clears
+the marker so a following delegated click can retry.
 e-Consent Custom Label keeps its setup-dialog close-control return through one
 eventual workspace for its rendered focus/click pair.
 Explicit rich-text source-editor buttons must route through
