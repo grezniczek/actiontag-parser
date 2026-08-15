@@ -137,6 +137,8 @@ Cover the same rendered toolbar path with no selected row: it must create no
 buffer or workspace while the dispatcher still restores spreadsheet interaction.
 Repeat that end-to-end guard for a selected row whose label cell is unavailable:
 it must likewise create no buffer or workspace and restore the spreadsheet.
+For a valid selected-row launch, also test cancellation: closing without save
+must clean up the detached buffer without writing through the spreadsheet API.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
 source-action handlers. Enter must keep the dialog from submitting; the three
 authoring gestures must remain cancellable and pass the current field name and

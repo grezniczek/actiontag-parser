@@ -795,7 +795,8 @@ project event and the public route for the project's `firstForm`, but no record 
   dispatch into the selected-row workspace, spreadsheet write-back, and buffer
   cleanup. Its no-selection path creates neither a buffer nor workspace and
   still restores spreadsheet interaction. The same is true when a selected
-  row has no available label cell.
+  row has no available label cell. Cancelling a valid workspace cleans up its
+  detached buffer without spreadsheet write-back.
   Matrix headers retain their rich-text
   handoff. Choice Labels use the restricted `filter_tags` HTML mode and retain
   their established one-line `<br>` handling. Do not enable field embedding
