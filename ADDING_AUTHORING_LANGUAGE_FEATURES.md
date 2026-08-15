@@ -133,6 +133,8 @@ and retain the toolbar placement and initial spreadsheet selection.
 Maintain one end-to-end Choice Editor workflow test from the rendered toolbar
 click through dialog binding and dispatch to selected-row workspace launch,
 spreadsheet save write-back, and detached-buffer cleanup.
+Cover the same rendered toolbar path with no selected row: it must create no
+buffer or workspace while the dispatcher still restores spreadsheet interaction.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
 source-action handlers. Enter must keep the dialog from submitting; the three
 authoring gestures must remain cancellable and pass the current field name and

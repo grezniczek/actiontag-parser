@@ -1779,6 +1779,8 @@ rendered action button to that dispatcher.
 An end-to-end Choice Editor test follows the rendered toolbar button through
 binding and dispatch to the selected-row workspace, spreadsheet write-back,
 and detached-buffer cleanup.
+The same rendered no-selection path creates neither a buffer nor a workspace,
+but still restores spreadsheet interaction through the dispatcher.
 Field Note coverage executes its rendered keyboard, double-click, and explicit
 source-action routes: Enter remains non-submitting, while F2, double-click,
 and the button are cancellable and preserve the current host field and form
