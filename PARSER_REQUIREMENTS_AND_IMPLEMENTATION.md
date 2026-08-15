@@ -1778,6 +1778,8 @@ rejected promise and does not launch a workspace.
 Field Label coverage must distinguish ordinary `element_label` storage from a
 section header's persisted `sq_id` host and `element_preceding_header`, while
 retaining current-form Field Embedding and the variable-name keyup callback.
+Its rendered source action also executes twice through the TinyMCE bridge,
+preserving live target/form context while sharing one detached buffer.
 Matrix Section Header instead uses its enclosing form and the first persisted
 matrix field as the Field Embedding target for `element_preceding_header`.
 The rendered Field Label and Matrix Section Header source-action buttons are

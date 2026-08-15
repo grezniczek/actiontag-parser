@@ -785,7 +785,9 @@ project event and the public route for the project's `firstForm`, but no record 
   Browser coverage also executes the Field Label bridge for ordinary fields
   and section headers. It keeps ordinary `element_label` versus persisted-host
   `element_preceding_header` storage, current-form Field Embedding, and the
-  variable-name keyup callback. Matrix Section Header remains separate: its
+  variable-name keyup callback. Its rendered action also executes twice through
+  that bridge, preserving live target/form context while sharing one detached
+  buffer. Matrix Section Header remains separate: its
   Field Embedding target is the first persisted matrix field and its form comes
   from the surrounding Add/Edit Field dialog.
   Browser coverage also executes both rendered source-action buttons, ensuring
