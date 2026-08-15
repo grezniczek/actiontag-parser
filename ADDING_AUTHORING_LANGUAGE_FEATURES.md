@@ -180,6 +180,8 @@ Also simulate a failed dependency load: its marker must clear so a following
 focus can retry from the same Advanced Branching Logic source.
 With its workspace already visible, a further focus must refocus the existing
 ACE editor without reloading dependencies or creating another dialog.
+After ordinary closure, the same Advanced Branching Logic source must launch
+again on focus.
 
 ### Manual Online Designer regression: shared Choices/Calculation/SQL control
 

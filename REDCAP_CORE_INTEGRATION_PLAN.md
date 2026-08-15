@@ -800,7 +800,8 @@ project event and the public route for the project's `firstForm`, but no record 
   browser coverage executes that handler and preserves its live field target.
   A failed dependency load clears its marker so a following focus can retry.
   A focus while visible refocuses its existing ACE editor without loading
-  dependencies or creating another dialog.
+  dependencies or creating another dialog. An ordinary close then permits a
+  fresh focus launch from the same source.
 - Generic External Modules JSON settings and the Vue `useLogicTextArea`
   helper remain on their legacy editor path. They are framework hooks rather
   than concrete source contracts, so assigning them a single workspace policy
