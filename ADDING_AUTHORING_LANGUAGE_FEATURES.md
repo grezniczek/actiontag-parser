@@ -94,6 +94,9 @@ its live target/form context while creating and reusing one detached buffer.
 Do the same for the rendered Matrix Section Header action, retaining its
 enclosing form and first persisted matrix field; its policy owns the header
 storage attribute.
+Execute Survey Queue custom text’s rendered action twice through the bridge.
+It must share one detached buffer, retain its close-control focus return, and
+run the established `fitDialog()` callback exactly once after a real save.
 Parameterize the same rendered-button check for Survey Settings' Offline
 Instructions, Survey Instructions, acknowledgement, stop-action
 acknowledgement, and confirmation-email body. Each must remain a cancellable

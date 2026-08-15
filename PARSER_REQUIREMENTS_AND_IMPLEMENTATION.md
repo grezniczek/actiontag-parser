@@ -1785,6 +1785,9 @@ matrix field as the Field Embedding target for `element_preceding_header`. Its
 rendered source action likewise executes twice through the TinyMCE bridge while
 sharing one detached buffer and retaining its form/first-field context; the
 `matrix.section_header` policy continues to own the storage attribute.
+Survey Queue custom text's rendered source action likewise executes twice
+through the bridge while sharing one buffer, preserving its close-control focus
+return, and running its existing `fitDialog()` callback once after a real save.
 The rendered Field Label and Matrix Section Header source-action buttons are
 also executable coverage cases: each remains cancellable and dispatches once
 to its established `REDCap` launcher.

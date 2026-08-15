@@ -793,6 +793,9 @@ project event and the public route for the project's `firstForm`, but no record 
   twice through the bridge, sharing one detached buffer while retaining that
   form/first-field context; the `matrix.section_header` policy owns the header
   storage attribute.
+  Survey Queue custom text's rendered action also executes twice through the
+  bridge, sharing one buffer while preserving close-control focus return and
+  running its established `fitDialog()` callback once after a real save.
   Browser coverage also executes both rendered source-action buttons, ensuring
   each is cancellable and dispatches once to its established `REDCap` launcher.
   Field Note retains its direct source workspace. Browser coverage executes its
