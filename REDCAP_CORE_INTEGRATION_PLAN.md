@@ -43,6 +43,10 @@ when that is warranted.
   without loading dependencies or creating another dialog; an ordinary close
   then permits a fresh delegated launch. A failed dependency load likewise
   clears the marker so the following delegated click can retry.
+  Field Annotation remains intentionally click-only. Its rendered click is
+  also guarded: while its workspace is visible, it refocuses the existing ACE
+  editor without loading dependencies or creating another dialog; an ordinary
+  close then permits a fresh click launch.
 - The Edit Field dialog reuses `element_enum` for choices, calculations, and
   SQL. Only the currently selected Calculated Field or SQL type makes it
   readonly and opens an authoring workspace; Radio, Drop-down, Checkbox, and

@@ -1731,7 +1731,10 @@ participant-allow condition preserves its dialog-close focus return and logic
 validation callback across that same pending pair. Alerts condition logic does
 likewise, while Alerts email subject and SendGrid template-data values each
 retain their source-specific focus-return selector. Field Annotation is
-intentionally click-only, so it is not part of that duplicate-event path.
+intentionally click-only, so it is not part of that duplicate-event path; a
+click while its workspace is already visible refocuses the existing ACE editor
+without loading dependencies or creating another dialog, and ordinary closure
+permits a fresh click launch.
 Quick Edit Action Tags instead has delegated focus/click handling: coverage
 keeps its append-mode focus return, click cancellation, and custom-source
 change path after an authoring save. The pair shares one pending workspace and
