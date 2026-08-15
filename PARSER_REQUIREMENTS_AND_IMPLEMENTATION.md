@@ -1735,7 +1735,8 @@ intentionally click-only, so it is not part of that duplicate-event path; a
 click while its workspace is already visible refocuses the existing ACE editor
 without loading dependencies or creating another dialog, and ordinary closure
 permits a fresh click launch. A failed dependency load also clears the marker
-so a following click can retry.
+so a following click can retry. Two clicks while dependencies are pending
+likewise yield one eventual workspace and clear the marker after closure.
 Quick Edit Action Tags instead has delegated focus/click handling: coverage
 keeps its append-mode focus return, click cancellation, and custom-source
 change path after an authoring save. The pair shares one pending workspace and

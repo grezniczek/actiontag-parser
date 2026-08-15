@@ -147,6 +147,8 @@ and save must retain `showHideValidationForMCFields()`.
 With its workspace already visible, the same click must refocus the existing
 ACE editor without reloading dependencies or creating another dialog; after
 ordinary closure, the same source must launch again.
+Hold two clicks pending through dependency loading and assert one eventual
+Field Annotation workspace plus marker cleanup after it closes.
 Also simulate a failed dependency load: its marker must clear so the next
 Field Annotation click can retry from the same source.
 Quick Edit Action Tags uses delegated focus/click handling. Execute both event

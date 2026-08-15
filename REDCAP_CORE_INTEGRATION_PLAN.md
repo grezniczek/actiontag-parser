@@ -47,7 +47,8 @@ when that is warranted.
   also guarded: while its workspace is visible, it refocuses the existing ACE
   editor without loading dependencies or creating another dialog; an ordinary
   close then permits a fresh click launch. A failed dependency load clears its
-  marker so a following click can retry.
+  marker so a following click can retry. Two clicks while dependencies are
+  pending yield one eventual workspace and clear the marker after closure.
 - The Edit Field dialog reuses `element_enum` for choices, calculations, and
   SQL. Only the currently selected Calculated Field or SQL type makes it
   readonly and opens an authoring workspace; Radio, Drop-down, Checkbox, and
