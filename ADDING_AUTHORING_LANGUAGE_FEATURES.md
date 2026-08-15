@@ -107,6 +107,9 @@ execution check, but must preserve their `checkComposeForSurveyLink()` save
 callbacks. Bulk Invitation also keeps its context-availability provider as a
 function until the workspace needs the current recipient state; Follow-up does
 not inherit that provider.
+Execute Bulk Invitation email content twice through the TinyMCE bridge. It must
+share one detached buffer, retain its live availability provider and focus
+return, and run `checkComposeForSurveyLink()` only once after a real save.
 Twilio SMS Invitation message is a readonly focus/click source rather than a
 TinyMCE button. Execute both rendered handlers through the pending-workspace
 guard, retain the live delivery-type lookup, preserve its Send-button focus

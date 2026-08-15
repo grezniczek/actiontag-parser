@@ -619,6 +619,9 @@ project event and the public route for the project's `firstForm`, but no record 
   separately: both retain their focus-return target and
   `checkComposeForSurveyLink()` callback, while only Bulk retains its live
   recipient context-availability provider. The
+  Bulk rendered action also executes twice through the TinyMCE bridge, sharing
+  one detached buffer while retaining that provider and focus return; its
+  `checkComposeForSurveyLink()` callback runs once after a real save. The
   Twilio SMS Invitation message is instead a readonly focus/click source.
   Browser coverage holds its rendered pair pending through dependencies,
   preserving the live delivery-type lookup, Send focus return, and

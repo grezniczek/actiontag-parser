@@ -1760,6 +1760,9 @@ Bulk and Follow-up Survey Invitation email-content actions preserve their
 respective focus-return targets and `checkComposeForSurveyLink()` callbacks.
 Bulk additionally retains its context-availability function rather than a
 stale resolved recipient state; Follow-up receives no such provider.
+Bulk's rendered action also executes twice through the TinyMCE bridge while
+sharing one detached buffer, retaining that live provider and focus return, and
+running `checkComposeForSurveyLink()` once after a real save.
 Twilio SMS Invitation message is a readonly focus/click source. Its rendered
 pair must share one pending workspace while retaining the live delivery type,
 Send focus return, and `checkComposeForSurveyLink()` save callback.
