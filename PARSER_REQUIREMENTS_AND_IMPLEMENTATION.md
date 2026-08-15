@@ -1735,8 +1735,11 @@ intentionally click-only, so it is not part of that duplicate-event path.
 Quick Edit Action Tags instead has delegated focus/click handling: coverage
 keeps its append-mode focus return, click cancellation, and custom-source
 change path after an authoring save. The pair shares one pending workspace and
-clears its opener marker after closure. A failed dependency load also clears
-the marker so a following delegated click can retry.
+clears its opener marker after closure. A request while that workspace remains
+visible focuses its existing ACE editor rather than loading dependencies or
+creating another dialog, and ordinary closure permits a fresh delegated launch.
+A failed dependency load also clears the marker so a following delegated click
+can retry.
 e-Consent Custom Label keeps its setup-dialog close-control return through one
 eventual workspace for its rendered focus/click pair.
 Explicit rich-text source-editor buttons must route through

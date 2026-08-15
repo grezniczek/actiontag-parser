@@ -39,8 +39,10 @@ when that is warranted.
   focus return, click cancellation, and the existing custom-source change path
   after an authoring save. Its pair is also held pending across dependencies,
   yielding one eventual workspace and clearing the opener marker after close.
-  A failed dependency load likewise clears the marker so the following
-  delegated click can retry.
+  While visible, another delegated click focuses its existing ACE editor
+  without loading dependencies or creating another dialog; an ordinary close
+  then permits a fresh delegated launch. A failed dependency load likewise
+  clears the marker so the following delegated click can retry.
 - The Edit Field dialog reuses `element_enum` for choices, calculations, and
   SQL. Only the currently selected Calculated Field or SQL type makes it
   readonly and opens an authoring workspace; Radio, Drop-down, Checkbox, and

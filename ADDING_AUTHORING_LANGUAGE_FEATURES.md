@@ -149,6 +149,9 @@ paths, keep its append-mode focus return, cancel click, and ensure save updates
 dialog state and triggers the existing custom-source change path.
 Hold that focus/click pair pending through dependency loading and assert one
 eventual workspace plus marker cleanup after it closes.
+While that workspace remains visible, a further delegated click must focus its
+existing ACE editor without reloading dependencies or creating another dialog;
+after ordinary closure, the same source must launch again.
 Also simulate a failed dependency load: its marker must clear so the next
 delegated click can retry from the same Quick Edit source.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
