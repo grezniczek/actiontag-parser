@@ -141,6 +141,12 @@ For a valid selected-row launch, also test cancellation: closing without save
 must clean up the detached buffer without writing through the spreadsheet API.
 Invoke its `focusAfterClose` callback in the end-to-end path and verify it
 returns the selected label cell while restoring that exact spreadsheet selection.
+Execute the rendered Field Annotation click handler with live field metadata.
+Its form, type, matrix, validation, and range options must remain providers,
+and save must retain `showHideValidationForMCFields()`.
+Quick Edit Action Tags uses delegated focus/click handling. Execute both event
+paths, keep its append-mode focus return, cancel click, and ensure save updates
+dialog state and triggers the existing custom-source change path.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
 source-action handlers. Enter must keep the dialog from submitting; the three
 authoring gestures must remain cancellable and pass the current field name and
@@ -165,6 +171,9 @@ Field dialog to verify all of the following:
 4. Make a valid choice edit, save the field, and reopen it to confirm that the
    choice text persisted. Do not save an intentionally incompatible temporary
    calculation or SQL value merely to exercise the transition.
+
+The browser test must execute both rendered `element_enum` handlers and confirm
+they route the actual textarea to the shared dynamic launch gate.
 
 The automated launcher test covers the same Radio → Calculated Field → SQL →
 Drop-down → Checkbox state sequence and its `readonly`/`aria-readonly` values;

@@ -1654,7 +1654,9 @@ viewport inset, and disables dragging and resizing; collapsing restores the
 saved position, dimensions, and resize controls. The Field Annotation source
 textarea is read-only and opens only on click, with closure focus explicitly
 returned to the field-name control so it cannot reopen itself or accept direct
-text while an editor is active. A consumer can enter or collapse the same
+text while an editor is active. Its rendered click handler preserves live form,
+type, matrix, validation, and range providers plus the existing mobile-app
+validation visibility refresh after save. A consumer can enter or collapse the same
 dynamic mode programmatically after `dialog:shown` with
 `ctx.setFullscreen(boolean)` and read it with `ctx.isFullscreen()`, even when
 the title-bar control is not shown; static `size: "fullscreen"` dialogs are
@@ -1730,6 +1732,9 @@ validation callback across that same pending pair. Alerts condition logic does
 likewise, while Alerts email subject and SendGrid template-data values each
 retain their source-specific focus-return selector. Field Annotation is
 intentionally click-only, so it is not part of that duplicate-event path.
+Quick Edit Action Tags instead has delegated focus/click handling: coverage
+keeps its append-mode focus return, click cancellation, and custom-source
+change path after an authoring save.
 e-Consent Custom Label keeps its setup-dialog close-control return through one
 eventual workspace for its rendered focus/click pair.
 Explicit rich-text source-editor buttons must route through
@@ -1814,7 +1819,8 @@ marks its opener before dependency loading, so the second request from a
 focus-then-click gesture resolves without creating another dialog. If that
 opener already owns the visible workspace, the duplicate request focuses its
 existing ACE editor without moving the dialog. Browser coverage executes the
-rendered `element_enum` focus and click handlers for both Calculated Field and
+raw rendered `element_enum` focus and click handlers as well as their shared
+gate for both Calculated Field and
 SQL, asserting one dialog creation and dependency load, followed by a focus of
 the existing editor in each case. The same rendered handlers for Radio,
 Drop-down, and Checkbox make no workspace request or opener marker and leave

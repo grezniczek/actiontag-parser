@@ -34,7 +34,10 @@ when that is warranted.
   workspace. The Quick-modify source is a readonly control that opens the
   Action Tags workspace on focus or click and identifies itself with
   `quick_edit.action_tags`. Syntax feedback is diagnostic only; the established
-  server-side validators remain authoritative when metadata is saved.
+  server-side validators remain authoritative when metadata is saved. Browser
+  coverage executes its delegated focus/click handler, preserving append-mode
+  focus return, click cancellation, and the existing custom-source change path
+  after an authoring save.
 - The Edit Field dialog reuses `element_enum` for choices, calculations, and
   SQL. Only the currently selected Calculated Field or SQL type makes it
   readonly and opens an authoring workspace; Radio, Drop-down, Checkbox, and
@@ -51,6 +54,8 @@ when that is warranted.
 - Both `element_enum` focus and click use the same dynamic launcher gate. It
   leaves choice-owning types on the direct-edit path and opens only the
   corresponding Calculation or SQL workspace with the current field identity.
+  Browser coverage executes both rendered handlers and confirms each routes
+  the actual textarea to that one shared gate.
   The shared workspace opener marker is set before dependency loading, so a
   following click does not create a second dialog; if the workspace is already
   visible for that opener, it focuses the existing ACE editor instead. Browser
@@ -731,7 +736,9 @@ project event and the public route for the project's `firstForm`, but no record 
   Label also have browser coverage for a pending dependency load across each
   rendered focus/click pair, which creates one eventual workspace. Field
   Annotation remains deliberately click-only and is not part of that
-  duplicate-event path.
+  duplicate-event path. Its rendered click coverage keeps form, type, matrix,
+  validation, and range options live and retains its mobile-app validation
+  visibility refresh after save.
   Saving removes trailing horizontal whitespace; Cancel leaves the source
   byte-for-byte unchanged. This completes the
   immediate data-entry-form design label surfaces while retaining each
