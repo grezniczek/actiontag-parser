@@ -794,7 +794,8 @@ project event and the public route for the project's `firstForm`, but no record 
   An end-to-end browser test follows that rendered button through binding and
   dispatch into the selected-row workspace, spreadsheet write-back, and buffer
   cleanup. Its no-selection path creates neither a buffer nor workspace and
-  still restores spreadsheet interaction.
+  still restores spreadsheet interaction. The same is true when a selected
+  row has no available label cell.
   Matrix headers retain their rich-text
   handoff. Choice Labels use the restricted `filter_tags` HTML mode and retain
   their established one-line `<br>` handling. Do not enable field embedding
