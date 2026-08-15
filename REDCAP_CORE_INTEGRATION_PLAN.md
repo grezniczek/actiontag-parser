@@ -792,7 +792,8 @@ project event and the public route for the project's `firstForm`, but no record 
   remains a non-submit gesture, while the three authoring gestures preserve the
   current host field and form for Field Embedding. While dependencies are
   pending, F2, double-click, and the source action share one eventual workspace
-  and clear its opener marker after closure.
+  and clear its opener marker after closure. A failed dependency load clears
+  that marker so a following Field Note authoring gesture can retry.
   Advanced Branching Logic remains an intentionally focus-only Logic launcher;
   browser coverage executes that handler and preserves its live field target.
 - Generic External Modules JSON settings and the Vue `useLogicTextArea`

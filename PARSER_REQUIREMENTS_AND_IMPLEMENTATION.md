@@ -1807,7 +1807,8 @@ source-action routes: Enter remains non-submitting, while F2, double-click,
 and the button are cancellable and preserve the current host field and form
 for Field Embedding. When those three authoring gestures occur while
 dependencies are pending, they share one eventual workspace and clear the
-opener marker after closure.
+opener marker after closure. A failed dependency load likewise clears the
+marker so a following Field Note authoring gesture can retry.
 Advanced Branching Logic is deliberately focus-only. Coverage executes its
 rendered handler and keeps its live field name as the Logic target without
 inventing a click route.
