@@ -170,6 +170,9 @@ dependency loading and assert one eventual Field Note workspace plus marker
 cleanup after it closes.
 Also simulate a failed dependency load: its marker must clear so a following
 Field Note authoring gesture can retry from the same source.
+With its workspace already visible, a further Field Note double-click must
+refocus the existing ACE editor without reloading dependencies or creating
+another dialog.
 Advanced Branching Logic is intentionally focus-only. Its rendered handler must
 continue to open the Logic workspace from that textarea and pass the live field
 name as the target; do not add a click path merely to match other controls.

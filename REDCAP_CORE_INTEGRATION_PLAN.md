@@ -793,7 +793,9 @@ project event and the public route for the project's `firstForm`, but no record 
   current host field and form for Field Embedding. While dependencies are
   pending, F2, double-click, and the source action share one eventual workspace
   and clear its opener marker after closure. A failed dependency load clears
-  that marker so a following Field Note authoring gesture can retry.
+  that marker so a following Field Note authoring gesture can retry. A
+  double-click while visible refocuses the existing ACE editor without loading
+  dependencies or creating another dialog.
   Advanced Branching Logic remains an intentionally focus-only Logic launcher;
   browser coverage executes that handler and preserves its live field target.
 - Generic External Modules JSON settings and the Vue `useLogicTextArea`
