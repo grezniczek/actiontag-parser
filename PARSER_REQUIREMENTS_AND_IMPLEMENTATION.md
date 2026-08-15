@@ -1785,6 +1785,8 @@ The selected-row path with no available label cell has the same no-buffer,
 no-workspace, spreadsheet-restoration contract.
 Cancelling a valid selected-row workspace removes its detached buffer without
 writing through the spreadsheet API.
+Its focus-return callback returns the exact selected Choice Label cell and
+restores that spreadsheet selection.
 Field Note coverage executes its rendered keyboard, double-click, and explicit
 source-action routes: Enter remains non-submitting, while F2, double-click,
 and the button are cancellable and preserve the current host field and form

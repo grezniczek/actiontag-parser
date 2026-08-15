@@ -139,6 +139,8 @@ Repeat that end-to-end guard for a selected row whose label cell is unavailable:
 it must likewise create no buffer or workspace and restore the spreadsheet.
 For a valid selected-row launch, also test cancellation: closing without save
 must clean up the detached buffer without writing through the spreadsheet API.
+Invoke its `focusAfterClose` callback in the end-to-end path and verify it
+returns the selected label cell while restoring that exact spreadsheet selection.
 For Field Note, execute the rendered Enter, F2, double-click, and explicit
 source-action handlers. Enter must keep the dialog from submitting; the three
 authoring gestures must remain cancellable and pass the current field name and
